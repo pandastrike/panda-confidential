@@ -2,9 +2,9 @@
   "name": "panda-confidential",
   "version": "0.0.1",
   "description": "Encryption helper that leverages AWS KMS and tweetnacl-js",
-  "main": "build/npm/lib/index.js",
+  "main": "build/npm/src/index.js",
   "files": [
-    "build/npm",
+    "build/npm/src",
     "LICENSE"
   ],
   "scripts": {
@@ -41,12 +41,17 @@
   },
   "homepage": "https://github.com/pandastrike/panda-sky-nacl#readme",
   "devDependencies": {
+    "amen": "^2.0.4",
+    "aws-sdk": "^2.200.0",
     "coffeescript": "2.1.0",
-    "fairmont-build-tools": "1.0.2",
-    "gulp": "github:gulpjs/gulp#4.0"
+    "command-line-args": "^5.0.2",
+    "commander": "^2.14.1",
+    "gulp": "github:gulpjs/gulp#4.0",
+    "panda-builder": "1.1.1",
+    "source-map-support": "^0.5.0"
   },
   "dependencies": {
-    "sundog": ">=0.0.6 <0.1.0",
+    "sundog": ">=0.0.8 <0.1.0",
     "tweetnacl": "^1.0.0"
   }
 }

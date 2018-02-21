@@ -54,32 +54,32 @@ box = ({KMS}) ->
 
   ## Exposed Sub-Modules
   ################################
-  publicKey = do ->
-    encrypt = (theirPublicKey, mySecretKey, message, encoding="utf8") ->
+  _publicKey = do ->
+    encrypt = (publicKey, privateKey, message, encoding="utf8") ->
       # Prepare for encryption.
       nonce = await prepareNonce()
-      theirPublicKey = prepareKey theirPublicKey
-      mySecretKey = prepareKey mySecretKey
+      publicKey = prepareKey publicKey
+      privateKey = prepareKey privateKey
       message = preparePlaintext message, encoding
 
       # Encrypt.
-      ciphertext= Buffer.from nacl.box message, nonce, theirPublicKey, mySecretKey
+      ciphertext= Buffer.from nacl.box message, nonce, publicKey, privateKey
 
       # Return a blob of base64 to the outer layer.
       Buffer.from JSON.stringify {ciphertext, nonce}
       .toString("base64")
 
-    decrypt = (theirPublicKey, mySecretKey, blob, encoding="utf8") ->
+    decrypt = (publicKey, privateKey, blob, encoding="utf8") ->
       # Prepare for decryption
       {ciphertext, nonce} = extractBlob blob
-      theirPublicKey = prepareKey theirPublicKey
-      mySecretKey = prepareKey mySecretKey
+      publicKey = prepareKey publicKey
+      privateKey = prepareKey privateKey
 
       # Return the decrypted the message.
       if encoding == "buffer"
-        Buffer.from nacl.box.open ciphertext, nonce, theirPublicKey, mySecretKey
+        Buffer.from nacl.box.open ciphertext, nonce, publicKey, privateKey
       else
-        Buffer.from nacl.box.open ciphertext, nonce, theirPublicKey, mySecretKey
+        Buffer.from nacl.box.open ciphertext, nonce, publicKey, privateKey
         .toString encoding
 
     {generateKeyPair, generateKeyPairFromSecret, encrypt, decrypt}
@@ -87,8 +87,8 @@ box = ({KMS}) ->
 
   sharedPublicKey = do ->
 
-    generateKey = (theirPublicKey, mySecretKey) ->
-      Buffer.from nacl.box.before(theirPublicKey, mySecretKey)
+    generateKey = (publicKey, privateKey) ->
+      Buffer.from nacl.box.before(publicKey, privateKey)
       .toString("base64")
 
     encrypt = (sharedKey, messager, encoding="utf8") ->
@@ -118,6 +118,6 @@ box = ({KMS}) ->
 
     {generateKeyPair, generateKeyPairFromSecret, generateSharedKey, encrypt, decrypt}
 
-  {publicKey, sharedPublicKey}
+  {publicKey:_publicKey, sharedPublicKey}
 
 export default box
