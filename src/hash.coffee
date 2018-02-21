@@ -11,7 +11,7 @@ hash = ->
     if encoding == "buffer"
       msg
     else
-      Buffer.from message, encoding
+      Buffer.from msg, encoding
 
   ## Exposed Functions
   ################################

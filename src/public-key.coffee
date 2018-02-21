@@ -29,7 +29,7 @@ box = ({KMS}) ->
     if encoding == "buffer"
       msg
     else
-      Buffer.from message, encoding
+      Buffer.from msg, encoding
 
   # Extract data from the blob for decryption.
   extractBlob = (blob) ->
@@ -45,11 +45,11 @@ box = ({KMS}) ->
     pair = nacl.box.keyPair.fromSecretKey secret
 
     publicKey: Buffer.from(pair.publicKey).toString("base64")
-    secretKey: Buffer.from(pair.secretKey).toString("base64")
+    privateKey: Buffer.from(pair.secretKey).toString("base64")
 
   generateKeyPair = ->
-    secretKey = await randomKey secretLength, "buffer"
-    generateKeyPairFromSecret secretKey, "buffer"
+    privateKey = await randomKey secretLength, "buffer"
+    generateKeyPairFromSecret privateKey, "buffer"
 
 
   ## Exposed Sub-Modules
@@ -116,7 +116,7 @@ box = ({KMS}) ->
         Buffer.from nacl.box.open.after ciphertext, nonce, sharedKey
         .toString encoding
 
-    {generateKeyPair, generateKeyPairFromSecret, generateSharedKey, encrypt, decrypt}
+    {generateKeyPair, generateKeyPairFromSecret, generateKey, encrypt, decrypt}
 
   {publicKey:_publicKey, sharedPublicKey}
 

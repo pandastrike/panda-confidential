@@ -26,7 +26,7 @@ signature = ({KMS}) ->
     if encoding == "buffer"
       msg
     else
-      Buffer.from message, encoding
+      Buffer.from msg, encoding
 
 
   ## Exposed Functions
@@ -38,11 +38,11 @@ signature = ({KMS}) ->
     pair = nacl.sign.keyPair.fromSecretKey secret
 
     publicKey: Buffer.from(pair.publicKey).toString("base64")
-    secretKey: Buffer.from(pair.secretKey).toString("base64")
+    privateKey: Buffer.from(pair.secretKey).toString("base64")
 
   generateKeyPair = ->
-    secretKey = await randomKey secretLength, "buffer"
-    generateKeyPairFromSecret secretKey, "buffer"
+    privateKey = await randomKey secretLength, "buffer"
+    generateKeyPairFromSecret privateKey, "buffer"
 
   sign = (key, message, encoding="utf8") ->
     key = prepareKey key

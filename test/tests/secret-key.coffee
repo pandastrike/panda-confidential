@@ -2,9 +2,9 @@ import assert from "assert"
 import Confidential from "../../src/index"
 import kmsKeyName from "../key-name"
 
-secretKeyTest = (SDK) ->
-  {secretKey} = Confidential SDK
-  box = secretKey kmsKeyName
+secretKeyTest = (SDK) -> ->
+  {SecretKey} = Confidential SDK
+  box = SecretKey kmsKeyName
 
   message = "Hello World!"
   cipher = await box.encrypt message

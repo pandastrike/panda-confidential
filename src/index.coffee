@@ -1,7 +1,7 @@
 import Sundog from "sundog"
 
 import secretKey from "./secret-key"
-#import PUBLIC_KEY from "./public-key"
+import PUBLIC_KEY from "./public-key"
 #import scalar from "./scalar"
 #import signature from "./signature"
 #import hash from "./hash"
@@ -9,31 +9,31 @@ import secretKey from "./secret-key"
 
 Confidential = (SDK) ->
   {AWS} = Sundog SDK
-  #{publicKey, sharedPublicKey} = PUBLIC_KEY AWS
+  {publicKey, sharedPublicKey} = PUBLIC_KEY AWS
 
   Object.defineProperties {},
-    secretKey:
+    SecretKey:
       enumerable: true
       get: -> secretKey AWS
-    # publicKey:
-    #   enumerable: true
-    #   get: -> publicKey
-    # sharedPublicKey:
+    PublicKey:
+      enumerable: true
+      get: -> publicKey
+    # SharedPublicKey:
     #   enumerable: true
     #   get: -> sharedPublicKey
-    # scalar:
+    # Scalar:
     #   enumerable: true
     #   get: -> scalar()
-    # signature:
+    # Signature:
     #   enumerable: true
     #   get: -> signature AWS
-    # hash:
+    # Hash:
     #   enumerable: true
     #   get: -> hash()
-    # random:
+    # Random:
     #   enumerable: true
     #   get: -> AWS.KMS.randomKey
-    # utility:
+    # Utility:
     #   enumerable: true
     #   get: -> utility()
 
