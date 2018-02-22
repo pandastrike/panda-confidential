@@ -3,11 +3,15 @@ import nacl from "tweetnacl"
 
 scalar = ->
 
+  toBuffer = (x) -> Buffer.from x, "base64"
+
   multiply = (n, p) ->
+    n = toBuffer n
     if p
-      nacl.scalarMult n, p
+      p = toBuffer p
+      Buffer.from(nacl.scalarMult n, p).toString("base64")
     else
-      nacl.scalarMult.base n
+      Buffer.from(nacl.scalarMult.base n).toString("base64")
 
   {multiply}
 

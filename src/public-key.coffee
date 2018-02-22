@@ -9,7 +9,7 @@ box = ({KMS}) ->
   ################################
   # Length in bytes
   publicLength = 32
-  secretLength = 32
+  privateLength = 32
   nonceLength = 24
 
   ## Helpers
@@ -48,7 +48,7 @@ box = ({KMS}) ->
     privateKey: Buffer.from(pair.secretKey).toString("base64")
 
   generateKeyPair = ->
-    privateKey = await randomKey secretLength, "buffer"
+    privateKey = await randomKey privateLength, "buffer"
     generateKeyPairFromSecret privateKey, "buffer"
 
 

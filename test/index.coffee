@@ -20,5 +20,4 @@ do ->
     console.error "Failed to establish AWS SDK context.", e
     process.exit()
 
-  console.error "Running tests..."
   await Tests SDK

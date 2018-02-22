@@ -2,8 +2,8 @@ import Sundog from "sundog"
 
 import secretKey from "./secret-key"
 import PUBLIC_KEY from "./public-key"
-#import scalar from "./scalar"
-#import signature from "./signature"
+import scalar from "./scalar"
+import signature from "./signature"
 #import hash from "./hash"
 #import utility from "./utility"
 
@@ -21,12 +21,12 @@ Confidential = (SDK) ->
     SharedPublicKey:
       enumerable: true
       get: -> sharedPublicKey
-    # Scalar:
-    #   enumerable: true
-    #   get: -> scalar()
-    # Signature:
-    #   enumerable: true
-    #   get: -> signature AWS
+    Scalar:
+      enumerable: true
+      get: -> scalar()
+    Signature:
+      enumerable: true
+      get: -> signature AWS
     # Hash:
     #   enumerable: true
     #   get: -> hash()

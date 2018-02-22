@@ -9,8 +9,7 @@ signature = ({KMS}) ->
   ################################
   # Length in bytes
   publicLength = 32
-  secretLength = 64
-  seedLength = 32
+  privateLength = 64
 
   ## Helpers
   ##################################
@@ -41,7 +40,7 @@ signature = ({KMS}) ->
     privateKey: Buffer.from(pair.secretKey).toString("base64")
 
   generateKeyPair = ->
-    privateKey = await randomKey secretLength, "buffer"
+    privateKey = await randomKey privateLength, "buffer"
     generateKeyPairFromSecret privateKey, "buffer"
 
   sign = (key, message, encoding="utf8") ->
