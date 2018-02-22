@@ -2,15 +2,15 @@ import assert from "assert"
 import {test, print} from "amen"
 import Confidential from "../../src/index"
 
-secretKeyTest = (SDK) -> ->
+publicKeyTest = (SDK) -> ->
   {PublicKey} = Confidential SDK
 
   # Test Key Pair Generation
   {privateKey, publicKey} = await PublicKey.generateKeyPair()
-  assert privateKey, "failed to generate secret key"
+  assert privateKey, "failed to generate private key"
   assert publicKey, "failed to generate public key"
   assert (Buffer.from(privateKey, "base64").length == 32),
-    "secret key is improper length"
+    "private key is improper length"
   assert (Buffer.from(publicKey, "base64").length == 32),
     "public key is improper length"
 
@@ -28,4 +28,4 @@ secretKeyTest = (SDK) -> ->
   output = PublicKey.decrypt A.publicKey, B.privateKey, cipher
   assert.equal message, output, "failed to decrypt"
 
-export default secretKeyTest
+export default publicKeyTest

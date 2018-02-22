@@ -88,10 +88,12 @@ box = ({KMS}) ->
   sharedPublicKey = do ->
 
     generateKey = (publicKey, privateKey) ->
+      publicKey = prepareKey publicKey
+      privateKey = prepareKey privateKey
       Buffer.from nacl.box.before(publicKey, privateKey)
       .toString("base64")
 
-    encrypt = (sharedKey, messager, encoding="utf8") ->
+    encrypt = (sharedKey, message, encoding="utf8") ->
       # Prepare for encryption.
       nonce = await prepareNonce()
       sharedKey = prepareKey sharedKey

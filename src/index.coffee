@@ -18,9 +18,9 @@ Confidential = (SDK) ->
     PublicKey:
       enumerable: true
       get: -> publicKey
-    # SharedPublicKey:
-    #   enumerable: true
-    #   get: -> sharedPublicKey
+    SharedPublicKey:
+      enumerable: true
+      get: -> sharedPublicKey
     # Scalar:
     #   enumerable: true
     #   get: -> scalar()
