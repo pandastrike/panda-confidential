@@ -10,6 +10,7 @@ signature = ({KMS}) ->
   # Length in bytes
   publicLength = 32
   privateLength = 64
+  seedLength = 32
 
   ## Helpers
   ##################################
@@ -30,18 +31,18 @@ signature = ({KMS}) ->
 
   ## Exposed Functions
   ################################
-  generateKeyPairFromSecret = (secret, encoding="base64") ->
+  generateKeyPairFromSeed = (seed, encoding="base64") ->
     if encoding != "buffer"
-      secret = Buffer.from secret, encoding
+      seed = Buffer.from seed, encoding
 
-    pair = nacl.sign.keyPair.fromSecretKey secret
+    pair = nacl.sign.keyPair.fromSeed seed
 
     publicKey: Buffer.from(pair.publicKey).toString("base64")
     privateKey: Buffer.from(pair.secretKey).toString("base64")
 
   generateKeyPair = ->
-    privateKey = await randomKey privateLength, "buffer"
-    generateKeyPairFromSecret privateKey, "buffer"
+    seed = await randomKey seedLength, "buffer"
+    generateKeyPairFromSeed seed, "buffer"
 
   sign = (key, message, encoding="utf8") ->
     key = prepareKey key
@@ -72,6 +73,6 @@ signature = ({KMS}) ->
     message = preparePlaintext message, encoding
     nacl.sign.detached.verify message, sig, key
 
-  {generateKeyPairFromSecret, generateKeyPair, sign, open, generate, verify}
+  {generateKeyPairFromSeed, generateKeyPair, sign, open, generate, verify}
 
 export default signature

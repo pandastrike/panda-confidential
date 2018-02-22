@@ -20,24 +20,21 @@ publicKeyTest = (SDK) -> ->
   message = "Hello World!"
 
   # Person A signs the message.
-  # signedMessage = Signature.sign A.privateKey, message
-  # assert (signedMessage && signedMessage != message),
-  #   "failed to create a signed message"
-  # console.log "signed message", signedMessage
-  # # Person B uses A's public key to verify and open the message.
-  # output = Signature.open A.publicKey, signedMessage
-  # assert.equal message, output, "failed to verify"
+  signedMessage = Signature.sign A.privateKey, message
+  assert (signedMessage && signedMessage != message),
+    "failed to create a signed message"
+
+  # Person B uses A's public key to verify and open the message.
+  output = Signature.open A.publicKey, signedMessage
+  assert.equal message, output, "failed to verify"
 
   # Person A generates a detatched signature.
   signature = Signature.generate A.privateKey, message
   assert (signature && signature != message),
     "failed to create a signature message"
-  console.log "signature", signature
-  console.log "message", Buffer.from(message, "utf8").length
-  console.log Buffer.from(signature, "base64").length
+
   # Person B verifies the message.
   output = Signature.verify A.publicKey, signature, message
-  console.log "output", output
   assert (output == true), "failed to verify"
 
 
