@@ -22,7 +22,7 @@ secretKeyTest = (SDK) -> ->
 
   # Person A encrypts the message for person B.
   cipher = await PublicKey.encrypt B.publicKey, A.privateKey, message
-  assert (message != cipher), "failed to create a ciphertext"
+  assert (cipher && message != cipher), "failed to create a ciphertext"
 
   # Person B gets the cipher and decrypts the message.
   output = PublicKey.decrypt A.publicKey, B.privateKey, cipher

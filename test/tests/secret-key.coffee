@@ -8,7 +8,7 @@ secretKeyTest = (SDK) -> ->
 
   message = "Hello World!"
   cipher = await box.encrypt message
-  assert (message != cipher), "created a ciphertext"
+  assert (cipher && message != cipher), "created a ciphertext"
   output = await box.decrypt cipher
   assert.equal message, output, "failed to decrypt"
 
