@@ -23,11 +23,6 @@ Tests = (SDK) ->
       sharedPublicKey SDK
 
     test
-      description: "Scalar Multiplication"
-      wait: false,
-      scalar SDK
-
-    test
       description: "Digital Signature"
       wait: false,
       signature SDK

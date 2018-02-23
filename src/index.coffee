@@ -34,10 +34,10 @@ Confidential = (SDK) ->
       get: -> decrypt AWS
     sign:
       enumerable: true
-      get: -> sign AWS
+      get: -> sign()
     verify:
       enumerable: true
-      get: -> verify AWS
+      get: -> verify()
 
 
 export default Confidential

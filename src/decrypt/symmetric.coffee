@@ -1,10 +1,7 @@
 import nacl from "tweetnacl"
-import {decodeCiphertext, encodeIntArray} from "../utils"
+import {decodeCiphertext, encode} from "../utils"
 
-SymmetricDecrypt = (KMS) ->
-  # Access to the KMS API via sundog.
-  {decrypt:kmsDecrypt} = KMS
-
+SymmetricDecrypt = ({decrypt:kmsDecrypt}) ->
   (kmsKey, blob, encoding) ->
     # Extract data from the blob for decryption.
     {ciphertext, nonce, lockedKey} = decodeCiphertext blob
@@ -13,7 +10,6 @@ SymmetricDecrypt = (KMS) ->
     key = await kmsDecrypt lockedKey, "buffer"
 
     # Return the decrypted the message.
-    encode = encodeIntArray encoding
-    encode nacl.secretbox.open ciphertext, nonce, key
+    encode encoding, nacl.secretbox.open ciphertext, nonce, key
 
 export default SymmetricDecrypt

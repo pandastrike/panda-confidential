@@ -21,13 +21,12 @@ utils = ->
     else
       Buffer.from msg, encoding
 
-  # Encode an IntArray from TweetNaCl or convert into a Buffer.
-  encodeIntArray = (encoding) ->
-    (a) ->
-      if encoding == "buffer"
-        Buffer.from a
-      else
-        Buffer.from(a).toString encoding
+  # String encode a piece of data or convert into a Buffer.
+  encode = (encoding, data) ->
+    if encoding == "buffer"
+      Buffer.from data  # Just output a buffer
+    else
+      Buffer.from(data).toString encoding
 
   isKMSKey = (key) -> isType KMSKey
   isPrivateKey = (key) -> isType PrivateKey
@@ -39,7 +38,7 @@ export {
   decodeCiphertext
   decodeKey
   decodePlaintext
-  encodeIntArray
+  encode
   isKMSKey
   isPrivateKey
   isPublicKey
