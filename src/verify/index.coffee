@@ -4,15 +4,16 @@ import {Method} from "fairmont-helpers"
 import {isSignedMessage} from "./utils"
 import {verify} from "./engine"
 
-Verify = ->
+VERIFY = ->
   # Define a multimethod.
-  verifyMultimethod = Method.create()
+  Verify = Method.create()
 
   # Verify the signature(s) on a message and return the message.
-  Method.define isSignedMessage, (signedMessage) -> verify signedMessage
+  Method.define Verify, isSignedMessage,
+    (signedMessage) -> verify signedMessage
 
   # Return the multimethod.
-  verifyMultimethod
+  Verify
 
 
-export default Verify
+export default VERIFY

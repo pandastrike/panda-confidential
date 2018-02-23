@@ -13,23 +13,23 @@ Decrypt = ({KMS}) ->
   decrypt = Method.create()
 
   # Symmetric Decryption
-  Method.define isKMSKey, isString,
+  Method.define decrypt, isKMSKey, isString,
     (key, ciphertext) -> symmetric key, ciphertext, "utf8"
   Method.define isKMSKey, isString, isString,
     (key, ciphertext, encoding) -> symmetric key, ciphertext, encoding
 
   # Asymmetric Decryption via shared key.
-  Method.define isSharedKey, isString,
+  Method.define decrypt, isSharedKey, isString,
     (key, ciphertext) -> asymmetric key, ciphertext, "utf8"
   Method.define isSharedKey, isString, isString,
     (key, ciphertext, encoding) -> asymmetric key, ciphertext, encoding
 
   # Asymmetric Decryption via separate private / public keys.
-  Method.define isPrivateKey, isPublicKey, isString,
+  Method.define decrypt, isPrivateKey, isPublicKey, isString,
     (privateKey, publicKey, ciphertext) ->
       key = new SharedKey privateKey, publicKey
       asymmetric key, ciphertext, "utf8"
-  Method.define isPrivateKey, isPublicKey, isString, isString,
+  Method.define decrypt, isPrivateKey, isPublicKey, isString, isString,
     (privateKey, publicKey, ciphertext, encoding) ->
       key = new SharedKey privateKey, publicKey
       asymmetric key, ciphertext, encoding

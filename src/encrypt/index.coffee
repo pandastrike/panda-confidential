@@ -13,31 +13,31 @@ Encrypt = ({KMS}) ->
   encrypt = Method.create()
 
   # Symmetric Encryption
-  Method.define isKMSKey, isString,
+  Method.define encrypt, isKMSKey, isString,
     (key, plaintext) -> symmetric key, plaintext, "utf8"
-  Method.define isKMSKey, isBuffer,
+  Method.define encrypt, isKMSKey, isBuffer,
     (key, plaintext) -> symmetric key, plaintext, "buffer"
-  Method.define isKMSKey, isString, isString,
+  Method.define encrypt, isKMSKey, isString, isString,
     (key, plaintext, encoding) -> symmetric key, plaintext, encoding
 
   # Asymmetric Encryption via shared key.
-  Method.define isSharedKey, isString,
+  Method.define encrypt, isSharedKey, isString,
     (key, plaintext) -> asymmetric key, plaintext, "utf8"
-  Method.define isSharedKey, isBuffer,
+  Method.define encrypt, isSharedKey, isBuffer,
     (key, plaintext) -> asymmetric key, plaintext, "buffer"
-  Method.define isSharedKey, isString, isString,
+  Method.define encrypt, isSharedKey, isString, isString,
     (key, plaintext, encoding) -> asymmetric key, plaintext, encoding
 
   # Asymmetric Encryption via separate private / public keys.
-  Method.define isPrivateKey, isPublicKey, isString,
+  Method.define encrypt, isPrivateKey, isPublicKey, isString,
     (privateKey, publicKey, plaintext) ->
       key = new SharedKey privateKey, publicKey
       asymmetric key, plaintext, "utf8"
-  Method.define isPrivateKey, isPublicKey, isBuffer,
+  Method.define encrypt, isPrivateKey, isPublicKey, isBuffer,
     (privateKey, publicKey, plaintext) ->
       key = new SharedKey privateKey, publicKey
       asymmetric key, plaintext, "buffer"
-  Method.define isPrivateKey, isPublicKey, isString, isString,
+  Method.define encrypt, isPrivateKey, isPublicKey, isString, isString,
     (privateKey, publicKey, plaintext, encoding) ->
       key = new SharedKey privateKey, publicKey
       asymmetric key, plaintext, encoding

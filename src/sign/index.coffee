@@ -1,30 +1,41 @@
 import nacl from "tweetnacl"
 import {Method, isString, isBuffer} from "fairmont-helpers"
 
-import {isPrivateKey, isPublicKey, isSignedMessage} from "./utils"
+import {isPrivateKey, isPublicKey, isSignedMessage, isKeyPair} from "./utils"
 import {sign, addSignature} from "./engine"
 
-Sign = ->
+SIGN = ->
   # Define a multimethod.
-  signMultimethod = Method.create()
+  Sign = Method.create()
 
   # Signing a plain message.
-  Method.define isPrivateKey, isPublicKey, isString,
+  Method.define Sign, isPrivateKey, isPublicKey, isString,
     (privateKey, publicKey, message) ->
       sign privateKey, publicKey, message, "utf8"
-  Method.define isPrivateKey, isPublicKey, isBuffer,
+  Method.define Sign, isPrivateKey, isPublicKey, isBuffer,
     (privateKey, publicKey, message) ->
       sign privateKey, publicKey, message, "buffer"
-  Method.define isPrivateKey, isPublicKey, isString, isString,
+  Method.define Sign, isPrivateKey, isPublicKey, isString, isString,
     (privateKey, publicKey, message, encoding) ->
       sign privateKey, publicKey, message, encoding
 
+  # Signing a plain message with whole Key Pair.
+  Method.define Sign, isKeyPair, isString,
+    ({privateKey, publicKey}, message) ->
+      sign privateKey, publicKey, message, "utf8"
+  Method.define Sign, isKeyPair, isBuffer,
+    ({privateKey, publicKey}, message) ->
+      sign privateKey, publicKey, message, "buffer"
+  Method.define Sign, isKeyPair, isString, isString,
+    ({privateKey, publicKey}, message, encoding) ->
+      sign privateKey, publicKey, message, encoding
+
   # Signing SignedMessage class (previously signed message).
-  Method.define isPrivateKey, isPublicKey, isSignedMessage
+  Method.define Sign, isPrivateKey, isPublicKey, isSignedMessage
     (privateKey, publicKey, signedMessage) ->
       addSignature privateKey, publicKey, signedMessage
 
   # Return the multimethod.
-  signMultimethod
+  Sign
 
-export default Sign
+export default SIGN

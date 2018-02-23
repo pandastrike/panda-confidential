@@ -1,7 +1,7 @@
 import nacl from "tweetnacl"
 import {decodePlaintext, encode} from "../utils"
-keyLength = 32    # Constant byte length specified by TweetNaCl
-nonceLength = 24  # Constant byte length specified by TweetNaCl
+import {encryption} from "../constants"
+{nonceLength, keyLength} = encryption.symmetric
 
 SymmetricEncrypt = ({randomKey, encrypt:kmsEncrypt}) ->
   (kmsKey, message, encoding) ->

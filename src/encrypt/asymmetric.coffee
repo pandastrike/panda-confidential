@@ -1,6 +1,7 @@
 import nacl from "tweetnacl"
 import {decodeKey, decodePlaintext, encode} from "../utils"
-nonceLength = 24  # Constant byte length specified by TweetNaCl
+import {encryption} from "../constants"
+{nonceLength} = encryption.asymmetric
 
 AsymmetricEncrypt = ({randomKey}) ->
   (sharedKey, message, encoding) ->
