@@ -1,9 +1,9 @@
 # These utility functions are only for the key classes to avoid circular dependencies with the rest of the Confidential interface.
 
 import {isType, isKind, isString, isBuffer} from "fairmont-helpers"
-import {Key} from "./key"
-import {PrivateKey} from "./private-key"
-import {PublicKey} from "./public-key"
+import Key from "./key"
+import PrivateKey from "./private-key"
+import PublicKey from "./public-key"
 
 isKey = isKind Key
 isPrivateKey = isType PrivateKey

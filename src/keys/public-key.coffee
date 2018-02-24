@@ -1,2 +1,4 @@
-import {Key} from "./key"
-export class PublicKey extends Key
+import Key from "./key"
+class PublicKey extends Key
+
+export default PublicKey

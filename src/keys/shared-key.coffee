@@ -1,12 +1,12 @@
 # This is a derived key formed from one person's private key and another's public key to form a shared secret key used in PKE encryption.
 import nacl from "tweetnacl"
 import {isBuffer, isString} from "fairmont-helpers"
-import {Method} from "fairmont-multimethod"
+import {Method} from "fairmont-multimethods"
 
-import {Key} from "./key"
+import Key from "./key"
 import {isPrivateKey, isPublicKey, encode} from "./key-utils"
 
-export class SharedKey extends Key
+class SharedKey extends Key
   constructor: (input1, input2) ->
     super()
     @key = undefined
@@ -37,3 +37,5 @@ export class SharedKey extends Key
       getKey input1, input2
     else
       getKey input1
+
+export default SharedKey

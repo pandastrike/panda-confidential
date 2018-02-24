@@ -3,8 +3,8 @@ import {isKey} from "./types"
 
 decodeCiphertext = (blob) ->
   out = JSON.parse Buffer.from(blob, "base64").toString()
-  out.ciphertext = Buffer.from ciphertext.data if out.ciphertext
-  out.nonce = Buffer.from nonce.data if out.nonce
+  out.ciphertext = Buffer.from out.ciphertext.data if out.ciphertext
+  out.nonce = Buffer.from out.nonce.data if out.nonce
   out
 
 decodePlaintext = (msg, encoding) ->

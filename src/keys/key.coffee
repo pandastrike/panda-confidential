@@ -1,7 +1,12 @@
 import {isBuffer, isString} from "fairmont-helpers"
 import {Method} from "fairmont-multimethods"
 
-import {encode} from "./key-utils"
+# String encode a piece of data or convert into a Buffer.
+encode = (encoding, data) ->
+  if encoding == "buffer"
+    Buffer.from data  # Just output a buffer
+  else
+    Buffer.from(data).toString encoding
 
 class Key
   constructor: (input, encoding) ->

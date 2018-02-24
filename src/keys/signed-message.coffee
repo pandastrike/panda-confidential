@@ -4,7 +4,7 @@ import {isString, isBuffer, isObject} from "fairmont-helpers"
 
 import {decodeSignature} from "./key-utils"
 
-export class SignedMessage
+class SignedMessage
   constructor: (input) ->
     getMsg = Method.create()
     Method.define getMsg, isString, (sig) ->
@@ -21,3 +21,5 @@ export class SignedMessage
   validate: ->
     if !@message || !@encoding || !@publicKeys || !@signatures
       throw new Error "Must provide message, encoding, public key array, and signature array."
+
+export default SignedMessage

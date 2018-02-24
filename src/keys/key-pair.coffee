@@ -3,14 +3,14 @@
 # (2) Signing via ed25519
 import nacl from "tweetnacl"
 import {isBuffer, isString} from "fairmont-helpers"
-import {Method} from "fairmont-multimethod"
+import {Method} from "fairmont-multimethods"
 
 import {isKey, encode} from "./key-utils"
-import {PrivateKey} from "./private-key"
-import {PublicKey} from "./public-key"
+import PrivateKey from "./private-key"
+import PublicKey from "./public-key"
 import {encryption, signing} from "../constants"
 
-export class KeyPair
+class KeyPair
   constructor: ->
   @_generate: ({KMS:{randomKey}}) ->
     @generate = (type, input, encoding) ->
@@ -42,3 +42,5 @@ export class KeyPair
           generatePair nacl.sign.keyPair.fromSeed, keyInput
         else
           throw new Error "Unsupported key pair type, #{type}"
+
+export default KeyPair
