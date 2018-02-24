@@ -1,6 +1,6 @@
 import Sundog from "sundog"
 
-import {KMSKey, PrivateKey, PublicKey, SharedKey, key_pair, SignedMessage} from "./keys"
+import {KMSKey, PrivateKey, PublicKey, SharedKey, KeyPair, SignedMessage} from "./keys"
 import encrypt from "./encrypt"
 import decrypt from "./decrypt"
 import sign from "./sign"
@@ -12,7 +12,9 @@ Confidential = (SDK) ->
   Object.defineProperties {},
     KeyPair:
       enumerable: true
-      get: -> key_pair AWS
+      get: ->
+        KeyPair._generate AWS
+        KeyPair
     KMSKey:
       enumerable: true
       get: -> KMSKey

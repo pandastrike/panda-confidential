@@ -1,6 +1,5 @@
 import nacl from "tweetnacl"
 import {decodeKey, decodePlaintext, encode} from "../utils"
-import {SignedMessage} from
 
 sign = (privateKey, publicKey, message, encoding) ->
   key = decodeKey privateKey
@@ -10,7 +9,7 @@ sign = (privateKey, publicKey, message, encoding) ->
   encode "base64", JSON.stringify
     message: encode "base64", message
     encoding: encoding
-    publicKeys: [publicKey]
+    publicKeys: [publicKey.key]
     signatures: [encode "base64", nacl.sign.detached message, key]
 
 
@@ -18,7 +17,7 @@ addSignature = (privateKey, publicKey, signedMessage) ->
   key = decodeKey privateKey
   message = decodePlaintext signedMessage.message, "base64"
 
-  signedMessage.publicKeys.push publicKey
+  signedMessage.publicKeys.push publicKey.key
   signedMessage.signatures.push encode "base64", nacl.sign.detached message, key
 
   # Return a blob of base64 to the outer layer.

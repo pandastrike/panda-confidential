@@ -2,7 +2,7 @@ import nacl from "tweetnacl"
 import {decodeCiphertext, encode} from "../utils"
 
 SymmetricDecrypt = ({decrypt:kmsDecrypt}) ->
-  (kmsKey, blob, encoding) ->
+  ({key:kmsKey}, blob, encoding) ->
     # Extract data from the blob for decryption.
     {ciphertext, nonce, lockedKey} = decodeCiphertext blob
 

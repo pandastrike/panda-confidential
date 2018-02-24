@@ -4,7 +4,7 @@ import {encryption} from "../constants"
 {nonceLength, keyLength} = encryption.symmetric
 
 SymmetricEncrypt = ({randomKey, encrypt:kmsEncrypt}) ->
-  (kmsKey, message, encoding) ->
+  ({key:kmsKey}, message, encoding) ->
     # Get key + nonce from KMS's robust source of entropy.
     random = await randomKey (keyLength + nonceLength), "buffer"
     key = random.slice 0, keyLength

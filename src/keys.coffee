@@ -1,5 +1,6 @@
 import nacl from "tweetnacl"
-import {Method, isBuffer, isString, isObject} from "fairmont-helpers"
+import {isBuffer, isString, isObject} from "fairmont-helpers"
+import {Method} from "fairmont-multimethods"
 
 import {encode, isPrivateKey, isPublicKey, isKey, decodeKey, decodeSignature, decodePlaintext} from "./utils"
 
@@ -33,6 +34,7 @@ class KMSKey
 # This is a derived key formed from one person's private key and another's public key to form a shared secret key used in PKE encryption.
 class SharedKey extends Key
   constructor: (input1, input2) ->
+    super()
     @key = undefined
 
     generateShared = (privateKey, publicKey) ->
@@ -66,10 +68,10 @@ class SharedKey extends Key
 # Allows developers to generate key pairs on demand from KMS's source of randomness for the two types of key pairs in TweetNaCl:
 # (1) Public-Key Authenticated Encryption via x25519-xsalsa20-poly1305
 # (2) Signing via ed25519
-key_pair = ({KMS:{randomKey}}) ->
-  class KeyPair
-    constructor: ->
-    @generate: (type, input, encoding) ->
+class KeyPair
+  constructor: ->
+  @_generate: ({KMS:{randomKey}}) ->
+    @generate = (type, input, encoding) ->
       getRandom = (length) -> await randomKey length, "buffer"
 
       getInput = (length) ->
@@ -125,6 +127,6 @@ export {
   PrivateKey
   PublicKey
   SharedKey
-  key_pair
+  KeyPair
   SignedMessage
 }

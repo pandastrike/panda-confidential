@@ -1,4 +1,5 @@
-import {Method, isString, isBuffer} from "fairmont-helpers"
+import {isString, isBuffer} from "fairmont-helpers"
+import {Method} from "fairmont-multimethods"
 
 import {SharedKey} from "../keys"
 import {isKMSKey, isPrivateKey, isPublicKey, isSharedKey} from "../utils"

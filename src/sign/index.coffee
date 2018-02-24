@@ -1,7 +1,9 @@
 import nacl from "tweetnacl"
-import {Method, isString, isBuffer} from "fairmont-helpers"
+import {isString, isBuffer} from "fairmont-helpers"
+import {Method} from "fairmont-multimethods"
 
-import {isPrivateKey, isPublicKey, isSignedMessage, isKeyPair} from "./utils"
+
+import {isPrivateKey, isPublicKey, isSignedMessage, isKeyPair} from "../utils"
 import {sign, addSignature} from "./engine"
 
 SIGN = ->
@@ -31,7 +33,7 @@ SIGN = ->
       sign privateKey, publicKey, message, encoding
 
   # Signing SignedMessage class (previously signed message).
-  Method.define Sign, isPrivateKey, isPublicKey, isSignedMessage
+  Method.define Sign, isPrivateKey, isPublicKey, isSignedMessage,
     (privateKey, publicKey, signedMessage) ->
       addSignature privateKey, publicKey, signedMessage
 

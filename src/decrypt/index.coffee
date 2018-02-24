@@ -1,4 +1,5 @@
-import {Method, isString, isBuffer} from "fairmont-helpers"
+import {isString, isBuffer} from "fairmont-helpers"
+import {Method} from "fairmont-multimethods"
 
 import {SharedKey} from "../keys"
 import {isKMSKey, isPrivateKey, isPublicKey, isSharedKey} from "../utils"
@@ -15,13 +16,13 @@ Decrypt = ({KMS}) ->
   # Symmetric Decryption
   Method.define decrypt, isKMSKey, isString,
     (key, ciphertext) -> symmetric key, ciphertext, "utf8"
-  Method.define isKMSKey, isString, isString,
+  Method.define decrypt, isKMSKey, isString, isString,
     (key, ciphertext, encoding) -> symmetric key, ciphertext, encoding
 
   # Asymmetric Decryption via shared key.
   Method.define decrypt, isSharedKey, isString,
     (key, ciphertext) -> asymmetric key, ciphertext, "utf8"
-  Method.define isSharedKey, isString, isString,
+  Method.define decrypt, isSharedKey, isString, isString,
     (key, ciphertext, encoding) -> asymmetric key, ciphertext, encoding
 
   # Asymmetric Decryption via separate private / public keys.
