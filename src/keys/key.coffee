@@ -3,7 +3,7 @@ import {Method} from "fairmont-multimethods"
 
 import {encode} from "./key-utils"
 
-export class Key
+class Key
   constructor: (input, encoding) ->
     @key = undefined
 
@@ -19,3 +19,5 @@ export class Key
       getKey key, encoding
     else
       getKey key
+
+export default Key

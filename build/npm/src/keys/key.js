@@ -3,7 +3,6 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Key = undefined;
 
 var _fairmontHelpers = require("fairmont-helpers");
 
@@ -11,7 +10,9 @@ var _fairmontMultimethods = require("fairmont-multimethods");
 
 var _keyUtils = require("./key-utils");
 
-var Key = exports.Key = class Key {
+var Key;
+
+Key = class Key {
   constructor(input, encoding) {
     var getKey;
     this.key = void 0;
@@ -33,3 +34,5 @@ var Key = exports.Key = class Key {
   }
 
 };
+
+exports.default = Key;
