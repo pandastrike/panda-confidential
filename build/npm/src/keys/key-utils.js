@@ -9,18 +9,26 @@ var _fairmontHelpers = require("fairmont-helpers");
 
 var _key = require("./key");
 
+var _key2 = _interopRequireDefault(_key);
+
 var _privateKey = require("./private-key");
 
+var _privateKey2 = _interopRequireDefault(_privateKey);
+
 var _publicKey = require("./public-key");
+
+var _publicKey2 = _interopRequireDefault(_publicKey);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // These utility functions are only for the key classes to avoid circular dependencies with the rest of the Confidential interface.
 var decodeKey, decodeSignature, encode, isKey, isPrivateKey, isPublicKey;
 
-exports.isKey = isKey = (0, _fairmontHelpers.isKind)(_key.Key);
+exports.isKey = isKey = (0, _fairmontHelpers.isKind)(_key2.default);
 
-exports.isPrivateKey = isPrivateKey = (0, _fairmontHelpers.isType)(_privateKey.PrivateKey);
+exports.isPrivateKey = isPrivateKey = (0, _fairmontHelpers.isType)(_privateKey2.default);
 
-exports.isPublicKey = isPublicKey = (0, _fairmontHelpers.isType)(_publicKey.PublicKey);
+exports.isPublicKey = isPublicKey = (0, _fairmontHelpers.isType)(_publicKey2.default);
 
 exports.decodeKey = decodeKey = function (input) {
   if (isKey(input)) {

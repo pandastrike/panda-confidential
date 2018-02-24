@@ -18,9 +18,12 @@ Method.define getKey, isString, isString, (key, encoding) ->
 
 class Key
   constructor: (input, encoding) ->
+    if !input
+      @key = false
+      return
     if encoding
-      @key = getKey key, encoding
+      @key = getKey input, encoding
     else
-      @key = getKey key
+      @key = getKey input
 
 export default Key

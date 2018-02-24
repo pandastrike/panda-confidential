@@ -37,8 +37,7 @@ Confidential = function (SDK) {
     KeyPair: {
       enumerable: true,
       get: function () {
-        _keys.KeyPair._generate(AWS);
-        return _keys.KeyPair;
+        return (0, _keys.KeyPair)(AWS);
       }
     },
     KMSKey: {

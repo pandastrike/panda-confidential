@@ -10,36 +10,38 @@ import PrivateKey from "./private-key"
 import PublicKey from "./public-key"
 import {encryption, signing} from "../constants"
 
-getRandom = (length) -> await randomKey length, "buffer"
-
-getInput = (length) ->
-  if !input
-    return await getRandom length
-
-  get = Method.create()
-  Method.define get, isBuffer, (b) -> b
-  Method.define get, isString, (s) -> Buffer.from s, "base64"
-  Method.define get, isString, isString, (s, e) -> Buffer.from s, e
-  Method.define get, isKey, ({key}) -> Buffer.from key, "base64"
-  if encoding then get input, encoding else get input
-
-# Accept a TweetNaCl method and use it with an input to generate a pair.
-generatePair = (f, input) ->
-  pair = f input
-  @privateKey = new PrivateKey encode "base64", pair.secretKey
-  @publicKey = new PublicKey encode "base64", pair.publicKey
-
-
 pair = ({KMS:{randomKey}}) ->
+  getRandom = (length) -> await randomKey length, "buffer"
+
+  getInput = (length, input, encoding) ->
+    if !input
+      return await getRandom length
+
+    get = Method.create()
+    Method.define get, isBuffer, (b) -> b
+    Method.define get, isString, (s) -> Buffer.from s, "base64"
+    Method.define get, isString, isString, (s, e) -> Buffer.from s, e
+    Method.define get, isKey, ({key}) -> Buffer.from key, "base64"
+    if encoding then get input, encoding else get input
+
+  # Accept a TweetNaCl method and use it with an input to generate a pair.
+  generatePair = (f, input) ->
+    pair = f input
+    privateKey: new PrivateKey encode "base64", pair.secretKey
+    publicKey: new PublicKey encode "base64", pair.publicKey
+
+
   class KeyPair
     constructor: ->
     @generate: (type, input, encoding) ->
-      switch type
+      {@privateKey, @publicKey} = switch type
         when "encrypt"
-          keyInput = await getInput encryption.asymmetric.privateKeyLength
+          length = encryption.asymmetric.privateKeyLength
+          keyInput = await getInput length, input, encoding
           generatePair nacl.box.keyPair.fromSecretKey, keyInput
         when "sign"
-          keyInput = await getInput signing.privateKeyLength
+          length = signing.seedLength
+          keyInput = await getInput length, input, encoding
           generatePair nacl.sign.keyPair.fromSeed, keyInput
         else
           throw new Error "Unsupported key pair type, #{type}"

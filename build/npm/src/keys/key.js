@@ -8,28 +8,41 @@ var _fairmontHelpers = require("fairmont-helpers");
 
 var _fairmontMultimethods = require("fairmont-multimethods");
 
-var _keyUtils = require("./key-utils");
+var Key, encode, getKey;
 
-var Key;
+// String encode a piece of data or convert into a Buffer.
+encode = function (encoding, data) {
+  if (encoding === "buffer") {
+    return Buffer.from(data); // Just output a buffer
+  } else {
+    return Buffer.from(data).toString(encoding);
+  }
+};
+
+getKey = _fairmontMultimethods.Method.create();
+
+_fairmontMultimethods.Method.define(getKey, _fairmontHelpers.isBuffer, function (key) {
+  return encode("base64", key);
+});
+
+_fairmontMultimethods.Method.define(getKey, _fairmontHelpers.isString, function (key) {
+  return key;
+});
+
+_fairmontMultimethods.Method.define(getKey, _fairmontHelpers.isString, _fairmontHelpers.isString, function (key, encoding) {
+  return encode("base64", Buffer.from(key, encoding));
+});
 
 Key = class Key {
   constructor(input, encoding) {
-    var getKey;
-    this.key = void 0;
-    getKey = _fairmontMultimethods.Method.create();
-    _fairmontMultimethods.Method.define(getKey, _fairmontHelpers.isBuffer, function (key) {
-      return this.key = (0, _keyUtils.encode)("base64", key);
-    });
-    _fairmontMultimethods.Method.define(getKey, _fairmontHelpers.isString, function (key) {
-      return this.key = key;
-    });
-    _fairmontMultimethods.Method.define(getKey, _fairmontHelpers.isString, _fairmontHelpers.isString, function (key, encoding) {
-      return this.key = (0, _keyUtils.encode)("base64", Buffer.from(key, encoding));
-    });
+    if (!input) {
+      this.key = false;
+      return;
+    }
     if (encoding) {
-      getKey(key, encoding);
+      this.key = getKey(input, encoding);
     } else {
-      getKey(key);
+      this.key = getKey(input);
     }
   }
 

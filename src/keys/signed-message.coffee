@@ -2,24 +2,24 @@
 import {Method} from "fairmont-multimethods"
 import {isString, isBuffer, isObject} from "fairmont-helpers"
 
-import {decodeSignature} from "./key-utils"
+import {decodeSignature, encode} from "./key-utils"
 
 getMsg = Method.create()
-Method.define getMsg, isString, (sig) ->
-  {@message, @encoding, @publicKeys, @signatures} = decodeSignature sig
-Method.define getMsg, isBuffer, (sig) ->
-  {@message, @encoding, @publicKeys, @signatures} =
-    decodeSignature sig, "buffer"
-Method.define getMsg, isObject, (sig) ->
-  {@message, @encoding, @publicKeys, @signatures} = sig
+Method.define getMsg, isString, (sig) -> decodeSignature sig
+Method.define getMsg, isBuffer, (sig) -> decodeSignature sig, "buffer"
+Method.define getMsg, isObject, (sig) -> sig
 
 class SignedMessage
   constructor: (input) ->
-    getMsg input
+    {@message, @encoding, @publicKeys, @signatures} = getMsg input
     @validate()
 
   validate: ->
     if !@message || !@encoding || !@publicKeys || !@signatures
       throw new Error "Must provide message, encoding, public key array, and signature array."
+
+  dump: ->
+    encode "base64",
+      JSON.stringify {@message, @encoding, @publicKeys, @signatures}
 
 export default SignedMessage

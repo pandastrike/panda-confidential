@@ -4,7 +4,7 @@ import {isBuffer, isString} from "fairmont-helpers"
 import {Method} from "fairmont-multimethods"
 
 import Key from "./key"
-import {isPrivateKey, isPublicKey, encode} from "./key-utils"
+import {isPrivateKey, isPublicKey, decodeKey, encode} from "./key-utils"
 
 generateShared = (privateKey, publicKey) ->
   privateKey = decodeKey privateKey

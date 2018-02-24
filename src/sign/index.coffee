@@ -36,6 +36,9 @@ SIGN = ->
   Method.define Sign, isPrivateKey, isPublicKey, isSignedMessage,
     (privateKey, publicKey, signedMessage) ->
       addSignature privateKey, publicKey, signedMessage
+  Method.define Sign, isKeyPair, isSignedMessage,
+    ({privateKey, publicKey}, message, encoding) ->
+      addSignature privateKey, publicKey, signedMessage
 
   # Return the multimethod.
   Sign

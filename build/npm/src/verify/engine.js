@@ -28,7 +28,7 @@ exports.verify = verify = function ({ message, encoding, publicKeys, signatures 
   }
   // Run through list of signatures and public keys and verify.
   message = (0, _utils.decodePlaintext)(message, "base64");
-  for (i = j = 0, ref = publicKeys.length; 0 <= ref ? j <= ref : j >= ref; i = 0 <= ref ? ++j : --j) {
+  for (i = j = 0, ref = publicKeys.length; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
     if (!_verify(message, publicKeys[i], signatures[i])) {
       return false;
     }

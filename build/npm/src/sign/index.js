@@ -48,6 +48,9 @@ SIGN = function () {
   _fairmontMultimethods.Method.define(Sign, _types.isPrivateKey, _types.isPublicKey, _types.isSignedMessage, function (privateKey, publicKey, signedMessage) {
     return (0, _engine.addSignature)(privateKey, publicKey, signedMessage);
   });
+  _fairmontMultimethods.Method.define(Sign, _types.isKeyPair, _types.isSignedMessage, function ({ privateKey, publicKey }, message, encoding) {
+    return (0, _engine.addSignature)(privateKey, publicKey, signedMessage);
+  });
   // Return the multimethod.
   return Sign;
 };

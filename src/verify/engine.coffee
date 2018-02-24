@@ -12,7 +12,7 @@ verify = ({message, encoding, publicKeys, signatures}) ->
 
   # Run through list of signatures and public keys and verify.
   message = decodePlaintext message, "base64"
-  for i in [0..publicKeys.length]
+  for i in [0...publicKeys.length]
     return false unless _verify message, publicKeys[i], signatures[i]
 
   # Verification completed successfully.  Return originally encoded message.

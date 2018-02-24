@@ -3,8 +3,15 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.PublicKey = undefined;
 
 var _key = require("./key");
 
-var PublicKey = exports.PublicKey = class PublicKey extends _key.Key {};
+var _key2 = _interopRequireDefault(_key);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var PublicKey;
+
+PublicKey = class PublicKey extends _key2.default {};
+
+exports.default = PublicKey;

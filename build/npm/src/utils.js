@@ -15,10 +15,10 @@ exports.decodeCiphertext = decodeCiphertext = function (blob) {
   var out;
   out = JSON.parse(Buffer.from(blob, "base64").toString());
   if (out.ciphertext) {
-    out.ciphertext = Buffer.from(ciphertext.data);
+    out.ciphertext = Buffer.from(out.ciphertext.data);
   }
   if (out.nonce) {
-    out.nonce = Buffer.from(nonce.data);
+    out.nonce = Buffer.from(out.nonce.data);
   }
   return out;
 };
