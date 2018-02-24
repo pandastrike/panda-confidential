@@ -6,36 +6,34 @@ import {Method} from "fairmont-multimethods"
 import Key from "./key"
 import {isPrivateKey, isPublicKey, encode} from "./key-utils"
 
+generateShared = (privateKey, publicKey) ->
+  privateKey = decodeKey privateKey
+  publicKey = decodeKey publicKey
+  encode "base64", nacl.box.before publicKey, privateKey
+
+# Create a key parsing multimethod.
+getKey = Method.create()
+
+# The most common usecase is to accept two explicit keys.
+Method.define getKey, isPrivateKey, isPublicKey,
+  (privateKey, publicKey) -> generateShared privateKey, publicKey
+Method.define getKey, isPublicKey, isPrivateKey,
+  (publicKey, privateKey) -> generateShared privateKey, publicKey
+
+# Also support a directly input key from somewhere.
+Method.define getKey, isBuffer, (key) ->
+  encode "base64", key
+Method.define getKey, isString, (key) ->
+  key
+Method.define getKey, isString, isString, (key, encoding) ->
+  encode "base64", Buffer.from key, encoding
+
 class SharedKey extends Key
   constructor: (input1, input2) ->
     super()
-    @key = undefined
-
-    generateShared = (privateKey, publicKey) ->
-      privateKey = decodeKey privateKey
-      publicKey = decodeKey publicKey
-      @key = encode "base64", nacl.box.before publicKey, privateKey
-
-    # Create a key parsing multimethod.
-    getKey = Method.create()
-
-    # The most common usecase is to accept two explicit keys.
-    Method.define getKey, isPrivateKey, isPublicKey,
-      (privateKey, publicKey) -> generateShared privateKey, publicKey
-    Method.define getKey, isPublicKey, isPrivateKey,
-      (publicKey, privateKey) -> generateShared privateKey, publicKey
-
-    # Also support a directly input key from somewhere.
-    Method.define getKey, isBuffer, (key) ->
-      @key = encode "base64", key
-    Method.define getKey, isString, (key) ->
-      @key = key
-    Method.define getKey, isString, isString, (key, encoding) ->
-      @key = encode "base64", Buffer.from key, encoding
-
     if input2
-      getKey input1, input2
+      @key = getKey input1, input2
     else
-      getKey input1
+      @key = getKey input1
 
 export default SharedKey

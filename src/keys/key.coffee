@@ -8,21 +8,19 @@ encode = (encoding, data) ->
   else
     Buffer.from(data).toString encoding
 
+getKey = Method.create()
+Method.define getKey, isBuffer, (key) ->
+  encode "base64", key
+Method.define getKey, isString, (key) ->
+  key
+Method.define getKey, isString, isString, (key, encoding) ->
+  encode "base64", Buffer.from key, encoding
+
 class Key
   constructor: (input, encoding) ->
-    @key = undefined
-
-    getKey = Method.create()
-    Method.define getKey, isBuffer, (key) ->
-      @key = encode "base64", key
-    Method.define getKey, isString, (key) ->
-      @key = key
-    Method.define getKey, isString, isString, (key, encoding) ->
-      @key = encode "base64", Buffer.from key, encoding
-
     if encoding
-      getKey key, encoding
+      @key = getKey key, encoding
     else
-      getKey key
+      @key = getKey key
 
 export default Key

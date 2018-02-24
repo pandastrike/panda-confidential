@@ -4,17 +4,17 @@ import {isString, isBuffer, isObject} from "fairmont-helpers"
 
 import {decodeSignature} from "./key-utils"
 
+getMsg = Method.create()
+Method.define getMsg, isString, (sig) ->
+  {@message, @encoding, @publicKeys, @signatures} = decodeSignature sig
+Method.define getMsg, isBuffer, (sig) ->
+  {@message, @encoding, @publicKeys, @signatures} =
+    decodeSignature sig, "buffer"
+Method.define getMsg, isObject, (sig) ->
+  {@message, @encoding, @publicKeys, @signatures} = sig
+
 class SignedMessage
   constructor: (input) ->
-    getMsg = Method.create()
-    Method.define getMsg, isString, (sig) ->
-      {@message, @encoding, @publicKeys, @signatures} = decodeSignature sig
-    Method.define getMsg, isBuffer, (sig) ->
-      {@message, @encoding, @publicKeys, @signatures} =
-        decodeSignature sig, "buffer"
-    Method.define getMsg, isObject, (sig) ->
-      {@message, @encoding, @publicKeys, @signatures} = sig
-
     getMsg input
     @validate()
 

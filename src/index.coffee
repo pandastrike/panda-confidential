@@ -12,9 +12,7 @@ Confidential = (SDK) ->
   Object.defineProperties {},
     KeyPair:
       enumerable: true
-      get: ->
-        KeyPair._generate AWS
-        KeyPair
+      get: -> KeyPair AWS
     KMSKey:
       enumerable: true
       get: -> KMSKey

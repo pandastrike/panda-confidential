@@ -10,29 +10,30 @@ import PrivateKey from "./private-key"
 import PublicKey from "./public-key"
 import {encryption, signing} from "../constants"
 
-class KeyPair
-  constructor: ->
-  @_generate: ({KMS:{randomKey}}) ->
-    @generate = (type, input, encoding) ->
-      getRandom = (length) -> await randomKey length, "buffer"
+getRandom = (length) -> await randomKey length, "buffer"
 
-      getInput = (length) ->
-        if !input
-          return await getRandom length
+getInput = (length) ->
+  if !input
+    return await getRandom length
 
-        get = Method.create()
-        Method.define get, isBuffer, (b) -> b
-        Method.define get, isString, (s) -> Buffer.from s, "base64"
-        Method.define get, isString, isString, (s, e) -> Buffer.from s, e
-        Method.define get, isKey, ({key}) -> Buffer.from key, "base64"
-        if encoding then get input, encoding else get input
+  get = Method.create()
+  Method.define get, isBuffer, (b) -> b
+  Method.define get, isString, (s) -> Buffer.from s, "base64"
+  Method.define get, isString, isString, (s, e) -> Buffer.from s, e
+  Method.define get, isKey, ({key}) -> Buffer.from key, "base64"
+  if encoding then get input, encoding else get input
 
-      # Accept a TweetNaCl method and use it with an input to generate a pair.
-      generatePair = (f, input) ->
-        pair = f input
-        @privateKey = new PrivateKey encode "base64", pair.secretKey
-        @publicKey = new PublicKey encode "base64", pair.publicKey
+# Accept a TweetNaCl method and use it with an input to generate a pair.
+generatePair = (f, input) ->
+  pair = f input
+  @privateKey = new PrivateKey encode "base64", pair.secretKey
+  @publicKey = new PublicKey encode "base64", pair.publicKey
 
+
+pair = ({KMS:{randomKey}}) ->
+  class KeyPair
+    constructor: ->
+    @generate: (type, input, encoding) ->
       switch type
         when "encrypt"
           keyInput = await getInput encryption.asymmetric.privateKeyLength
@@ -43,4 +44,4 @@ class KeyPair
         else
           throw new Error "Unsupported key pair type, #{type}"
 
-export default KeyPair
+export default pair

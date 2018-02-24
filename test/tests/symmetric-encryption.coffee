@@ -2,9 +2,7 @@ import assert from "assert"
 import Confidential from "../../src/index"
 import kmsKeyName from "../key-name"
 
-import {isKMSKey, isKey} from "../../src/types"
-
-secretKeyTest = (SDK) -> ->
+symmetric = (SDK) -> ->
   # Setup for encryption
   {encrypt, decrypt, KMSKey} = Confidential SDK
   key = new KMSKey kmsKeyName
@@ -16,4 +14,4 @@ secretKeyTest = (SDK) -> ->
   output = await decrypt key, cipher
   assert.equal message, output, "failed to decrypt"
 
-export default secretKeyTest
+export default symmetric
