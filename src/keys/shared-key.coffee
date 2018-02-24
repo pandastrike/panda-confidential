@@ -30,10 +30,9 @@ Method.define getKey, isString, isString, (key, encoding) ->
 
 class SharedKey extends Key
   constructor: (input1, input2) ->
-    super()
     if input2
-      @key = getKey input1, input2
+      super getKey input1, input2
     else
-      @key = getKey input1
+      super getKey input1
 
 export default SharedKey

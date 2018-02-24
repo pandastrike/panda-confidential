@@ -56,11 +56,10 @@ _fairmontMultimethods.Method.define(getKey, _fairmontHelpers.isString, _fairmont
 
 SharedKey = class SharedKey extends _key2.default {
   constructor(input1, input2) {
-    super();
     if (input2) {
-      this.key = getKey(input1, input2);
+      super(getKey(input1, input2));
     } else {
-      this.key = getKey(input1);
+      super(getKey(input1));
     }
   }
 

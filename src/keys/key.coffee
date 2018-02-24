@@ -18,9 +18,6 @@ Method.define getKey, isString, isString, (key, encoding) ->
 
 class Key
   constructor: (input, encoding) ->
-    if !input
-      @key = false
-      return
     if encoding
       @key = getKey input, encoding
     else

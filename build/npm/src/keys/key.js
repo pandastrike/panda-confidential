@@ -35,10 +35,6 @@ _fairmontMultimethods.Method.define(getKey, _fairmontHelpers.isString, _fairmont
 
 Key = class Key {
   constructor(input, encoding) {
-    if (!input) {
-      this.key = false;
-      return;
-    }
     if (encoding) {
       this.key = getKey(input, encoding);
     } else {
