@@ -3,7 +3,7 @@ import {isString, isBuffer} from "fairmont-helpers"
 import {Method} from "fairmont-multimethods"
 
 
-import {isPrivateKey, isPublicKey, isSignedMessage, isKeyPair} from "../utils"
+import {isPrivateKey, isPublicKey, isSignedMessage, isKeyPair} from "../types"
 import {sign, addSignature} from "./engine"
 
 SIGN = ->

@@ -2,7 +2,7 @@ import {isString, isBuffer} from "fairmont-helpers"
 import {Method} from "fairmont-multimethods"
 
 import {SharedKey} from "../keys"
-import {isKMSKey, isPrivateKey, isPublicKey, isSharedKey} from "../utils"
+import {isKMSKey, isPrivateKey, isPublicKey, isSharedKey} from "../types"
 import SymmetricDecrypt from "./symmetric"
 import AsymmetricDecrypt from "./asymmetric"
 

@@ -1,11 +1,17 @@
-import {isType, isKind, isString, isBuffer} from "fairmont-helpers"
-import {Key, KMSKey, PrivateKey, PublicKey, SharedKey, KeyPair} from "./keys"
+import {isString, isBuffer} from "fairmont-helpers"
+import {isKey} from "./types"
 
 decodeCiphertext = (blob) ->
   out = JSON.parse Buffer.from(blob, "base64").toString()
   out.ciphertext = Buffer.from ciphertext.data if out.ciphertext
   out.nonce = Buffer.from nonce.data if out.nonce
   out
+
+decodePlaintext = (msg, encoding) ->
+  if encoding == "buffer"
+    msg
+  else
+    Buffer.from msg, encoding
 
 decodeKey = (input) ->
   if isKey input
@@ -17,12 +23,6 @@ decodeKey = (input) ->
       input
     else
       throw new Error "Unable to decode key"
-
-decodePlaintext = (msg, encoding) ->
-  if encoding == "buffer"
-    msg
-  else
-    Buffer.from msg, encoding
 
 decodeSignature = (blob, encoding="base64") ->
   if encoding == "buffer"
@@ -37,25 +37,10 @@ encode = (encoding, data) ->
   else
     Buffer.from(data).toString encoding
 
-console.log Key, KMSKey
-
-isKey = isKind Key
-isKMSKey = isType KMSKey
-isPrivateKey = isType PrivateKey
-isPublicKey = isType PublicKey
-isSharedKey = isType SharedKey
-isKeyPair = isType KeyPair
-
 export {
   decodeCiphertext
-  decodeKey
   decodePlaintext
+  decodeKey
   decodeSignature
   encode
-  isKey
-  isKMSKey
-  isPrivateKey
-  isPublicKey
-  isSharedKey
-  isKeyPair
 }
