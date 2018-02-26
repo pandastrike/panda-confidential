@@ -1,46 +1,79 @@
-import {isString, isBuffer} from "fairmont-helpers"
-import {isKey} from "./types"
+import nacl from "tweetnacl-util"
+import {isType, isKind, isBuffer, isString} from "fairmont-helpers"
+import {Method} from "fairmont-multimethods"
+
+{decodeBase64, decodeUTF8, encodeBase64, encodeUTF8} = nacl.util
+
+encode = (encoding, array) ->
+  switch encoding
+    when "utf8"
+      encodeUTF8 array
+    when "base64"
+      encodeBase64 array
+    else
+      throw new Error "The format #{encoding} is not supported."
+
+decode = (encoding, string) ->
+  switch encoding
+    when "utf8"
+      decodeUTF8 string
+    when "base64"
+      decodeBase64 string
+    else
+      throw new Error "The format #{encoding} is not supported."
+
+# Generate a stringified JSON object in base64 encoding.
+encodeBlob = (object) -> encode "base64", decode "utf8", JSON.stringify object
+
+# Parse a stringified JSON object in base64 encoding.
+parseBlob = (blob) -> JSON.parse encode "utf8", decode "base64", blob
+
+# These handle ciphertexts from both symmetric and asymmetric schemes
+encodeCiphertext = (ciphertext, nonce, lockedKey) ->
+  ciphertext = encode "base64", ciphertext
+  nonce = encode "base64", nonce
+  if lockedKey
+    encodeBlob {ciphertext, nonce, lockedKey}
+  else
+    encodeBlob {ciphertext, nonce}
 
 decodeCiphertext = (blob) ->
-  out = JSON.parse Buffer.from(blob, "base64").toString()
-  out.ciphertext = Buffer.from out.ciphertext.data if out.ciphertext
-  out.nonce = Buffer.from out.nonce.data if out.nonce
-  out
+  {ciphertext, nonce, lockedKey} = parseBlob blob
+  ciphertext = decode "base64", ciphertext if ciphertext
+  nonce = decode "base64", nonce if nonce
+  {ciphertext, nonce, lockedKey}
 
-decodePlaintext = (msg, encoding) ->
-  if encoding == "buffer"
-    msg
-  else
-    Buffer.from msg, encoding
+encodeSignature = (message, encoding, publicKeys, signatures) ->
+  message = encode "base64", message
+  publicKeys = (encode "base64", key for key in publicKeys)
+  signatures = (encode "base64", sig for sig in signatures)
+  encodeBlob {message, encoding, publicKeys, signatures}
 
-decodeKey = (input) ->
-  if isKey input
-    Buffer.from input.key, "base64"
-  else
-    if isString input
-      Buffer.from input, "base64"
-    else if isBuffer input
-      input
-    else
-      throw new Error "Unable to decode key"
+decodeSignature = (blob) ->
+  {message, publicKeys, encoding, signatures} = parseBlob blob
+  message = decode "base64", message
+  publicKeys = (decode "base64", key for key in publicKeys)
+  signatures = (decode "base64", sig for sig in signatures)
+  {message, publicKeys, encoding, signatures}
 
-decodeSignature = (blob, encoding="base64") ->
-  if encoding == "buffer"
-    JSON.parse blob.toString()
-  else
-    JSON.parse Buffer.from(blob, encoding).toString()
+isUint8Array = isType Uint8Array
 
-# String encode a piece of data or convert into a Buffer.
-encode = (encoding, data) ->
-  if encoding == "buffer"
-    Buffer.from data  # Just output a buffer
-  else
-    Buffer.from(data).toString encoding
+decodeKey = Method.create()
+Method.define decodeKey, isBuffer, (key) -> key
+Method.define decodeKey, isUint8Array, (key) -> key
+Method.define decodeKey, isString, isString,
+  (key, encoding) -> decode encoding, key
+Method.define decodeKey, isString, (key) -> decode "base64", key
 
 export {
-  decodeCiphertext
-  decodePlaintext
-  decodeKey
-  decodeSignature
   encode
+  decode
+  encodeBlob
+  parseBlob
+  encodeCiphertext
+  decodeCiphertext
+  encodeSignature
+  decodeSignature
+  decodeKey
+  isUint8Array
 }
