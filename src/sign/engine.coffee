@@ -1,5 +1,5 @@
 import nacl from "tweetnacl"
-import {signedMessage} from "../classes"
+import {signedMessage} from "../signed-message"
 import {decode} from "../utils"
 
 sign = ({key:privateKey}, {key:publicKey}, message, encoding) ->

@@ -1,7 +1,9 @@
 import Sundog from "sundog"
 import nacl from "tweetnacl"
 
-import {kmsKeyID, privateKey, publicKey, sharedKey, keyPair, signedMessage} from "./classes"
+import {kmsKeyID, privateKey, publicKey, sharedKey} from "./keys"
+import {keyPair} from "./key-pairs"
+import {signedMessage} from "./signed-message"
 import encrypt from "./encrypt"
 import decrypt from "./decrypt"
 import sign from "./sign"

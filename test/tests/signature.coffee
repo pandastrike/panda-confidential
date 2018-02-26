@@ -1,7 +1,8 @@
 import assert from "assert"
 import {test, print} from "amen"
 import Confidential from "../../src/index"
-import {isSignedMessage, isPrivateKey, isPublicKey} from "../../src/classes"
+import {isPrivateKey, isPublicKey} from "../../src/keys"
+import {isSignedMessage} from "../../src/signed-message"
 import nacl from "tweetnacl"
 
 Signature = (SDK) -> ->

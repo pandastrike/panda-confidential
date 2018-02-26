@@ -5,9 +5,7 @@ import nacl from "tweetnacl"
 import {isType, isBuffer, isString} from "fairmont-helpers"
 import {Method} from "fairmont-multimethods"
 
-import {isKey} from "./key"
-import {privateKey} from "./private-key"
-import {publicKey} from "./public-key"
+import {privateKey, publicKey, isKey} from "../keys"
 import {decode, isUint8Array} from "../utils"
 
 # Constants that specify the lenght of random numbers used to generate pairs.

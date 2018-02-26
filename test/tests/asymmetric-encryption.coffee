@@ -1,7 +1,7 @@
 import assert from "assert"
 import {test, print} from "amen"
 import Confidential from "../../src/index"
-import {isPublicKey, isPrivateKey, isSharedKey} from "../../src/classes"
+import {isPublicKey, isPrivateKey, isSharedKey} from "../../src/keys"
 import nacl from "tweetnacl"
 
 asymmetric = (SDK) -> ->
