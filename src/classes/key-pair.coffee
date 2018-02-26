@@ -9,12 +9,11 @@ import {isKey} from "./key"
 import {privateKey} from "./private-key"
 import {publicKey} from "./public-key"
 import {decode, isUint8Array} from "../utils"
-import {encryption, signing} from "../constants"
 
 # Constants that specify the lenght of random numbers used to generate pairs.
 LENGTH =
-  encrypt: encryption.asymmetric.privateKeyLength
-  sign: signing.seedLength
+  encrypt: nacl.box.secretKeyLength
+  sign: nacl.sign.seedLength
 
 class KeyPair
   constructor: ({@privateKey, @publicKey}) ->

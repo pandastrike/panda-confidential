@@ -1,7 +1,6 @@
 import nacl from "tweetnacl"
 import {decode, encodeCiphertext} from "../utils"
-import {encryption} from "../constants"
-{nonceLength} = encryption.asymmetric
+{nonceLength} = nacl.box
 
 AsymmetricEncrypt = ({randomKey}) ->
   ({key}, message, encoding) ->

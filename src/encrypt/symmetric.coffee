@@ -1,7 +1,6 @@
 import nacl from "tweetnacl"
 import {decode, encodeCiphertext} from "../utils"
-import {encryption} from "../constants"
-{nonceLength, keyLength} = encryption.symmetric
+{nonceLength, keyLength} = nacl.secretbox
 
 SymmetricEncrypt = ({randomKey, encrypt:kmsEncrypt}) ->
   ({id:kmsKeyID}, message, encoding) ->

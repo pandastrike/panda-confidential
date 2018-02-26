@@ -1,7 +1,8 @@
 import assert from "assert"
 import {test, print} from "amen"
 import Confidential from "../../src/index"
-import {isPublicKey, isPrivateKey} from "../../src/classes"
+import {isPublicKey, isPrivateKey, isSharedKey} from "../../src/classes"
+import nacl from "tweetnacl"
 
 asymmetric = (SDK) -> ->
   {keyPair, sharedKey, encrypt, decrypt} = Confidential SDK
@@ -9,8 +10,10 @@ asymmetric = (SDK) -> ->
   A = {privateKey, publicKey} = await keyPair "encrypt"
   assert (privateKey && isPrivateKey privateKey), "must make private key"
   assert (publicKey && isPublicKey publicKey), "must make public key"
-  assert privateKey.key.length == 32, "private key is improper length"
-  assert publicKey.key.length == 32, "public key is improper length"
+  assert privateKey.key.length == nacl.box.secretKeyLength,
+    "private key is improper length"
+  assert publicKey.key.length == nacl.box.publicKeyLength,
+    "public key is improper length"
 
   # Test Encrypt - Decrypt Cycle
   B = await keyPair "encrypt"
@@ -18,6 +21,7 @@ asymmetric = (SDK) -> ->
 
   # Person A encrypts the message for person B.
   key1 = sharedKey A.privateKey, B.publicKey
+  assert (key1 && isSharedKey(key1) && (key1.key.length == nacl.box.sharedKeyLength)), "failed to create shared key."
   cipher = await encrypt key1, message
   assert (cipher && message != cipher), "failed to create a ciphertext"
 

@@ -2,6 +2,7 @@ import assert from "assert"
 import {test, print} from "amen"
 import Confidential from "../../src/index"
 import {isSignedMessage, isPrivateKey, isPublicKey} from "../../src/classes"
+import nacl from "tweetnacl"
 
 Signature = (SDK) -> ->
   {sign, verify, keyPair, signedMessage} = Confidential SDK
@@ -10,8 +11,10 @@ Signature = (SDK) -> ->
   A = {privateKey, publicKey} = await keyPair "sign"
   assert (privateKey && isPrivateKey privateKey), "must make private key"
   assert (publicKey && isPublicKey publicKey), "must make public key"
-  assert privateKey.key.length == 64, "private key is improper length"
-  assert publicKey.key.length == 32, "public key is improper length"
+  assert privateKey.key.length == nacl.sign.secretKeyLength,
+    "private key is improper length"
+  assert publicKey.key.length == nacl.sign.publicKeyLength,
+    "public key is improper length"
 
 
   # Test Encrypt - Decrypt Cycle
