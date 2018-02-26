@@ -1,6 +1,6 @@
 import Sundog from "sundog"
 
-import {KMSKey, PrivateKey, PublicKey, SharedKey, KeyPair, SignedMessage} from "./keys"
+import {kmsKeyID, privateKey, publicKey, sharedKey, keyPair, signedMessage} from "./classes"
 import encrypt from "./encrypt"
 import decrypt from "./decrypt"
 import sign from "./sign"
@@ -10,24 +10,24 @@ Confidential = (SDK) ->
   {AWS} = Sundog SDK
 
   Object.defineProperties {},
-    KeyPair:
+    keyPair:
       enumerable: true
-      get: -> KeyPair AWS
-    KMSKey:
+      get: -> keyPair AWS
+    kmsKeyID:
       enumerable: true
-      get: -> KMSKey
-    PrivateKey:
+      get: -> kmsKeyID
+    privateKey:
       enumerable: true
-      get: -> PrivateKey
-    PublicKey:
+      get: -> privateKey
+    publicKey:
       enumerable: true
-      get: -> PublicKey
-    SharedKey:
+      get: -> publicKey
+    sharedKey:
       enumerable: true
-      get: -> SharedKey
-    SignedMessage:
+      get: -> sharedKey
+    signedMessage:
       enumerable: true
-      get: -> SignedMessage
+      get: -> signedMessage
     encrypt:
       enumerable: true
       get: -> encrypt AWS

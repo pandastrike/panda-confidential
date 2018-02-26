@@ -2,13 +2,12 @@
 import {Method} from "fairmont-multimethods"
 import {isType, isString, isBuffer, isObject} from "fairmont-helpers"
 
-import {decodeSignature, encode, isUint8Array} from "./key-utils"
+import {isUint8Array, decodeSignature, encode, encodeSigature} from "../utils"
 
 class SignedMessage
   constructor: ({@message, @encoding, @publicKeys, @signatures}) ->
-  dump: ->
-    encode "base64",
-      JSON.stringify {@message, @encoding, @publicKeys, @signatures}
+  dump: -> encodeSigature @
+  dumpMessage: (encoding="utf8") -> encode encoding, @message
 
 isSignedMessage = isType SignedMessage
 
@@ -27,4 +26,4 @@ Method.define getMsg, isObject, (sig) -> sig
 
 signedMessage = (input) -> new SignedMessage validate getMsg input
 
-export default {signedMessage, isSignedMessage}
+export {signedMessage, isSignedMessage}

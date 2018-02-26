@@ -1,8 +1,7 @@
 import {isString, isBuffer} from "fairmont-helpers"
 import {Method} from "fairmont-multimethods"
 
-import {SharedKey} from "../keys"
-import {isKMSKey, isPrivateKey, isPublicKey, isSharedKey} from "../types"
+import {isKMSKeyID, isSharedKey} from "../classes"
 import SymmetricEncrypt from "./symmetric"
 import AsymmetricEncrypt from "./asymmetric"
 
@@ -14,11 +13,11 @@ Encrypt = ({KMS}) ->
   encrypt = Method.create()
 
   # Symmetric Encryption
-  Method.define encrypt, isKMSKey, isString,
+  Method.define encrypt, isKMSKeyID, isString,
     (key, plaintext) -> symmetric key, plaintext, "utf8"
-  Method.define encrypt, isKMSKey, isBuffer,
+  Method.define encrypt, isKMSKeyID, isBuffer,
     (key, plaintext) -> symmetric key, plaintext, "buffer"
-  Method.define encrypt, isKMSKey, isString, isString,
+  Method.define encrypt, isKMSKeyID, isString, isString,
     (key, plaintext, encoding) -> symmetric key, plaintext, encoding
 
   # Asymmetric Encryption via shared key.
@@ -28,21 +27,6 @@ Encrypt = ({KMS}) ->
     (key, plaintext) -> asymmetric key, plaintext, "buffer"
   Method.define encrypt, isSharedKey, isString, isString,
     (key, plaintext, encoding) -> asymmetric key, plaintext, encoding
-
-  # Asymmetric Encryption via separate private / public keys.
-  Method.define encrypt, isPrivateKey, isPublicKey, isString,
-    (privateKey, publicKey, plaintext) ->
-      key = new SharedKey privateKey, publicKey
-      asymmetric key, plaintext, "utf8"
-  Method.define encrypt, isPrivateKey, isPublicKey, isBuffer,
-    (privateKey, publicKey, plaintext) ->
-      key = new SharedKey privateKey, publicKey
-      asymmetric key, plaintext, "buffer"
-  Method.define encrypt, isPrivateKey, isPublicKey, isString, isString,
-    (privateKey, publicKey, plaintext, encoding) ->
-      key = new SharedKey privateKey, publicKey
-      asymmetric key, plaintext, encoding
-
 
   # Return the multimethod.
   encrypt

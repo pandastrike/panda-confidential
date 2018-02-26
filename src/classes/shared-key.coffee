@@ -3,9 +3,9 @@ import nacl from "tweetnacl"
 import {isType} from "fairmont-helpers"
 import {Method} from "fairmont-multimethods"
 
-import Key from "./key"
+import {Key} from "./key"
 import {isPrivateKey} from "./private-key"
-import {isPublicKey} from "./publicKey"
+import {isPublicKey} from "./public-key"
 import {decodeKey} from "../utils"
 
 class SharedKey extends Key
@@ -18,9 +18,9 @@ generate = nacl.box.before
 
 # While we may accept a key literal, the most common usecase is to accept two explicit key classes.
 Method.define get, isPrivateKey, isPublicKey,
-  (privateKey, publicKey) -> generate privateKey.key, publicKey.key
+  (privateKey, publicKey) -> generate publicKey.key, privateKey.key
 Method.define get, isPublicKey, isPrivateKey,
-  (publicKey, privateKey) -> generate privateKey.key, publicKey.key
+  (publicKey, privateKey) -> generate publicKey.key, privateKey.key
 
 sharedKey = (input1, input2) -> new SharedKey get input1, input2
 

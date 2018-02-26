@@ -1,24 +1,21 @@
 import nacl from "tweetnacl"
-import {SignedMessage} from "../keys"
-import {decodeKey, decodePlaintext, encode} from "../utils"
+import {signedMessage} from "../classes"
+import {decode} from "../utils"
 
-sign = (privateKey, publicKey, message, encoding) ->
-  key = decodeKey privateKey
-  message = decodePlaintext message, encoding
+sign = ({key:privateKey}, {key:publicKey}, message, encoding) ->
+  message = decode encoding, message
 
-  new SignedMessage
-    message: encode "base64", message
+  signedMessage
+    message: message
     encoding: encoding
-    publicKeys: [publicKey.key]
-    signatures: [encode "base64", nacl.sign.detached message, key]
+    publicKeys: [publicKey]
+    signatures: [nacl.sign.detached message, privateKey]
 
 
-addSignature = (privateKey, publicKey, signedMessage) ->
-  key = decodeKey privateKey
-  message = decodePlaintext signedMessage.message, "base64"
-
-  signedMessage.publicKeys.push publicKey.key
-  signedMessage.signatures.push encode "base64", nacl.sign.detached message, key
+addSignature = ({key:privateKey}, {key:publicKey}, signedMessage) ->
+  {message} = signedMessage
+  signedMessage.publicKeys.push publicKey
+  signedMessage.signatures.push nacl.sign.detached message, privateKey
   signedMessage
 
 

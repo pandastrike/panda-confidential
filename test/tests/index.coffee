@@ -14,7 +14,7 @@ Tests = (SDK) ->
       description: "Public Key Encryption"
       wait: false,
       publicKey SDK
-
+    
     test
       description: "Digital Signature"
       wait: false,

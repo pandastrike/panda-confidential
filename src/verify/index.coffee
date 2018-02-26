@@ -1,7 +1,7 @@
 import nacl from "tweetnacl"
 import {Method} from "fairmont-multimethods"
 
-import {isSignedMessage} from "../types"
+import {isSignedMessage} from "../classes"
 import {verify} from "./engine"
 
 VERIFY = ->

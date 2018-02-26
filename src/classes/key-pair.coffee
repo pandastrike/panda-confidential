@@ -6,8 +6,8 @@ import {isType, isBuffer, isString} from "fairmont-helpers"
 import {Method} from "fairmont-multimethods"
 
 import {isKey} from "./key"
-import {PrivateKey} from "./private-key"
-import {PublicKey} from "./public-key"
+import {privateKey} from "./private-key"
+import {publicKey} from "./public-key"
 import {decode, isUint8Array} from "../utils"
 import {encryption, signing} from "../constants"
 
@@ -21,7 +21,7 @@ class KeyPair
 
 isKeyPair = isType KeyPair
 
-pair = ({KMS:{randomKey}}) ->
+keyPair = ({KMS:{randomKey}}) ->
   getRandom = (length=1) -> await randomKey length, "buffer"
 
   decodeInput = Method.create()
@@ -34,10 +34,10 @@ pair = ({KMS:{randomKey}}) ->
   # Accept a TweetNaCl method and use it with an input to generate a pair.
   generate = (f, input) ->
     pair = f input
-    privateKey: new PrivateKey pair.secretKey
-    publicKey: new PublicKey pair.publicKey
+    privateKey: privateKey pair.secretKey
+    publicKey: publicKey pair.publicKey
 
-  keyPair = (type, input, encoding) ->
+  (type, input, encoding) ->
     input =
       if input
         decodeInput input, encoding
@@ -52,7 +52,5 @@ pair = ({KMS:{randomKey}}) ->
       else
         throw new Error "Unsupported key pair type, #{type}"
 
-  {keyPair, isKeyPair}
 
-
-export default pair
+export {keyPair, isKeyPair}

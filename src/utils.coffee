@@ -2,7 +2,7 @@ import nacl from "tweetnacl-util"
 import {isType, isKind, isBuffer, isString} from "fairmont-helpers"
 import {Method} from "fairmont-multimethods"
 
-{decodeBase64, decodeUTF8, encodeBase64, encodeUTF8} = nacl.util
+{decodeBase64, decodeUTF8, encodeBase64, encodeUTF8} = nacl
 
 encode = (encoding, array) ->
   switch encoding
@@ -29,7 +29,7 @@ encodeBlob = (object) -> encode "base64", decode "utf8", JSON.stringify object
 parseBlob = (blob) -> JSON.parse encode "utf8", decode "base64", blob
 
 # These handle ciphertexts from both symmetric and asymmetric schemes
-encodeCiphertext = (ciphertext, nonce, lockedKey) ->
+encodeCiphertext = ({ciphertext, nonce, lockedKey}) ->
   ciphertext = encode "base64", ciphertext
   nonce = encode "base64", nonce
   if lockedKey
@@ -43,7 +43,7 @@ decodeCiphertext = (blob) ->
   nonce = decode "base64", nonce if nonce
   {ciphertext, nonce, lockedKey}
 
-encodeSignature = (message, encoding, publicKeys, signatures) ->
+encodeSignature = ({message, encoding, publicKeys, signatures}) ->
   message = encode "base64", message
   publicKeys = (encode "base64", key for key in publicKeys)
   signatures = (encode "base64", sig for sig in signatures)
