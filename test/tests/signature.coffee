@@ -6,10 +6,10 @@ import {isSignedMessage} from "../../src/signed-message"
 import nacl from "tweetnacl"
 
 Signature = (SDK) -> ->
-  {sign, verify, keyPair, signedMessage} = Confidential SDK
+  {sign, verify, signatureKeyPair, signedMessage} = Confidential SDK
 
   # Test Key Pair Generation
-  A = {privateKey, publicKey} = await keyPair "sign"
+  A = {privateKey, publicKey} = await signatureKeyPair()
   assert (privateKey && isPrivateKey privateKey), "must make private key"
   assert (publicKey && isPublicKey publicKey), "must make public key"
   assert privateKey.key.length == nacl.sign.secretKeyLength,
@@ -19,7 +19,7 @@ Signature = (SDK) -> ->
 
 
   # Test Encrypt - Decrypt Cycle
-  B = await keyPair "sign"
+  B = await signatureKeyPair()
   message = "Hello World!"
 
   ## Case 1

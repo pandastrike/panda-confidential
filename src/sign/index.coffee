@@ -4,7 +4,7 @@ import {Method} from "fairmont-multimethods"
 
 
 import {isPrivateKey, isPublicKey} from "../keys"
-import {isKeyPair} from "../key-pairs"
+import {isSignatureKeyPair} from "../key-pairs"
 import {isSignedMessage} from "../signed-message"
 import {sign, addSignature} from "./engine"
 
@@ -16,18 +16,18 @@ SIGN = ->
   Method.define Sign, isPrivateKey, isPublicKey, isSignedMessage,
     (privateKey, publicKey, signedMessage) ->
       addSignature privateKey, publicKey, signedMessage
-  Method.define Sign, isKeyPair, isSignedMessage,
+  Method.define Sign, isSignatureKeyPair, isSignedMessage,
     ({privateKey, publicKey}, signedMessage, encoding) ->
       addSignature privateKey, publicKey, signedMessage
 
   # Signing a plain message with whole Key Pair.
-  Method.define Sign, isKeyPair, isBuffer,
+  Method.define Sign, isSignatureKeyPair, isBuffer,
     ({privateKey, publicKey}, message) ->
       sign privateKey, publicKey, message, "buffer"
-  Method.define Sign, isKeyPair, isString, isString,
+  Method.define Sign, isSignatureKeyPair, isString, isString,
     ({privateKey, publicKey}, message, encoding) ->
       sign privateKey, publicKey, message, encoding
-  Method.define Sign, isKeyPair, isString,
+  Method.define Sign, isSignatureKeyPair, isString,
     ({privateKey, publicKey}, message) ->
       sign privateKey, publicKey, message, "utf8"
 

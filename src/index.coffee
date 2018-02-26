@@ -2,7 +2,7 @@ import Sundog from "sundog"
 import nacl from "tweetnacl"
 
 import {kmsKeyID, privateKey, publicKey, sharedKey} from "./keys"
-import {keyPair} from "./key-pairs"
+import {encryptionKeyPair, signatureKeyPair} from "./key-pairs"
 import {signedMessage} from "./signed-message"
 import encrypt from "./encrypt"
 import decrypt from "./decrypt"
@@ -14,9 +14,12 @@ Confidential = (SDK) ->
   {AWS} = Sundog SDK
 
   Object.defineProperties {},
-    keyPair:
+    encryptionKeyPair:
       enumerable: true
-      get: -> keyPair AWS
+      get: -> encryptionKeyPair AWS
+    signatureKeyPair:
+      enumerable: true
+      get: -> signatureKeyPair AWS
     kmsKeyID:
       enumerable: true
       get: -> kmsKeyID

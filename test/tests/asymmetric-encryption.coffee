@@ -5,9 +5,9 @@ import {isPublicKey, isPrivateKey, isSharedKey} from "../../src/keys"
 import nacl from "tweetnacl"
 
 asymmetric = (SDK) -> ->
-  {keyPair, sharedKey, encrypt, decrypt} = Confidential SDK
+  {encryptionKeyPair, sharedKey, encrypt, decrypt} = Confidential SDK
   # Test Key Pair Generation
-  A = {privateKey, publicKey} = await keyPair "encrypt"
+  A = {privateKey, publicKey} = await encryptionKeyPair()
   assert (privateKey && isPrivateKey privateKey), "must make private key"
   assert (publicKey && isPublicKey publicKey), "must make public key"
   assert privateKey.key.length == nacl.box.secretKeyLength,
@@ -16,7 +16,7 @@ asymmetric = (SDK) -> ->
     "public key is improper length"
 
   # Test Encrypt - Decrypt Cycle
-  B = await keyPair "encrypt"
+  B = await encryptionKeyPair()
   message = "Hello World!"
 
   # Person A encrypts the message for person B.
