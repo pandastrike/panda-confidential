@@ -21,25 +21,33 @@ Signature = (SDK) -> ->
   ## Case 1
   ################################
   # Person A signs a message.
-  signedMessage = sign A.privateKey, A.publicKey, message
-  assert (signedMessage && signedMessage != message), "bad signature"
-  assert signedMessage.dumpMessage() == message, "message must be the same"
+  signedMsg = sign A.privateKey, A.publicKey, message
+  assert (signedMsg && signedMsg != message), "bad signature"
+  assert signedMsg.dumpMessage() == message, "message must be the same"
 
   # Person B uses A's public key to verify and open the message.
-  output = verify signedMessage
+  output = verify signedMsg
   assert output == true, "failed to verify"
 
 
   ## Case 2
   ################################
   # Person A and B sign a message with key pairs.
-  signedMessage = sign A, message
-  signedMessage = sign B, signedMessage
-  assert (signedMessage && signedMessage != message), "bad signature"
-  assert signedMessage.dumpMessage() == message, "message must be the same"
+  signedMsg = sign A, message
+  signedMsg = sign B, signedMsg
+  assert (signedMsg && signedMsg != message), "bad signature"
+  assert signedMsg.dumpMessage() == message, "message must be the same"
 
   # Person C verifies the message from both.
-  output = verify signedMessage
+  output = verify signedMsg
+  assert output == true, "failed to verify"
+
+  ## Case 3
+  ################################
+  # Person D recieves a base64 encoded blob of the signed message and verifies.
+  blob = signedMsg.dump()
+  signedMsg = signedMessage blob
+  output = verify signedMsg
   assert output == true, "failed to verify"
 
 

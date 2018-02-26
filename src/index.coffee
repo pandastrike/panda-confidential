@@ -5,6 +5,7 @@ import encrypt from "./encrypt"
 import decrypt from "./decrypt"
 import sign from "./sign"
 import verify from "./verify"
+import hash from "./hash"
 
 Confidential = (SDK) ->
   {AWS} = Sundog SDK
@@ -40,6 +41,9 @@ Confidential = (SDK) ->
     verify:
       enumerable: true
       get: -> verify()
+    hash:
+      enumerable: true
+      get: -> hash
 
 
 export default Confidential

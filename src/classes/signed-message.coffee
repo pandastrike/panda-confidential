@@ -2,11 +2,11 @@
 import {Method} from "fairmont-multimethods"
 import {isType, isString, isBuffer, isObject} from "fairmont-helpers"
 
-import {isUint8Array, decodeSignature, encode, encodeSigature} from "../utils"
+import {isUint8Array, decodeSignature, encode, encodeSignature} from "../utils"
 
 class SignedMessage
   constructor: ({@message, @encoding, @publicKeys, @signatures}) ->
-  dump: -> encodeSigature @
+  dump: -> encodeSignature @
   dumpMessage: (encoding="utf8") -> encode encoding, @message
 
 isSignedMessage = isType SignedMessage
