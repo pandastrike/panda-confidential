@@ -1,4 +1,4 @@
-import validate from "./validate-input"
+import nacl from "tweetnacl"
 import {kmsKeyID, privateKey, publicKey, sharedKey} from "./keys"
 import {encryptionKeyPair, signatureKeyPair} from "./key-pairs"
 import {signedMessage} from "./signed-message"
@@ -8,37 +8,31 @@ import sign from "./sign"
 import verify from "./verify"
 import hash from "./hash"
 
-Confidential = (input={}) ->
-  {randomBytes, externalEncrypter, isExternalKeyClass} = validate input
-
+confidential = ->
   Object.defineProperties {},
-    encryptionKeyPair:
+    randomBytes:
       enumerable: true
-      get: -> encryptionKeyPair randomBytes
-    signatureKeyPair:
+      get: -> nacl.randomBytes
+    key:
       enumerable: true
-      get: -> signatureKeyPair randomBytes
-    kmsKeyID:
+      get: ->
+        Private: privateKey @randomBytes
+        Public: publicKey
+        Shared: sharedKey
+    keyPair:
       enumerable: true
-      get: -> kmsKeyID
-    privateKey:
-      enumerable: true
-      get: -> privateKey randomBytes
-    publicKey:
-      enumerable: true
-      get: -> publicKey
-    sharedKey:
-      enumerable: true
-      get: -> sharedKey
+      get: ->
+        Encryption: encryptionKeyPair @randomBytes, @key
+        Signature: signatureKeyPair @randomBytes, @key
     signedMessage:
       enumerable: true
       get: -> signedMessage
     encrypt:
       enumerable: true
-      get: -> encrypt randomBytes, externalEncrypter, isExternalKeyClass
+      get: -> encrypt @randomBytes
     decrypt:
       enumerable: true
-      get: -> decrypt externalEncrypter, isExternalKeyClass
+      get: -> decrypt
     sign:
       enumerable: true
       get: -> sign
@@ -49,5 +43,4 @@ Confidential = (input={}) ->
       enumerable: true
       get: -> hash
 
-
-export default Confidential
+export {confidential}

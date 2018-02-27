@@ -1,13 +1,12 @@
 import nacl from "tweetnacl"
 import {isType} from "fairmont-helpers"
-import {privateKey as PrivateKey, publicKey} from "../keys"
 import {KeyPair} from "./key-pair"
 
 class SignatureKeyPair extends KeyPair
 
 isSignatureKeyPair = isType SignatureKeyPair
 
-signatureKeyPair = (randomBytes, privateKey, publicKey) ->
+signatureKeyPair = (randomBytes, {Private:privateKey, Public:publicKey}) ->
   # Generate a random input to generate a pair. Length comes from TweetNaCl.
   ->
     input = await randomBytes nacl.sign.seedLength

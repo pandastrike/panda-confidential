@@ -1,13 +1,15 @@
 import assert from "assert"
-import Confidential from "../../../src/index"
+import {confidential} from "../../../src/index"
+import {isPrivateKey} from "../../../src/keys"
 import kmsKeyName from "../../key-name"
 
 symmetric = ->
   # Setup for encryption
-  {encrypt, decrypt, privateKey} = Confidential()
+  {encrypt, decrypt, key} = confidential()
 
   # Generate symmetric key of correct length that should be saved.
-  key = await privateKey()
+  key = await key.Private()
+  assert (key && isPrivateKey key), "bad key"
 
   # Person A symmetrically encrypts their data.
   message = "Hello World!"

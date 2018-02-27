@@ -1,15 +1,15 @@
 import assert from "assert"
 import {test, print} from "amen"
-import Confidential from "../../../src/index"
+import {confidential} from "../../../src/index"
 import {isPrivateKey, isPublicKey} from "../../../src/keys"
 import {isSignedMessage} from "../../../src/signed-message"
 import nacl from "tweetnacl"
 
 Signature = ->
-  {sign, verify, signatureKeyPair, signedMessage} = Confidential()
+  {sign, verify, keyPair} = confidential()
 
   # Test Key Pair Generation
-  A = {privateKey, publicKey} = await signatureKeyPair()
+  A = {privateKey, publicKey} = await keyPair.Signature()
   assert (privateKey && isPrivateKey privateKey), "must make private key"
   assert (publicKey && isPublicKey publicKey), "must make public key"
   assert privateKey.key.length == nacl.sign.secretKeyLength,
@@ -19,14 +19,14 @@ Signature = ->
 
 
   # Test Encrypt - Decrypt Cycle
-  B = await signatureKeyPair()
+  B = await keyPair.Signature()
   message = "Hello World!"
 
   ## Case 1
   ################################
   # Person A signs a message.
   signedMsg = sign A.privateKey, A.publicKey, message
-  assert (signedMsg && signedMsg != message), "bad signature"
+  assert (signedMsg && isSignedMessage signedMsg), "bad signature"
   assert signedMsg.dumpMessage() == message, "message must be the same"
 
   # Person B uses A's public key to verify and open the message.
@@ -39,7 +39,7 @@ Signature = ->
   # Person A and B sign a message with key pairs.
   signedMsg = sign A, message
   signedMsg = sign B, signedMsg
-  assert (signedMsg && signedMsg != message), "bad signature"
+  assert (signedMsg && isSignedMessage signedMsg), "bad signature"
   assert signedMsg.dumpMessage() == message, "message must be the same"
 
   # Person C verifies the message from both.
@@ -50,9 +50,7 @@ Signature = ->
   ################################
   # Person D recieves a base64 encoded blob of the signed message and verifies.
   blob = signedMsg.dump()
-  signedMsg = signedMessage blob
-  output = verify signedMsg
+  output = verify blob
   assert output == true, "failed to verify"
-
 
 export default Signature

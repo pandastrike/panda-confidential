@@ -1,9 +1,9 @@
 import assert from "assert"
 import {test, print} from "amen"
-import Confidential from "../../../src/index"
+import {confidential} from "../../../src/index"
 
 Hash = ->
-  {hash} = Confidential()
+  {hash} = confidential()
 
   message = "Hello World!"
   expectedOutput = "hhhE1nBOhXP+w02WfiC8/vPUJM9IvgTm3AjyvVjHKXQzcQFerYkcw88cnTS0kmS1EHUbH/nlN5N7xGtdb/TsyA=="

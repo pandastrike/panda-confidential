@@ -6,7 +6,7 @@ class EncryptionKeyPair extends KeyPair
 
 isEncryptionKeyPair = isType EncryptionKeyPair
 
-encryptionKeyPair = (randomBytes, privateKey, publicKey) ->
+encryptionKeyPair = (randomBytes, {Private:privateKey, Public:publicKey}) ->
   # Generate a random input to generate a pair. Length comes from TweetNaCl.
   ->
     input = await randomBytes nacl.box.secretKeyLength

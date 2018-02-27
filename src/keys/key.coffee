@@ -1,6 +1,6 @@
-import {encode} from "../utils"
 import {isKind} from "fairmont-helpers"
 import {Method} from "fairmont-multimethods"
+import {encode} from "../utils"
 
 class Key
   constructor: (@key) ->
