@@ -1,6 +1,7 @@
 import Sundog from "sundog"
 import nacl from "tweetnacl"
 
+import validate from "./validate-input"
 import {kmsKeyID, privateKey, publicKey, sharedKey} from "./keys"
 import {encryptionKeyPair, signatureKeyPair} from "./key-pairs"
 import {signedMessage} from "./signed-message"
@@ -10,22 +11,22 @@ import sign from "./sign"
 import verify from "./verify"
 import hash from "./hash"
 
-Confidential = (SDK) ->
-  {AWS} = Sundog SDK
+Confidential = (input={}) ->
+  {randomBytes, externalEncrypter, isExternalKeyClass} = validate input
 
   Object.defineProperties {},
     encryptionKeyPair:
       enumerable: true
-      get: -> encryptionKeyPair AWS
+      get: -> encryptionKeyPair randomBytes
     signatureKeyPair:
       enumerable: true
-      get: -> signatureKeyPair AWS
+      get: -> signatureKeyPair randomBytes
     kmsKeyID:
       enumerable: true
       get: -> kmsKeyID
     privateKey:
       enumerable: true
-      get: -> privateKey
+      get: -> privateKey randomBytes
     publicKey:
       enumerable: true
       get: -> publicKey
@@ -37,16 +38,16 @@ Confidential = (SDK) ->
       get: -> signedMessage
     encrypt:
       enumerable: true
-      get: -> encrypt AWS
+      get: -> encrypt randomBytes, externalEncrypter, isExternalKeyClass
     decrypt:
       enumerable: true
-      get: -> decrypt AWS
+      get: -> decrypt externalEncrypter, isExternalKeyClass
     sign:
       enumerable: true
-      get: -> sign()
+      get: -> sign
     verify:
       enumerable: true
-      get: -> verify()
+      get: -> verify
     hash:
       enumerable: true
       get: -> hash

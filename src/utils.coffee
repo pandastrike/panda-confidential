@@ -10,6 +10,8 @@ encode = (encoding, array) ->
       encodeUTF8 array
     when "base64"
       encodeBase64 array
+    when "buffer"
+      array # no op case
     else
       throw new Error "The format #{encoding} is not supported."
 
@@ -19,6 +21,8 @@ decode = (encoding, string) ->
       decodeUTF8 string
     when "base64"
       decodeBase64 string
+    when "buffer"
+      string # was never a string, no op case
     else
       throw new Error "The format #{encoding} is not supported."
 

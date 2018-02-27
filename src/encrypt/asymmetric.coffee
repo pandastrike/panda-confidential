@@ -2,13 +2,13 @@ import nacl from "tweetnacl"
 import {decode, encodeCiphertext} from "../utils"
 {nonceLength} = nacl.box
 
-AsymmetricEncrypt = ({randomKey}) ->
+AsymmetricEncrypt = (randomBytes) ->
   ({key}, message, encoding) ->
     # Generate nonce from KMS's robust source of randomness.
-    nonce = await randomKey nonceLength, "buffer"
+    nonce = await randomBytes nonceLength, "buffer"
     message = decode encoding, message
 
-    # Encrypt the message. Convert from UInt8Array to Buffer.
+    # Encrypt the message.
     ciphertext = nacl.box.after message, nonce, key
 
     # Return a blob of base64 to the outer layer.

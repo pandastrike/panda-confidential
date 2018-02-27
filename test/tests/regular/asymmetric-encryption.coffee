@@ -1,11 +1,12 @@
 import assert from "assert"
 import {test, print} from "amen"
-import Confidential from "../../src/index"
-import {isPublicKey, isPrivateKey, isSharedKey} from "../../src/keys"
+import Confidential from "../../../src/index"
+import {isPublicKey, isPrivateKey, isSharedKey} from "../../../src/keys"
 import nacl from "tweetnacl"
 
-asymmetric = (SDK) -> ->
-  {encryptionKeyPair, sharedKey, encrypt, decrypt} = Confidential SDK
+asymmetric = ->
+  {encryptionKeyPair, sharedKey, encrypt, decrypt} = Confidential()
+
   # Test Key Pair Generation
   A = {privateKey, publicKey} = await encryptionKeyPair()
   assert (privateKey && isPrivateKey privateKey), "must make private key"
@@ -30,6 +31,5 @@ asymmetric = (SDK) -> ->
   assert.equal key1.dump(), key2.dump(), "shared keys must be identical"
   output = decrypt key2, cipher
   assert.equal message, output, "failed to decrypt"
-
 
 export default asymmetric

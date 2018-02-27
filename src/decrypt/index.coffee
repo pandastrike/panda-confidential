@@ -1,22 +1,36 @@
 import {isString, isBuffer} from "fairmont-helpers"
 import {Method} from "fairmont-multimethods"
 
-import {isSharedKey} from "../keys"
+import {isSharedKey, isPrivateKey} from "../keys"
 import SymmetricDecrypt from "./symmetric"
+import SymmetricDecryptExternal from "./symmetric-external"
 import AsymmetricDecrypt from "./asymmetric"
 
-Decrypt = ({KMS}) ->
-  symmetric = SymmetricDecrypt KMS
-  asymmetric = AsymmetricDecrypt()
+Decrypt = (externalEncrypter, isExternalKeyClass) ->
+  if externalEncrypter
+    symmetricExternal = SymmetricDecryptExternal externalEncrypter
+  else
+    symmetricExternal = ->
+      throw new Error "No external encryption service defined"
+
+  symmetric = SymmetricDecrypt
+  asymmetric = AsymmetricDecrypt
 
   # Define a multimethod.
   decrypt = Method.create()
 
+  if isExternalKeyClass
+    # Symmetric Decryption extended via external service.
+    Method.define decrypt, isExternalKeyClass, isString, isString,
+      (key, ciphertext, encoding) -> symmetricExternal key, ciphertext, encoding
+    Method.define decrypt, isExternalKeyClass, isString,
+      (key, ciphertext) -> symmetricExternal key, ciphertext, "utf8"
+
   # Symmetric Decryption
-  Method.define decrypt, isString,
-    (ciphertext) -> symmetric ciphertext, "utf8"
-  Method.define decrypt, isString, isString,
-    (ciphertext, encoding) -> symmetric ciphertext, encoding
+  Method.define decrypt, isPrivateKey, isString, isString,
+    (key, ciphertext, encoding) -> symmetric key, ciphertext, encoding
+  Method.define decrypt, isPrivateKey, isString,
+    (key, ciphertext) -> symmetric key, ciphertext, "utf8"
 
   # Asymmetric Decryption via shared key.
   Method.define decrypt, isSharedKey, isString,

@@ -1,12 +1,12 @@
 import assert from "assert"
 import {test, print} from "amen"
-import Confidential from "../../src/index"
-import {isPrivateKey, isPublicKey} from "../../src/keys"
-import {isSignedMessage} from "../../src/signed-message"
+import Confidential from "../../../src/index"
+import {isPrivateKey, isPublicKey} from "../../../src/keys"
+import {isSignedMessage} from "../../../src/signed-message"
 import nacl from "tweetnacl"
 
-Signature = (SDK) -> ->
-  {sign, verify, signatureKeyPair, signedMessage} = Confidential SDK
+Signature = (externalInterface) -> ->
+  {sign, verify, signatureKeyPair, signedMessage} = Confidential externalInterface
 
   # Test Key Pair Generation
   A = {privateKey, publicKey} = await signatureKeyPair()
