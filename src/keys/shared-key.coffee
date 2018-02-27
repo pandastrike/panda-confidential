@@ -6,21 +6,18 @@ import {Method} from "fairmont-multimethods"
 import {Key} from "./key"
 import {isPrivateKey} from "./private-key"
 import {isPublicKey} from "./public-key"
-import {decodeKey} from "../utils"
+import {decode} from "../utils"
 
 class SharedKey extends Key
 
-# Create a key parsing multimethod.
-get = Method.create default: decodeKey
+# Create a key parsing multimethod.  Default to decoding a key literal...
+get = Method.create default: decode
 
-# Oddly named NaCl function to generate shared key.
-generate = nacl.box.before
-
-# While we may accept a key literal, the most common usecase is to accept two explicit key classes.
+# ... but the most common usecase is to accept two explicit key classes.
 Method.define get, isPrivateKey, isPublicKey,
-  (privateKey, publicKey) -> generate publicKey.key, privateKey.key
+  (privateKey, publicKey) -> nacl.box.before publicKey.key, privateKey.key
 Method.define get, isPublicKey, isPrivateKey,
-  (publicKey, privateKey) -> generate publicKey.key, privateKey.key
+  (publicKey, privateKey) -> nacl.box.before publicKey.key, privateKey.key
 
 sharedKey = (input1, input2) -> new SharedKey get input1, input2
 

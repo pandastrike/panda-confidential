@@ -1,17 +1,14 @@
 import {Key} from "./key"
-import {decodeKey} from "../utils"
+import {decode} from "../utils"
 import {isType} from "fairmont-helpers"
 import nacl from "tweetnacl"
 
 class PrivateKey extends Key
 
 privateKey = (randomBytes) ->
-  (input, encoding) ->
+  (input, encoding="base64") ->
     if input
-      if encoding
-        new PrivateKey decodeKey input, encoding
-      else
-        new PrivateKey decodeKey input
+      new PrivateKey decode encoding, input
     else
       # Assumes the developer wants key compatible with symmetric encryption.
       new PrivateKey await randomBytes nacl.secretbox.keyLength

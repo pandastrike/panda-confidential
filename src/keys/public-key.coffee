@@ -1,14 +1,11 @@
 import {Key} from "./key"
-import {decodeKey} from "../utils"
+import {decode} from "../utils"
 import {isType} from "fairmont-helpers"
 
 class PublicKey extends Key
 
-publicKey = (input, encoding) ->
-  if encoding
-    new PublicKey decodeKey input, encoding
-  else
-    new PublicKey decodeKey input
+publicKey = (input, encoding="base64") ->
+  new PublicKey decode encoding, input
 
 isPublicKey = isType PublicKey
 
