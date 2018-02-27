@@ -1,6 +1,3 @@
-import Sundog from "sundog"
-import nacl from "tweetnacl"
-
 import validate from "./validate-input"
 import {kmsKeyID, privateKey, publicKey, sharedKey} from "./keys"
 import {encryptionKeyPair, signatureKeyPair} from "./key-pairs"
