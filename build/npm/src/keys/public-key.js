@@ -3,15 +3,35 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.isPublicKey = exports.publicKey = undefined;
+
+var _fairmontHelpers = require("fairmont-helpers");
+
+var _fairmontMultimethods = require("fairmont-multimethods");
 
 var _key = require("./key");
 
-var _key2 = _interopRequireDefault(_key);
+var _utils = require("../utils");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var PublicKey, get, isPublicKey;
 
-var PublicKey;
+PublicKey = class PublicKey extends _key.Key {};
 
-PublicKey = class PublicKey extends _key2.default {};
+exports.isPublicKey = isPublicKey = (0, _fairmontHelpers.isType)(PublicKey);
 
-exports.default = PublicKey;
+exports.publicKey = get = _fairmontMultimethods.Method.create();
+
+_fairmontMultimethods.Method.define(get, _utils.isData, function (input) {
+  return new PublicKey(input);
+});
+
+_fairmontMultimethods.Method.define(get, _fairmontHelpers.isString, function (input) {
+  return get((0, _utils.decode)("base64", input));
+});
+
+_fairmontMultimethods.Method.define(get, _fairmontHelpers.isString, _fairmontHelpers.isString, function (input, encoding) {
+  return get((0, _utils.decode)(encoding, input));
+});
+
+exports.publicKey = get;
+exports.isPublicKey = isPublicKey;

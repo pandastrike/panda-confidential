@@ -3,67 +3,94 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.encode = exports.decodeSignature = exports.decodeKey = exports.decodePlaintext = exports.decodeCiphertext = undefined;
+exports.isData = exports.decode = exports.encode = undefined;
+
+var _tweetnaclUtil = require("tweetnacl-util");
+
+var _tweetnaclUtil2 = _interopRequireDefault(_tweetnaclUtil);
 
 var _fairmontHelpers = require("fairmont-helpers");
 
-var _types = require("./types");
+var _fairmontMultimethods = require("fairmont-multimethods");
 
-var decodeCiphertext, decodeKey, decodePlaintext, decodeSignature, encode;
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.decodeCiphertext = decodeCiphertext = function (blob) {
-  var out;
-  out = JSON.parse(Buffer.from(blob, "base64").toString());
-  if (out.ciphertext) {
-    out.ciphertext = Buffer.from(out.ciphertext.data);
-  }
-  if (out.nonce) {
-    out.nonce = Buffer.from(out.nonce.data);
-  }
-  return out;
+var decode, decodeBase64, decodeUTF8, encode, encodeBase64, encodeUTF8, isAny, isBase64, isData, isEqual, isUTF8, isUint8Array;
+
+({ decodeBase64, decodeUTF8, encodeBase64, encodeUTF8 } = _tweetnaclUtil2.default);
+
+isEqual = function (x) {
+  return function (y) {
+    return x === y;
+  };
 };
 
-exports.decodePlaintext = decodePlaintext = function (msg, encoding) {
-  if (encoding === "buffer") {
-    return msg;
-  } else {
-    return Buffer.from(msg, encoding);
-  }
+isUTF8 = isEqual("utf8");
+
+isBase64 = isEqual("base64");
+
+isUint8Array = (0, _fairmontHelpers.isType)(Uint8Array);
+
+exports.isData = isData = function (x) {
+  return (0, _fairmontHelpers.isBuffer)(x) || isUint8Array(x);
 };
 
-exports.decodeKey = decodeKey = function (input) {
-  if ((0, _types.isKey)(input)) {
-    return Buffer.from(input.key, "base64");
-  } else {
-    if ((0, _fairmontHelpers.isString)(input)) {
-      return Buffer.from(input, "base64");
-    } else if ((0, _fairmontHelpers.isBuffer)(input)) {
-      return input;
-    } else {
-      throw new Error("Unable to decode key");
-    }
-  }
+isAny = function (x) {
+  return true;
 };
 
-exports.decodeSignature = decodeSignature = function (blob, encoding = "base64") {
-  if (encoding === "buffer") {
-    return JSON.parse(blob.toString());
-  } else {
-    return JSON.parse(Buffer.from(blob, encoding).toString());
+exports.decode = decode = _fairmontMultimethods.Method.create({
+  default: function (...args) {
+    throw new Error(`Unable to decode string ${args}`);
   }
-};
+});
 
-// String encode a piece of data or convert into a Buffer.
-exports.encode = encode = function (encoding, data) {
-  if (encoding === "buffer") {
-    return Buffer.from(data); // Just output a buffer
-  } else {
-    return Buffer.from(data).toString(encoding);
+_fairmontMultimethods.Method.define(decode, isUTF8, _fairmontHelpers.isString, function (_, string) {
+  return decodeUTF8(string);
+});
+
+_fairmontMultimethods.Method.define(decode, isBase64, _fairmontHelpers.isString, function (_, string) {
+  return decodeBase64(string);
+});
+
+_fairmontMultimethods.Method.define(decode, isAny, isData, function (_, array) {
+  return array;
+});
+
+exports.encode = encode = _fairmontMultimethods.Method.create({
+  default: function (...args) {
+    throw new Error(`Unable to encode data ${args}`);
   }
-};
+});
 
-exports.decodeCiphertext = decodeCiphertext;
-exports.decodePlaintext = decodePlaintext;
-exports.decodeKey = decodeKey;
-exports.decodeSignature = decodeSignature;
+_fairmontMultimethods.Method.define(encode, isData, function (array) {
+  return encodeUTF8(array);
+});
+
+_fairmontMultimethods.Method.define(encode, isUTF8, isData, function (_, array) {
+  return encodeUTF8(array);
+});
+
+_fairmontMultimethods.Method.define(encode, isBase64, isData, function (_, array) {
+  return encodeBase64(array);
+});
+
+_fairmontMultimethods.Method.define(encode, isUTF8, _fairmontHelpers.isString, function (_, string) {
+  return encode("utf8", decode("base64", string));
+});
+
+_fairmontMultimethods.Method.define(encode, isBase64, _fairmontHelpers.isString, function (_, string) {
+  return encode("base64", decode("utf8", string));
+});
+
+_fairmontMultimethods.Method.define(encode, _fairmontHelpers.isObject, function (object) {
+  return encode("base64", JSON.stringify(object));
+});
+
+_fairmontMultimethods.Method.define(encode, isEqual("buffer", isData, function (_, array) {
+  return array; // no op
+}));
+
 exports.encode = encode;
+exports.decode = decode;
+exports.isData = isData;

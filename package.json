@@ -1,29 +1,28 @@
 {
   "name": "panda-confidential",
   "version": "0.0.1",
-  "description": "Encryption helper that leverages AWS KMS and tweetnacl-js",
+  "description": "Simple, extensible interface for the tweetnacl-js cryptography library",
   "main": "build/npm/src/index.js",
   "files": [
     "build/npm/src",
     "LICENSE"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "coffee --transpile test/index.coffee"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pandastrike/panda-sky-nacl.git"
+    "url": "git+https://github.com/pandastrike/panda-confidential.git"
   },
   "keywords": [
-    "panda",
-    "sky",
     "encryption",
-    "serverless",
-    "lambda",
-    "node",
     "PKE",
     "public key encryption",
-    "secret key encryption"
+    "symmetric encryption",
+    "asymmetric encryption",
+    "browser",
+    "node",
+    "universal"
   ],
   "contributors": [
     {
@@ -37,9 +36,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/pandastrike/panda-sky-nacl/issues"
+    "url": "https://github.com/pandastrike/panda-confidential/issues"
   },
-  "homepage": "https://github.com/pandastrike/panda-sky-nacl#readme",
+  "homepage": "https://github.com/pandastrike/panda-confidential#readme",
   "devDependencies": {
     "amen": "^2.0.4",
     "aws-sdk": "^2.200.0",

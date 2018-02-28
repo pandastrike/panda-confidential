@@ -1,13 +1,11 @@
 import assert from "assert"
 import {test, print} from "amen"
-import {isPublicKey, isPrivateKey, isSharedKey} from "../../../src/keys"
-import nacl from "tweetnacl"
 
-asymmetric = ({keyPair, key, encrypt, decrypt}) -> ->
+asymmetric = ({keyPair, key, encrypt, decrypt, nacl}) -> ->
   # Test Key Pair Generation
   A = {privateKey, publicKey} = await keyPair.Encryption()
-  assert (privateKey && isPrivateKey privateKey), "must make private key"
-  assert (publicKey && isPublicKey publicKey), "must make public key"
+  assert (privateKey && key.isPrivateKey privateKey), "must make private key"
+  assert (publicKey && key.isPublicKey publicKey), "must make public key"
   assert privateKey.key.length == nacl.box.secretKeyLength,
     "private key is improper length"
   assert publicKey.key.length == nacl.box.publicKeyLength,
@@ -19,7 +17,7 @@ asymmetric = ({keyPair, key, encrypt, decrypt}) -> ->
 
   # Person A encrypts the message for person B.
   key1 = key.Shared A.privateKey, B.publicKey
-  assert (key1 && isSharedKey(key1) && (key1.key.length == nacl.box.sharedKeyLength)), "failed to create shared key."
+  assert (key1 && key.isSharedKey(key1) && (key1.key.length == nacl.box.sharedKeyLength)), "failed to create shared key."
   cipher = await encrypt key1, message
   assert (cipher && message != cipher), "failed to create a ciphertext"
 

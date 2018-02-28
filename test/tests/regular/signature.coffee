@@ -1,17 +1,14 @@
 import assert from "assert"
 import {test, print} from "amen"
 import {confidential} from "../../../src/index"
-import {isPrivateKey, isPublicKey} from "../../../src/keys"
-import {isSignedMessage} from "../../../src/signed-message"
-import nacl from "tweetnacl"
 
 Signature = ->
-  {sign, verify, keyPair} = confidential()
+  {sign, verify, key, keyPair, isSignedMessage, nacl} = confidential()
 
   # Test Key Pair Generation
   A = {privateKey, publicKey} = await keyPair.Signature()
-  assert (privateKey && isPrivateKey privateKey), "must make private key"
-  assert (publicKey && isPublicKey publicKey), "must make public key"
+  assert (privateKey && key.isPrivateKey privateKey), "must make private key"
+  assert (publicKey && key.isPublicKey publicKey), "must make public key"
   assert privateKey.key.length == nacl.sign.secretKeyLength,
     "private key is improper length"
   assert publicKey.key.length == nacl.sign.publicKeyLength,

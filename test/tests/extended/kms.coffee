@@ -1,7 +1,6 @@
 import Sundog from "sundog"
 import {isString} from "fairmont-helpers"
 import {Method} from "fairmont-multimethods"
-import nacl from "tweetnacl"
 import {isKMSKeyID} from "./kms-key"
 
 # Extend Confidential with KMS via sundog.
@@ -9,7 +8,7 @@ kms = (confidential, SDK) ->
   {AWS:KMS:{randomKey, encrypt:kmsEncrypt, decrypt:kmsDecrypt}} = Sundog SDK
 
   confidential.randomBytes = (length) -> await randomKey length, "buffer"
-  {utils:{encode, decode, isData}, randomBytes} = confidential
+  {utils:{encode, decode, isData}, randomBytes, nacl} = confidential
 
   # Extension to Symmetric Encryption that encrypts the key with KMS.
   Method.define confidential.encrypt, isKMSKeyID, isData,

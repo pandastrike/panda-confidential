@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.isSharedKey = exports.sharedKey = undefined;
 
 var _tweetnacl = require("tweetnacl");
 
@@ -14,55 +15,44 @@ var _fairmontMultimethods = require("fairmont-multimethods");
 
 var _key = require("./key");
 
-var _key2 = _interopRequireDefault(_key);
+var _privateKey = require("./private-key");
 
-var _keyUtils = require("./key-utils");
+var _publicKey = require("./public-key");
+
+var _utils = require("../utils");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // This is a derived key formed from one person's private key and another's public key to form a shared secret key used in PKE encryption.
-var SharedKey, generateShared, getKey;
+var SharedKey, get, isSharedKey;
 
-generateShared = function (privateKey, publicKey) {
-  privateKey = (0, _keyUtils.decodeKey)(privateKey);
-  publicKey = (0, _keyUtils.decodeKey)(publicKey);
-  return (0, _keyUtils.encode)("base64", _tweetnacl2.default.box.before(publicKey, privateKey));
-};
+SharedKey = class SharedKey extends _key.Key {};
 
-// Create a key parsing multimethod.
-getKey = _fairmontMultimethods.Method.create();
+exports.isSharedKey = isSharedKey = (0, _fairmontHelpers.isType)(SharedKey);
 
-// The most common usecase is to accept two explicit keys.
-_fairmontMultimethods.Method.define(getKey, _keyUtils.isPrivateKey, _keyUtils.isPublicKey, function (privateKey, publicKey) {
-  return generateShared(privateKey, publicKey);
+// Create a key parsing multimethod.  Default to decoding a key literal...
+exports.sharedKey = get = _fairmontMultimethods.Method.create();
+
+_fairmontMultimethods.Method.define(get, _utils.isData, function (input) {
+  return new SharedKey(input);
 });
 
-_fairmontMultimethods.Method.define(getKey, _keyUtils.isPublicKey, _keyUtils.isPrivateKey, function (publicKey, privateKey) {
-  return generateShared(privateKey, publicKey);
+_fairmontMultimethods.Method.define(get, _fairmontHelpers.isString, function (input) {
+  return get((0, _utils.decode)("base64", input));
 });
 
-// Also support a directly input key from somewhere.
-_fairmontMultimethods.Method.define(getKey, _fairmontHelpers.isBuffer, function (key) {
-  return (0, _keyUtils.encode)("base64", key);
+_fairmontMultimethods.Method.define(get, _fairmontHelpers.isString, _fairmontHelpers.isString, function (input, encoding) {
+  return get((0, _utils.decode)(encoding, input));
 });
 
-_fairmontMultimethods.Method.define(getKey, _fairmontHelpers.isString, function (key) {
-  return key;
+// ... but the most common usecase is to accept two explicit key classes.
+_fairmontMultimethods.Method.define(get, _privateKey.isPrivateKey, _publicKey.isPublicKey, function (privateKey, publicKey) {
+  return get(_tweetnacl2.default.box.before(publicKey.key, privateKey.key));
 });
 
-_fairmontMultimethods.Method.define(getKey, _fairmontHelpers.isString, _fairmontHelpers.isString, function (key, encoding) {
-  return (0, _keyUtils.encode)("base64", Buffer.from(key, encoding));
+_fairmontMultimethods.Method.define(get, _publicKey.isPublicKey, _privateKey.isPrivateKey, function (publicKey, privateKey) {
+  return get(_tweetnacl2.default.box.before(publicKey.key, privateKey.key));
 });
 
-SharedKey = class SharedKey extends _key2.default {
-  constructor(input1, input2) {
-    if (input2) {
-      super(getKey(input1, input2));
-    } else {
-      super(getKey(input1));
-    }
-  }
-
-};
-
-exports.default = SharedKey;
+exports.sharedKey = get;
+exports.isSharedKey = isSharedKey;

@@ -1,2 +1,2 @@
 # panda-confidential
-Encryption helper that leverages AWS KMS and tweetnacl-js
+Simple, extensible interface for the tweetnacl-js cryptography library

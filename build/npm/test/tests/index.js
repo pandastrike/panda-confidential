@@ -4,19 +4,13 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _amen = require("amen");
+var _regular = require("./regular");
 
-var _symmetricEncryption = require("./symmetric-encryption");
+var _regular2 = _interopRequireDefault(_regular);
 
-var _symmetricEncryption2 = _interopRequireDefault(_symmetricEncryption);
+var _extended = require("./extended");
 
-var _asymmetricEncryption = require("./asymmetric-encryption");
-
-var _asymmetricEncryption2 = _interopRequireDefault(_asymmetricEncryption);
-
-var _signature = require("./signature");
-
-var _signature2 = _interopRequireDefault(_signature);
+var _extended2 = _interopRequireDefault(_extended);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -26,16 +20,8 @@ var Tests;
 
 Tests = (() => {
   var _ref = _asyncToGenerator(function* (SDK) {
-    return (0, _amen.print)((yield (0, _amen.test)("Panda Confidential", [(0, _amen.test)({
-      description: "Symmetric Encryption",
-      wait: false
-    }, (0, _symmetricEncryption2.default)(SDK)), (0, _amen.test)({
-      description: "Public Key Encryption",
-      wait: false
-    }, (0, _asymmetricEncryption2.default)(SDK)), (0, _amen.test)({
-      description: "Digital Signature",
-      wait: false
-    }, (0, _signature2.default)(SDK))])));
+    yield (0, _regular2.default)();
+    return yield (0, _extended2.default)(SDK);
   });
 
   return function Tests(_x) {

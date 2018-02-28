@@ -3,45 +3,28 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.isKey = exports.Key = undefined;
 
 var _fairmontHelpers = require("fairmont-helpers");
 
 var _fairmontMultimethods = require("fairmont-multimethods");
 
-var Key, encode, getKey;
+var _utils = require("../utils");
 
-// String encode a piece of data or convert into a Buffer.
-encode = function (encoding, data) {
-  if (encoding === "buffer") {
-    return Buffer.from(data); // Just output a buffer
-  } else {
-    return Buffer.from(data).toString(encoding);
+var Key, isKey;
+
+exports.Key = Key = class Key {
+  constructor(key) {
+    this.key = key;
   }
-};
 
-getKey = _fairmontMultimethods.Method.create();
-
-_fairmontMultimethods.Method.define(getKey, _fairmontHelpers.isBuffer, function (key) {
-  return encode("base64", key);
-});
-
-_fairmontMultimethods.Method.define(getKey, _fairmontHelpers.isString, function (key) {
-  return key;
-});
-
-_fairmontMultimethods.Method.define(getKey, _fairmontHelpers.isString, _fairmontHelpers.isString, function (key, encoding) {
-  return encode("base64", Buffer.from(key, encoding));
-});
-
-Key = class Key {
-  constructor(input, encoding) {
-    if (encoding) {
-      this.key = getKey(input, encoding);
-    } else {
-      this.key = getKey(input);
-    }
+  dump() {
+    return (0, _utils.encode)("base64", this.key);
   }
 
 };
 
-exports.default = Key;
+exports.isKey = isKey = (0, _fairmontHelpers.isKind)(Key);
+
+exports.Key = Key;
+exports.isKey = isKey;
