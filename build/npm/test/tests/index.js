@@ -21,7 +21,9 @@ var Tests;
 Tests = (() => {
   var _ref = _asyncToGenerator(function* (SDK) {
     yield (0, _regular2.default)();
-    return yield (0, _extended2.default)(SDK);
+    if (SDK) {
+      return yield (0, _extended2.default)(SDK);
+    }
   });
 
   return function Tests(_x) {

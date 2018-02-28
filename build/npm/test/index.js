@@ -26,6 +26,10 @@ var options;
 
 // This grabs CLI arugments to allow the developer to configure the AWS context.
 options = (0, _commandLineArgs2.default)([{
+  name: 'extended',
+  alias: 'e',
+  type: Boolean
+}, {
   name: "profile",
   alias: "p",
   type: String
@@ -37,14 +41,18 @@ options = (0, _commandLineArgs2.default)([{
 
 _asyncToGenerator(function* () {
   var SDK, Sundog, e;
-  try {
-    console.error("Establishing AWS context...");
-    ({ Sundog, SDK } = (0, _context2.default)(options));
-    yield (0, _key2.default)(Sundog);
-  } catch (error) {
-    e = error;
-    console.error("Failed to establish AWS SDK context.", e);
-    process.exit();
+  if (options.extended) {
+    try {
+      console.error("Establishing AWS context...");
+      ({ Sundog, SDK } = (0, _context2.default)(options));
+      yield (0, _key2.default)(Sundog);
+    } catch (error) {
+      e = error;
+      console.error("Failed to establish AWS SDK context.", e);
+      process.exit();
+    }
+  } else {
+    SDK = false;
   }
   return yield (0, _tests2.default)(SDK);
 })();

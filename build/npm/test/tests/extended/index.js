@@ -43,7 +43,7 @@ ExtensionTests = (() => {
   var _ref = _asyncToGenerator(function* (SDK) {
     var kms;
     kms = (0, _kms2.default)((0, _index.confidential)(), SDK);
-    return yield (0, _amen.print)((yield (0, _amen.test)("Panda Confidential with KMS", [(0, _amen.test)({
+    return yield (0, _amen.print)((yield (0, _amen.test)("Panda Confidential extended with KMS", [(0, _amen.test)({
       description: "Symmetric Encryption",
       wait: false
     }, (0, _symmetricEncryption2.default)(kms)), (0, _amen.test)({
