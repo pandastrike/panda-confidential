@@ -13,7 +13,7 @@ import KMS from "./kms"
 
 ExtensionTests = (SDK) ->
   kms = KMS confidential(), SDK
-  await print await test "Panda Confidential with KMS", [
+  await print await test "Panda Confidential extended with KMS", [
     test
       description: "Symmetric Encryption"
       wait: false,
