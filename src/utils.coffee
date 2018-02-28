@@ -13,7 +13,6 @@ isData = (x) -> isBuffer(x) || isUint8Array(x)
 isAny = (x) -> true
 
 decode = Method.create default: (args...) ->
-  console.log args
   throw new Error "Unable to decode string #{args}"
 Method.define decode, isUTF8, isString,
   (_, string) -> decodeUTF8 string

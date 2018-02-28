@@ -7,7 +7,7 @@ import {isPrivateKey, isSharedKey} from "./keys"
 
 Encrypt = (randomBytes) ->
   # Define a multimethod to export.
-  encrypt = Method.create default: (args...) -> console.log args
+  encrypt = Method.create()
 
   # Symmetric Encryption
   Method.define encrypt, isPrivateKey, isData,

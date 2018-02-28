@@ -7,40 +7,24 @@ import decrypt from "./decrypt"
 import sign from "./sign"
 import verify from "./verify"
 import hash from "./hash"
+import {encode, decode, isData} from "./utils"
 
 confidential = ->
-  Object.defineProperties {},
-    randomBytes:
-      enumerable: true
-      get: -> nacl.randomBytes
-    key:
-      enumerable: true
-      get: ->
-        Private: privateKey @randomBytes
-        Public: publicKey
-        Shared: sharedKey
-    keyPair:
-      enumerable: true
-      get: ->
-        Encryption: encryptionKeyPair @randomBytes, @key
-        Signature: signatureKeyPair @randomBytes, @key
-    signedMessage:
-      enumerable: true
-      get: -> signedMessage
-    encrypt:
-      enumerable: true
-      get: -> encrypt @randomBytes
-    decrypt:
-      enumerable: true
-      get: -> decrypt
-    sign:
-      enumerable: true
-      get: -> sign
-    verify:
-      enumerable: true
-      get: -> verify
-    hash:
-      enumerable: true
-      get: -> hash
+  c = randomBytes: nacl.randomBytes
+  c.key =
+    Private: privateKey c.randomBytes
+    Public: publicKey
+    Shared: sharedKey
+  c.keyPair =
+    Encryption: encryptionKeyPair c.randomBytes, c.key
+    Signature: signatureKeyPair c.randomBytes, c.key
+  c.signedMessage = signedMessage
+  c.encrypt = encrypt c.randomBytes
+  c.decrypt = decrypt
+  c.sign = sign
+  c.verify = verify
+  c.hash = hash
+  c.utils = {encode, decode, isData}
+  c
 
 export {confidential}

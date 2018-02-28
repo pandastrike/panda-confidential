@@ -1,15 +1,12 @@
 import assert from "assert"
-import Confidential from "../../../src/index"
 import kmsKeyName from "../../key-name"
 
-import {kmsKeyID} from "./kms-key"
+import {kmsKeyID, isKMSKeyID} from "./kms-key"
 
-symmetric = (externalInterface) -> ->
-  # Setup for encryption
-  {encrypt, decrypt} = Confidential externalInterface
-
+symmetric = ({encrypt, decrypt}) -> ->
   # Create our custom key class to pass into Confidential.
   keyID = kmsKeyID kmsKeyName
+  assert (keyID && isKMSKeyID keyID), "bad key"
 
   # Person A symmetrically encrypts their data.
   message = "Hello World!"
