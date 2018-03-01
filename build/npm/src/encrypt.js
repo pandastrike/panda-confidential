@@ -27,7 +27,7 @@ Encrypt = function (randomBytes) {
   // Define a multimethod to export.
   encrypt = _fairmontMultimethods.Method.create();
   // Symmetric Encryption
-  _fairmontMultimethods.Method.define(encrypt, _keys.isPrivateKey, _utils.isData, (() => {
+  _fairmontMultimethods.Method.define(encrypt, _keys.isSymmetricKey, _utils.isData, (() => {
     var _ref = _asyncToGenerator(function* ({ key }, plaintext) {
       var ciphertext, nonce;
       nonce = yield randomBytes(_tweetnacl2.default.secretbox.nonceLength);
@@ -42,10 +42,10 @@ Encrypt = function (randomBytes) {
       return _ref.apply(this, arguments);
     };
   })());
-  _fairmontMultimethods.Method.define(encrypt, _keys.isPrivateKey, _fairmontHelpers.isString, _fairmontHelpers.isString, function (key, plaintext, encoding) {
+  _fairmontMultimethods.Method.define(encrypt, _keys.isSymmetricKey, _fairmontHelpers.isString, _fairmontHelpers.isString, function (key, plaintext, encoding) {
     return encrypt(key, (0, _utils.decode)(encoding, plaintext));
   });
-  _fairmontMultimethods.Method.define(encrypt, _keys.isPrivateKey, _fairmontHelpers.isString, function (key, plaintext) {
+  _fairmontMultimethods.Method.define(encrypt, _keys.isSymmetricKey, _fairmontHelpers.isString, function (key, plaintext) {
     return encrypt(key, (0, _utils.decode)("utf8", plaintext));
   });
   // Asymmetric Encryption via shared key.

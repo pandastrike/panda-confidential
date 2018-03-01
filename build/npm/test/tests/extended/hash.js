@@ -10,8 +10,6 @@ var _powerAssert = require("power-assert");
 
 var _powerAssert2 = _interopRequireDefault(_powerAssert);
 
-var _amen = require("amen");
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Hash;
@@ -28,11 +26,11 @@ Hash = function ({ hash }) {
     return _powerAssert2.default.equal(_rec._expr(_rec._capt(output, "arguments/0"), {
       content: "assert.equal(output, expectedOutput, \"Unexpected hash result\")",
       filepath: "tests/extended/hash.coffee",
-      line: 9
+      line: 8
     }), _rec2._expr(_rec2._capt(expectedOutput, "arguments/1"), {
       content: "assert.equal(output, expectedOutput, \"Unexpected hash result\")",
       filepath: "tests/extended/hash.coffee",
-      line: 9
+      line: 8
     }), "Unexpected hash result");
   };
 };

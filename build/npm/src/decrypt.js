@@ -24,7 +24,7 @@ var decrypt;
 decrypt = _fairmontMultimethods.Method.create();
 
 // Symmetric Decryption
-_fairmontMultimethods.Method.define(decrypt, _keys.isPrivateKey, _utils.isData, _fairmontHelpers.isString, function ({ key }, blob, encoding) {
+_fairmontMultimethods.Method.define(decrypt, _keys.isSymmetricKey, _utils.isData, _fairmontHelpers.isString, function ({ key }, blob, encoding) {
   var ciphertext, nonce;
   ({ ciphertext, nonce } = JSON.parse((0, _utils.encode)("utf8", blob)));
   ciphertext = (0, _utils.decode)("base64", ciphertext);
@@ -32,15 +32,15 @@ _fairmontMultimethods.Method.define(decrypt, _keys.isPrivateKey, _utils.isData, 
   return (0, _utils.encode)(encoding, _tweetnacl2.default.secretbox.open(ciphertext, nonce, key));
 });
 
-_fairmontMultimethods.Method.define(decrypt, _keys.isPrivateKey, _utils.isData, function (key, blob) {
+_fairmontMultimethods.Method.define(decrypt, _keys.isSymmetricKey, _utils.isData, function (key, blob) {
   return decrypt(key, blob, "utf8");
 });
 
-_fairmontMultimethods.Method.define(decrypt, _keys.isPrivateKey, _fairmontHelpers.isString, _fairmontHelpers.isString, function (key, blob, encoding) {
+_fairmontMultimethods.Method.define(decrypt, _keys.isSymmetricKey, _fairmontHelpers.isString, _fairmontHelpers.isString, function (key, blob, encoding) {
   return decrypt(key, (0, _utils.decode)("base64", blob), encoding);
 });
 
-_fairmontMultimethods.Method.define(decrypt, _keys.isPrivateKey, _fairmontHelpers.isString, function (key, blob) {
+_fairmontMultimethods.Method.define(decrypt, _keys.isSymmetricKey, _fairmontHelpers.isString, function (key, blob) {
   return decrypt(key, (0, _utils.decode)("base64", blob), "utf8");
 });
 

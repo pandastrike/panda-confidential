@@ -1,5 +1,4 @@
 import assert from "assert"
-import {test, print} from "amen"
 
 Hash = ({hash}) -> ->
   message = "Hello World!"

@@ -7,8 +7,8 @@ Signature = ->
 
   # Test Key Pair Generation
   A = {privateKey, publicKey} = await keyPair.Signature()
-  assert (privateKey && key.isPrivateKey privateKey), "must make private key"
-  assert (publicKey && key.isPublicKey publicKey), "must make public key"
+  assert (privateKey && key.isPrivate privateKey), "must make private key"
+  assert (publicKey && key.isPublic publicKey), "must make public key"
   assert privateKey.key.length == nacl.sign.secretKeyLength,
     "private key is improper length"
   assert publicKey.key.length == nacl.sign.publicKeyLength,

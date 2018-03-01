@@ -44,33 +44,40 @@ var confidential;
 exports.confidential = confidential = function () {
   var c;
   c = {
+    nacl: _tweetnacl2.default,
     randomBytes: _tweetnacl2.default.randomBytes
   };
+  // Key types.  Symmetric key generation requires randomBytes.
   c.key = {
-    Private: (0, _keys.privateKey)(c.randomBytes),
+    Private: _keys.privateKey,
     Public: _keys.publicKey,
     Shared: _keys.sharedKey,
-    isPrivateKey: _keys.isPrivateKey,
-    isPublicKey: _keys.isPublicKey,
-    isSharedKey: _keys.isSharedKey
+    Symmetric: (0, _keys.symmetricKey)(c.randomBytes),
+    isPrivate: _keys.isPrivateKey,
+    isPublic: _keys.isPublicKey,
+    isShared: _keys.isSharedKey,
+    isSymmetric: _keys.isSymmetricKey
   };
+  // Key pair types.  Pair generation requires randomBytes
   c.keyPair = {
-    Encryption: (0, _keyPairs.encryptionKeyPair)(c.randomBytes, c.key),
-    Signature: (0, _keyPairs.signatureKeyPair)(c.randomBytes, c.key),
-    isEncryptionKeyPair: _keyPairs.isEncryptionKeyPair,
-    isSignatureKeyPair: _keyPairs.isSignatureKeyPair
+    Encryption: (0, _keyPairs.encryptionKeyPair)(c.randomBytes),
+    Signature: (0, _keyPairs.signatureKeyPair)(c.randomBytes),
+    isEncryption: _keyPairs.isEncryptionKeyPair,
+    isSignature: _keyPairs.isSignatureKeyPair
   };
-  c.signedMessage = _signedMessage.signedMessage;
-  c.isSignedMessage = _signedMessage.isSignedMessage;
-  c.isData = _utils.isData;
+  // Main functions, 3 pairs of opposing operations.
+  // encrypt needs randomBytes for nonce generation
   c.encrypt = (0, _encrypt2.default)(c.randomBytes);
   c.decrypt = _decrypt2.default;
   c.sign = _sign2.default;
   c.verify = _verify2.default;
-  c.hash = _hash2.default;
   c.encode = _utils.encode;
   c.decode = _utils.decode;
-  c.nacl = _tweetnacl2.default;
+  // Helper functions
+  c.hash = _hash2.default; // wrapper around nacl's SHA-512 hash
+  c.isData = _utils.isData; // Is Uint8Array or Node.js buffer?
+  c.signedMessage = _signedMessage.signedMessage;
+  c.isSignedMessage = _signedMessage.isSignedMessage;
   return c;
 };
 

@@ -3,14 +3,14 @@ import {isString} from "fairmont-helpers"
 import {Method} from "fairmont-multimethods"
 
 import {decode, encode, isData} from "./utils"
-import {isPrivateKey, isSharedKey} from "./keys"
+import {isSymmetricKey, isSharedKey} from "./keys"
 
 Encrypt = (randomBytes) ->
   # Define a multimethod to export.
   encrypt = Method.create()
 
   # Symmetric Encryption
-  Method.define encrypt, isPrivateKey, isData,
+  Method.define encrypt, isSymmetricKey, isData,
     ({key}, plaintext) ->
       nonce = await randomBytes nacl.secretbox.nonceLength
       ciphertext = nacl.secretbox plaintext, nonce, key
@@ -18,9 +18,9 @@ Encrypt = (randomBytes) ->
         ciphertext: encode "base64", ciphertext
         nonce: encode "base64", nonce
 
-  Method.define encrypt, isPrivateKey, isString, isString,
+  Method.define encrypt, isSymmetricKey, isString, isString,
     (key, plaintext, encoding) -> encrypt key, decode(encoding, plaintext)
-  Method.define encrypt, isPrivateKey, isString,
+  Method.define encrypt, isSymmetricKey, isString,
     (key, plaintext) -> encrypt key, decode("utf8", plaintext)
 
   # Asymmetric Encryption via shared key.

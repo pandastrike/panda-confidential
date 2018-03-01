@@ -41,14 +41,14 @@ asymmetric = (() => {
     ({ keyPair, key, encrypt, decrypt } = (0, _index.confidential)());
     // Test Key Pair Generation
     A = ({ privateKey, publicKey } = yield keyPair.Encryption());
-    (0, _powerAssert2.default)(_rec._expr(_rec._capt(_rec._capt(privateKey, "arguments/0/left") && _rec._capt(_rec._capt(key, "arguments/0/right/callee/object").isPrivateKey(_rec._capt(privateKey, "arguments/0/right/arguments/0")), "arguments/0/right"), "arguments/0"), {
-      content: "assert(privateKey && key.isPrivateKey(privateKey), \"must make private key\")",
+    (0, _powerAssert2.default)(_rec._expr(_rec._capt(_rec._capt(privateKey, "arguments/0/left") && _rec._capt(_rec._capt(key, "arguments/0/right/callee/object").isPrivate(_rec._capt(privateKey, "arguments/0/right/arguments/0")), "arguments/0/right"), "arguments/0"), {
+      content: "assert(privateKey && key.isPrivate(privateKey), \"must make private key\")",
       filepath: "tests/regular/asymmetric-encryption.coffee",
       line: 11,
       async: true
     }), "must make private key");
-    (0, _powerAssert2.default)(_rec2._expr(_rec2._capt(_rec2._capt(publicKey, "arguments/0/left") && _rec2._capt(_rec2._capt(key, "arguments/0/right/callee/object").isPublicKey(_rec2._capt(publicKey, "arguments/0/right/arguments/0")), "arguments/0/right"), "arguments/0"), {
-      content: "assert(publicKey && key.isPublicKey(publicKey), \"must make public key\")",
+    (0, _powerAssert2.default)(_rec2._expr(_rec2._capt(_rec2._capt(publicKey, "arguments/0/left") && _rec2._capt(_rec2._capt(key, "arguments/0/right/callee/object").isPublic(_rec2._capt(publicKey, "arguments/0/right/arguments/0")), "arguments/0/right"), "arguments/0"), {
+      content: "assert(publicKey && key.isPublic(publicKey), \"must make public key\")",
       filepath: "tests/regular/asymmetric-encryption.coffee",
       line: 12,
       async: true
@@ -70,8 +70,8 @@ asymmetric = (() => {
     message = "Hello World!";
     // Person A encrypts the message for person B.
     key1 = key.Shared(A.privateKey, B.publicKey);
-    (0, _powerAssert2.default)(_rec5._expr(_rec5._capt(_rec5._capt(_rec5._capt(key1, "arguments/0/left/left") && _rec5._capt(_rec5._capt(key, "arguments/0/left/right/callee/object").isSharedKey(_rec5._capt(key1, "arguments/0/left/right/arguments/0")), "arguments/0/left/right"), "arguments/0/left") && _rec5._capt(_rec5._capt(_rec5._capt(_rec5._capt(key1, "arguments/0/right/left/object/object").key, "arguments/0/right/left/object").length, "arguments/0/right/left") === _rec5._capt(_rec5._capt(_rec5._capt(_tweetnacl2.default, "arguments/0/right/right/object/object").box, "arguments/0/right/right/object").sharedKeyLength, "arguments/0/right/right"), "arguments/0/right"), "arguments/0"), {
-      content: "assert(key1 && key.isSharedKey(key1) && key1.key.length === nacl.box.sharedKeyLength, \"failed to create shared key.\")",
+    (0, _powerAssert2.default)(_rec5._expr(_rec5._capt(_rec5._capt(_rec5._capt(key1, "arguments/0/left/left") && _rec5._capt(_rec5._capt(key, "arguments/0/left/right/callee/object").isShared(_rec5._capt(key1, "arguments/0/left/right/arguments/0")), "arguments/0/left/right"), "arguments/0/left") && _rec5._capt(_rec5._capt(_rec5._capt(_rec5._capt(key1, "arguments/0/right/left/object/object").key, "arguments/0/right/left/object").length, "arguments/0/right/left") === _rec5._capt(_rec5._capt(_rec5._capt(_tweetnacl2.default, "arguments/0/right/right/object/object").box, "arguments/0/right/right/object").sharedKeyLength, "arguments/0/right/right"), "arguments/0/right"), "arguments/0"), {
+      content: "assert(key1 && key.isShared(key1) && key1.key.length === nacl.box.sharedKeyLength, \"failed to create shared key.\")",
       filepath: "tests/regular/asymmetric-encryption.coffee",
       line: 24,
       async: true

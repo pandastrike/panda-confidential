@@ -29,9 +29,9 @@ symmetric = (() => {
     // Setup for encryption
     ({ encrypt, decrypt, key } = (0, _index.confidential)());
     // Generate symmetric key of correct length that should be saved.
-    KEY = yield key.Private();
-    (0, _powerAssert2.default)(_rec._expr(_rec._capt(_rec._capt(KEY, "arguments/0/left") && _rec._capt(_rec._capt(key, "arguments/0/right/callee/object").isPrivateKey(_rec._capt(KEY, "arguments/0/right/arguments/0")), "arguments/0/right"), "arguments/0"), {
-      content: "assert(KEY && key.isPrivateKey(KEY), \"bad key\")",
+    KEY = yield key.Symmetric();
+    (0, _powerAssert2.default)(_rec._expr(_rec._capt(_rec._capt(KEY, "arguments/0/left") && _rec._capt(_rec._capt(key, "arguments/0/right/callee/object").isSymmetric(_rec._capt(KEY, "arguments/0/right/arguments/0")), "arguments/0/right"), "arguments/0"), {
+      content: "assert(KEY && key.isSymmetric(KEY), \"bad key\")",
       filepath: "tests/regular/symmetric-encryption.coffee",
       line: 10,
       async: true

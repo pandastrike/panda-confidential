@@ -38,14 +38,14 @@ Signature = (() => {
     ({ sign, verify, key, keyPair, isSignedMessage, nacl } = (0, _index.confidential)());
     // Test Key Pair Generation
     A = ({ privateKey, publicKey } = yield keyPair.Signature());
-    (0, _powerAssert2.default)(_rec._expr(_rec._capt(_rec._capt(privateKey, "arguments/0/left") && _rec._capt(_rec._capt(key, "arguments/0/right/callee/object").isPrivateKey(_rec._capt(privateKey, "arguments/0/right/arguments/0")), "arguments/0/right"), "arguments/0"), {
-      content: "assert(privateKey && key.isPrivateKey(privateKey), \"must make private key\")",
+    (0, _powerAssert2.default)(_rec._expr(_rec._capt(_rec._capt(privateKey, "arguments/0/left") && _rec._capt(_rec._capt(key, "arguments/0/right/callee/object").isPrivate(_rec._capt(privateKey, "arguments/0/right/arguments/0")), "arguments/0/right"), "arguments/0"), {
+      content: "assert(privateKey && key.isPrivate(privateKey), \"must make private key\")",
       filepath: "tests/regular/signature.coffee",
       line: 10,
       async: true
     }), "must make private key");
-    (0, _powerAssert2.default)(_rec2._expr(_rec2._capt(_rec2._capt(publicKey, "arguments/0/left") && _rec2._capt(_rec2._capt(key, "arguments/0/right/callee/object").isPublicKey(_rec2._capt(publicKey, "arguments/0/right/arguments/0")), "arguments/0/right"), "arguments/0"), {
-      content: "assert(publicKey && key.isPublicKey(publicKey), \"must make public key\")",
+    (0, _powerAssert2.default)(_rec2._expr(_rec2._capt(_rec2._capt(publicKey, "arguments/0/left") && _rec2._capt(_rec2._capt(key, "arguments/0/right/callee/object").isPublic(_rec2._capt(publicKey, "arguments/0/right/arguments/0")), "arguments/0/right"), "arguments/0"), {
+      content: "assert(publicKey && key.isPublic(publicKey), \"must make public key\")",
       filepath: "tests/regular/signature.coffee",
       line: 11,
       async: true
