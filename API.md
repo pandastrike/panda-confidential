@@ -2,9 +2,10 @@
 ### encrypt
 _**encrypt** Key, Plaintext [, Encoding] &rarr; Ciphertext_
 
-- Key [`<PrivateKey>`][privatekey] | [`<SharedKey>`][sharedkey]  Key to be used in encryption operation.
-- Plaintext `<String>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer] Data to be encrypted.
-- Encoding `utf8` | `base64`  (Optional) Specifies the encoding a plaintext string.  This value defaults to `utf8` and is ignored when the plaintext is an Uint8Array or Node.js buffer.
+- _Key_ [`<PrivateKey>`][privatekey] | [`<SharedKey>`][sharedkey]  Key to be used in encryption operation.
+- _Plaintext_ `<String>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer] Data to be encrypted.
+- _Encoding_ `utf8` | `base64`  (Optional) Specifies the encoding a plaintext string.  This value defaults to `utf8` and is ignored when the plaintext is an Uint8Array or Node.js buffer.
+- Returns _Ciphertext.
 
 This encrypts the given data with the given key.  
 
