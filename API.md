@@ -1,6 +1,50 @@
 # Panda Confidential API
 
 ## randomBytes
+_**randomBytes** Length &rarr; Value_
+
+- _Length_ `<Number>`:  Length of the output in bytes.
+- __Returns__ _Value_: random data -- This is an Uint8Array of length `Length`, filled with pseudo-random values.
+
+Generate a Uint8Array of the given length filled with pseudo-random data.  By default, this is the [implementation from TweetNaCl.js][tweetnacl-random], designed to seek out robust sources of random number generation in browser and Node.js platforms.  TweetNaCl.js will throw if it is unable to locate a suitable source on your platform.  
+
+This method is exposed for your needs _and_ is used internally by various functions in panda-confidential to generate random values:
+
+- [encrypt][encrypt]
+- [key.Symmetric][encryption]
+- [keyPair.Encryption][encryption]
+- [keyPair.Signature][signature]
+
+That includes key, key-pair, and encryption nonce generation.
+
+##### Example
+```coffeescript
+import {confidential} from "panda-confidential"
+{randomBytes} = confidential()
+
+do ->
+  randomValue = await randomBytes 32
+```
+
+### Overriding randomBytes
+You may override `randomBytes` by simply reassigning its value after you have created your instance of panda-confidential.  That change will also apply to the methods listed above.
+
+___WARNING: Using non-robust sources of randomness will compromise the effectiveness of your encryption.  Use this feature with caution.___
+
+##### Example
+```coffeescript
+import {confidential} from "panda-confidential"
+import {myRandomGenerator} from "my-other-library"
+c = confidential()
+
+# Applies your random generator to panda-confidential functions
+c.randomBytes = myRandomGenerator
+{key, randomBytes} = c
+
+do ->
+  randomValue = await randomBytes 32
+  myKey = await key.Symmetric()  # random values come from your generator.
+```
 
 ## encrypt
 _**encrypt** Key, Plaintext [, Encoding] &rarr; Ciphertext_
@@ -96,6 +140,11 @@ do ->
   message = await decrypt sharedKey, ciphertext
 ```
 
+## sign
+## verify
+## encode
+## decode
+
 ## Key Type System
 
 ## key
@@ -116,6 +165,15 @@ do ->
 ### isEncryption
 ### isSignature
 
+# Helpers
+
+## nacl
+## hash
+## isData
+## signedMessage
+## isSignedMessage
+
+
 [randombytes]: #randombytes
 [encrypt]: #encrypt
 [decrypt]: #decrypt
@@ -128,10 +186,14 @@ do ->
 [PrivateKey]: #private
 [PublicKey]: #public
 [SharedKey]: #shared
+[EncryptionKeyPair]: #encryption
+[SignatureKeyPair]: #signature
+
+
 [Uint8Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
-
-
 [Buffer]:https://nodejs.org/api/buffer.html
+
+
 [tweetnacl-random]: https://github.com/dchest/tweetnacl-js#random-bytes-generation
 [secretbox]: https://github.com/dchest/tweetnacl-js#naclsecretboxmessage-nonce-key
 [box-after]: https://github.com/dchest/tweetnacl-js#naclboxaftermessage-nonce-sharedkey

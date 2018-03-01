@@ -11,7 +11,6 @@ import {encode, decode, isData} from "./utils"
 
 confidential = ->
   c =
-    nacl: nacl
     randomBytes: nacl.randomBytes
 
   # Key types.  Symmetric key generation requires randomBytes.
@@ -42,6 +41,7 @@ confidential = ->
   c.decode = decode
 
   # Helper functions
+  c.nacl = nacl      # Base methods directly use tweetnacl.
   c.hash = hash      # wrapper around nacl's SHA-512 hash
   c.isData = isData  # Is Uint8Array or Node.js buffer?
   c.signedMessage = signedMessage
