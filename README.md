@@ -39,7 +39,7 @@ For example, let's perform a symmetric encryption with a secret key.
   ciphertext = await encrypt myKey, message
 ```
 
-The details of key length, ensuring a robust source of randomness, encryption algorithm, etc -- are all handled by TweetNaCl.js.  `encrypt` and the key type system just provides a super simple interface for that power.
+The details -- key length, ensuring a robust source of randomness, encryption algorithm, etc -- are all handled by TweetNaCl.js.  `encrypt` and the key type system just provides a super simple interface for that power.
 
 Use `decrypt` to retrieve the data just as simply.
 ```coffeescript
