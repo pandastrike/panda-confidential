@@ -2,10 +2,10 @@
 ### encrypt
 _**encrypt** Key, Plaintext [, Encoding] &rarr; Ciphertext_
 
-- _Key_ [`<PrivateKey>`][privatekey] | [`<SharedKey>`][sharedkey]  Key to be used in encryption operation.
-- _Plaintext_ `<String>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer] Data to be encrypted.
-- _Encoding_ `utf8` | `base64`  (Optional) Specifies the encoding a plaintext string.  This value defaults to `utf8` and is ignored when the plaintext is an Uint8Array or Node.js buffer.
-- Returns _Ciphertext.
+- _Key_ [`<PrivateKey>`][privatekey] | [`<SharedKey>`][sharedkey]:  Key to be used in encryption operation.
+- _Plaintext_ `<String>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer]: Data to be encrypted.
+- _Encoding_ `utf8` | `base64`  (Optional): Specifies the encoding a plaintext string.  This value defaults to `utf8` and is ignored when the plaintext is an Uint8Array or Node.js buffer.
+- Returns _Ciphertext_: encrypted plaintext as a base64 encoded stringified object with the fields `ciphertext` and `nonce`.  This data is required for decryption.
 
 This encrypts the given data with the given key.  
 
@@ -14,9 +14,6 @@ When a [private key][privatekey] is used, `encrypt` uses symmetric encryption wi
 When a [shared key][sharedkey] is used, `encrypt` uses asymmetric encryption with a random nonce [it generates][[tweetnacl-random]].
 
 `encrypt` expects data as either a string or as an Uint8Array / Node.js Buffer.
-
-`encrypt` returns a base64 encoded stringified object with the fields `ciphertext` and `nonce`.  This data is required for decryption.
-
 
 ### decrypt
 > `decrypt(Key, Blob [, Encoding])`
