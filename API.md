@@ -1,6 +1,6 @@
 # Panda Confidential API
 ### encrypt
-> `encrypt(Key, Plaintext [, Encoding])`
+_encrypt(Key, Plaintext [, Encoding]) &rarr; Ciphertext_
 
 - Key [`<PrivateKey>`][privatekey] | [`<SharedKey>`][sharedkey]  Key to be used in encryption operation.
 - Plaintext `<String>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer] Data to be encrypted.
