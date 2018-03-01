@@ -8,7 +8,7 @@ kms = (confidential, SDK) ->
   {AWS:KMS:{randomKey, encrypt:kmsEncrypt, decrypt:kmsDecrypt}} = Sundog SDK
 
   confidential.randomBytes = (length) -> await randomKey length, "buffer"
-  {utils:{encode, decode, isData}, randomBytes, nacl} = confidential
+  {encode, decode, isData, randomBytes, nacl} = confidential
 
   # Extension to Symmetric Encryption that encrypts the key with KMS.
   Method.define confidential.encrypt, isKMSKeyID, isData,

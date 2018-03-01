@@ -25,12 +25,14 @@ confidential = ->
     isSignatureKeyPair: isSignatureKeyPair
   c.signedMessage = signedMessage
   c.isSignedMessage = isSignedMessage
+  c.isData = isData
   c.encrypt = encrypt c.randomBytes
   c.decrypt = decrypt
   c.sign = sign
   c.verify = verify
   c.hash = hash
-  c.utils = {encode, decode, isData}
+  c.encode = encode
+  c.decode = decode
   c.nacl = nacl
   c
 

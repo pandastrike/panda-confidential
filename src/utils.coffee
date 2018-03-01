@@ -7,6 +7,7 @@ import {Method} from "fairmont-multimethods"
 isEqual = (x) -> (y) -> x == y
 isUTF8 = isEqual "utf8"
 isBase64 = isEqual "base64"
+isBinary = isEqual "binary"
 
 isUint8Array = isType Uint8Array
 isData = (x) -> isBuffer(x) || isUint8Array(x)
@@ -35,7 +36,7 @@ Method.define encode, isBase64, isString,
   (_, string) ->  encode "base64", decode "utf8", string
 Method.define encode, isObject,
   (object) -> encode "base64", JSON.stringify object
-Method.define encode, isEqual "buffer", isData,
+Method.define encode, isBinary, isData,
   (_, array) -> array  # no op
 
 export {

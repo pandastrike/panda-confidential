@@ -62,12 +62,14 @@ exports.confidential = confidential = function () {
   };
   c.signedMessage = _signedMessage.signedMessage;
   c.isSignedMessage = _signedMessage.isSignedMessage;
+  c.isData = _utils.isData;
   c.encrypt = (0, _encrypt2.default)(c.randomBytes);
   c.decrypt = _decrypt2.default;
   c.sign = _sign2.default;
   c.verify = _verify2.default;
   c.hash = _hash2.default;
-  c.utils = { encode: _utils.encode, decode: _utils.decode, isData: _utils.isData };
+  c.encode = _utils.encode;
+  c.decode = _utils.decode;
   c.nacl = _tweetnacl2.default;
   return c;
 };

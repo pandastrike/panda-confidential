@@ -15,7 +15,7 @@ var _fairmontMultimethods = require("fairmont-multimethods");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var decode, decodeBase64, decodeUTF8, encode, encodeBase64, encodeUTF8, isAny, isBase64, isData, isEqual, isUTF8, isUint8Array;
+var decode, decodeBase64, decodeUTF8, encode, encodeBase64, encodeUTF8, isAny, isBase64, isBinary, isData, isEqual, isUTF8, isUint8Array;
 
 ({ decodeBase64, decodeUTF8, encodeBase64, encodeUTF8 } = _tweetnaclUtil2.default);
 
@@ -28,6 +28,8 @@ isEqual = function (x) {
 isUTF8 = isEqual("utf8");
 
 isBase64 = isEqual("base64");
+
+isBinary = isEqual("binary");
 
 isUint8Array = (0, _fairmontHelpers.isType)(Uint8Array);
 
@@ -87,9 +89,9 @@ _fairmontMultimethods.Method.define(encode, _fairmontHelpers.isObject, function 
   return encode("base64", JSON.stringify(object));
 });
 
-_fairmontMultimethods.Method.define(encode, isEqual("buffer", isData, function (_, array) {
+_fairmontMultimethods.Method.define(encode, isBinary, isData, function (_, array) {
   return array; // no op
-}));
+});
 
 exports.encode = encode;
 exports.decode = decode;

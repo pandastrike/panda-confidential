@@ -1,6 +1,5 @@
 import assert from "assert"
 import {confidential} from "../../../src/index"
-import kmsKeyName from "../../key-name"
 
 symmetric = ->
   # Setup for encryption
