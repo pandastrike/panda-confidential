@@ -11,9 +11,9 @@ Generate a Uint8Array of the given length filled with pseudo-random data.  By de
 This method is exposed for your needs _and_ is used internally by various functions in panda-confidential to generate random values:
 
 - [encrypt][encrypt]
-- [key.Symmetric][encryption]
-- [keyPair.Encryption][encryption]
-- [keyPair.Signature][signature]
+- [key.Symmetric][SymmetricKey]
+- [keyPair.Encryption][EncryptionKeyPair]
+- [keyPair.Signature][SignatureKeyPair]
 
 That includes key, key-pair, and encryption nonce generation.
 
