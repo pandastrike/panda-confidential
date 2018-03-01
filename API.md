@@ -1,6 +1,6 @@
 # Panda Confidential API
 ### encrypt
-> encrypt(Key, Plaintext [, Encoding])
+> `encrypt(Key, Plaintext [, Encoding])`
 
 - Key [`<PrivateKey>`][privatekey] | [`<SharedKey>`][sharedkey]  Key to be used in encryption operation.
 - Plaintext `<String>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer] Data to be encrypted.
@@ -16,7 +16,7 @@ When a [shared key][sharedkey] is used, `encrypt` uses asymmetric encryption wit
 
 
 ### decrypt
-> decrypt(Key, Blob [, Encoding])
+> `decrypt(Key, Blob [, Encoding])`
 
 - Key [`<PrivateKey>`][privatekey] | [`<SharedKey>`][sharedkey]  Key to be used in decryption operation.
 - Blob `<String>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer] Data to be decrypted.
@@ -24,7 +24,7 @@ When a [shared key][sharedkey] is used, `encrypt` uses asymmetric encryption wit
 
 This decrypts the given data with the given key.  
 
-When a [private key][privatekey] is used, `decrypt` use a symmetric decryption operation.
+When a [private key][privatekey] is used, `decrypt` uses a symmetric decryption operation.
 
 When a [shared key][sharedkey] is used, `decrypt` uses an asymmetric decryption operation.
 
@@ -33,8 +33,8 @@ When a [shared key][sharedkey] is used, `decrypt` uses an asymmetric decryption 
 `decrypt` returns a plaintext string with the encoding specified.  The encoding defaults to `utf8`.  Selecting the encoding `binary` causes `decrypt` to return the plaintext as an Uint8Array.
 
 
-[privatekey]: #privatekey
-[sharedkey]: #sharedkey
+[privatekey]: #private
+[sharedkey]: #shared
 [Uint8Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
 [Buffer]:https://nodejs.org/api/buffer.html
 

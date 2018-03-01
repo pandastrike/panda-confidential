@@ -45,4 +45,4 @@ Confidential provides generic functions for:
 
 These functions all make use of TweetNaCl.js, but the accept a variety of inputs to accomplish the desired operation.  Confidential has a system of key-types and keypair-types to make the operations clear and error free.
 
-[Full API Documentation][https://github.com/pandastrike/panda-confidential/blob/master/API.md]
+[Full API Documentation](https://github.com/pandastrike/panda-confidential/blob/master/API.md)
