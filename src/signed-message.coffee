@@ -12,7 +12,7 @@ class SignedMessage
       encoding: @encoding
       publicKeys: (encode "base64", key for key in @publicKeys)
       signatures: (encode "base64", sig for sig in @signatures)
-  dumpMessage: (encoding="utf8") -> encode encoding, @message
+  dumpMessage: -> encode @encoding, @message
 
 isSignedMessage = isType SignedMessage
 

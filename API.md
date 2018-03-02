@@ -6,7 +6,7 @@ _**randomBytes** Length &rarr; Value_
 - _Length_ `<Number>`:  Length of the output in bytes.
 - __Returns__ _Value_: random data -- This is an Uint8Array of length `Length`, filled with pseudo-random values.
 
-Generate a Uint8Array of the given length filled with pseudo-random data.  By default, this is the [implementation from TweetNaCl.js][tweetnacl-random], designed to seek out robust sources of random number generation in browser and Node.js platforms.  TweetNaCl.js will throw if it is unable to locate a suitable source on your platform.  
+Generate an Uint8Array of the given length filled with pseudo-random data.  By default, this is the [implementation from TweetNaCl.js][tweetnacl-random], designed to seek out robust sources of random number generation in browser and Node.js platforms.  TweetNaCl.js will throw if it is unable to locate a suitable source on your platform.  
 
 This method is exposed for your needs _and_ is used internally by various functions in panda-confidential to generate random values:
 
@@ -239,7 +239,7 @@ Encodes an input into a desired output.  This generic is designed to be flexible
 
 The underlying `utf8` and `base64` encoding is handled by the [TweetNaCl-Utils-JS][tweetnacl-utils] helpers, written in [Universal JavasScript][universal].
 
-When a Uint8Array or Node.js Buffer is input:
+When an Uint8Array or Node.js Buffer is input:
 - `utf8`: `encode` outputs a UTF8 encoded string.
 - `base64`: `encode` outputs a Base64 encoded string.
 - `binary`: `encode` is a no-op.
@@ -278,16 +278,16 @@ Decodes an input into a desired output.  This generic is designed to be flexible
 
 The underlying `utf8` and `base64` decoding is handled by the [TweetNaCl-Utils-JS][tweetnacl-utils] helpers, written in [Universal JavasScript][universal].
 
-When a Uint8Array or Node.js Buffer is input:
+When an Uint8Array or Node.js Buffer is input:
 - `decode` is a no-op, regardless of the encoding specified.
 
 When a string is input:
-- `utf8`: `decode` decodes the string -- assuming UTF8 encoding -- and outputs a Uint8Array of the resulting data.
-- `base64`: `decode` decodes the string -- assuming Base64 encoding -- and outputs a Uint8Array of the resulting data.
+- `utf8`: `decode` decodes the string -- assuming UTF8 encoding -- and outputs an Uint8Array of the resulting data.
+- `base64`: `decode` decodes the string -- assuming Base64 encoding -- and outputs an Uint8Array of the resulting data.
 - `binary`: `deocde` is a no-op.
 
 When an object is input:
-- `decode` first stringifies the object and then utf8 decodes it to output a Uint8Array of the resulting data.  In this case, you are not required to specify a decoding format.
+- `decode` first stringifies the object and then utf8 decodes it to output an Uint8Array of the resulting data.  In this case, you are not required to specify a decoding format.
 
 ##### Example
 ```coffeescript
@@ -336,14 +336,99 @@ do ->
 ## isSignedMessage
 
 # Classes
+Classes in panda-confidential are lightweight wrappers for values.  They provide a type-system to support the generics (`encrypt`, `decrypt`, `sign`, and `verify`) and a couple of convenience methods.  Their constructors ready values for use with the underlying TweetNaCl.js invocations (`Uint8Array`), but you can easily access the value by `dump`ing it into a form that's easier for transport or placing into a datastore.
+
 ## Key
+### Properties
+  - `key` - key's value stored as an Uint8Array of bytes, ready for use within TweetNaCl.js.
+
+### Methods
+- `dump`
+  - _dump &rarr; Value_
+
+   outputs the value of `key` as a Base64 encoded string.
+
+### Description
+Base class for all keys in panda-confidential.  It stores a decoded key ready for use in TweetNaCl.js functions, and can output a Base64 encoded string for transport.  
+
+This class is not used directly within panda-confidential, but its descendants all share its interface.
+
 ## SymmetricKey
+_extends [Key][classKey]_
+
+### Description
+This key type is used in [TweetNaCl.js symmetric encryption interface][tweetnacl-secretbox].  This is the key type required by [`encrypt`][encrypt] to perform symmetric encryption.
+
 ## PrivateKey
+_extends [Key][classKey]_
+
+### Description
+This key type is used in [TweetNaCl.js public key encryption interface][tweetnacl-box], along with [PublicKey][classPublicKey]
+
 ## PublicKey
+_extends [Key][classKey]_
+
+### Description
+This key type is used in [TweetNaCl.js public key encryption interface][tweetnacl-box], along with [PrivateKey][classPrivateKey]
+
 ## SharedKey
+_extends [Key][classKey]_
+
+### Description
+This key type is used in [TweetNaCl.js public key encryption interface][tweetnacl-box].  It is a special key formed by using on person's private key and another's public key, yielding a shared secret.  This is the key required by [`encrypt`][encrypt] to perform asymmetric encryption.
+
+## KeyPair
+### Properties
+  - `privateKey` - The private key of this key pair.  This is an instance of [PrivateKey][classPrivateKey].
+  - `publicKey` - The public key of this key pair.  This is an instance of [PublicKey][classPublicKey].
+
+### Methods
+- `dump`
+  - _dump &rarr; Value_
+
+   outputs all the properties of this instance as a Base64 encoded stringified object.
+
+### Description
+Base class for all key-pairs in panda-confidential.  It stores pair of [PrivateKey][classPrivateKey] and [PublicKey][classPublicKey] classes.  Recall they are decoded values ready for use in TweetNaCl.js functions, and can be output a Base64 encoded string for transport.  
+
+This class is not used directly within panda-confidential, but its descendants all share its interface.
+
 ## EncryptionKeyPair
+_extends [KeyPair][classKeyPair]_
+
+This key pair is used by panda-confidential for public key encryption.  You may generate a pair by invoking [`keyPair.Encryption()`][EncryptionKeyPair].
+
+___The key pair you generate for encryption is _not_ suitable for signing.___
+
 ## SignatureKeyPair
+_extends [KeyPair][classKeyPair]_
+
+This key pair is used by panda-confidential for message signing.  You may generate a pair by invoking [`keyPair.Signature()`][SignatureKeyPair].
+
+___The key pair you generate for signing is _not_ suitable for encryption.___
+
 ## SignedMessage
+### Properties
+  - `message` - The message that has been signed, stored as an Uint8Array of bytes, ready for use within TweetNaCl.js.
+  - `encoding` - The encoding of the original message.  When this value is `binary`, dumping the message will return an Uint8Array.
+  - `signatures` - A list of signatures generated by signing the `message` with a private key.  These are stored as Uint8Arrays, ready for use within TweetNaCl.js.
+  - `publicKeys` - A list of the public keys used to validate the matching signatures in the `signatures` list. These are stored as Uint8Arrays, ready for use within TweetNaCl.js.
+
+### Methods
+- `dump`
+  - _dump &rarr; Value_
+
+   outputs all the properties of this instance as a Base64 encoded stringified object.
+
+- `dumpMessage`
+ - _dump &rarr; Value_
+
+  outputs the message as a string with the encoding matching the value of the `encoding` property.  If `encoding` is `binary`, this method returns the message as an Uint8Array.
+
+### Description
+Signed messages are self-contained entities that have everything you need to check their integrity.  When passed to [`verify`][verify], it matches all the public keys to the signatures and uses TweetNaCl.js to validate the signatures.
+
+While a signed message can be verified to be internally self-consistent, it is up to you to verify the public keys belong to whoever claims to have sent the message.
 
 
 [randombytes]: #randombytes
@@ -380,6 +465,7 @@ do ->
 [classPrivateKey]: #privatekey
 [classPublicKey]: #publickey
 [classSharedKey]: #sharedkey
+[classKeyPair]: #keypair-1
 [classEncryptionKeyPair]: #encryptionkeypair
 [classSignatureKeyPair]: #signaturekeypair
 [classSignedMessage]: #signedmessage-1
@@ -391,6 +477,7 @@ do ->
 
 
 [tweetnacl-random]: https://github.com/dchest/tweetnacl-js#random-bytes-generation
+[tweetnacl-box]:https://github.com/dchest/tweetnacl-js#public-key-authenticated-encryption-box
 [tweetnacl-secretbox]: https://github.com/dchest/tweetnacl-js#naclsecretboxmessage-nonce-key
 [tweetnacl-box-after]: https://github.com/dchest/tweetnacl-js#naclboxaftermessage-nonce-sharedkey
 [tweetnacl-secretbox-open]: https://github.com/dchest/tweetnacl-js#naclsecretboxopenbox-nonce-key

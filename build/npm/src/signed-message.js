@@ -55,8 +55,8 @@ SignedMessage = class SignedMessage {
     });
   }
 
-  dumpMessage(encoding = "utf8") {
-    return (0, _utils.encode)(encoding, this.message);
+  dumpMessage() {
+    return (0, _utils.encode)(this.encoding, this.message);
   }
 
 };

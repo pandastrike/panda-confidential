@@ -55,8 +55,12 @@ _fairmontMultimethods.Method.define(decode, isBase64, _fairmontHelpers.isString,
   return decodeBase64(string);
 });
 
+_fairmontMultimethods.Method.define(decode, _fairmontHelpers.isObject, function (object) {
+  return decode("utf8", JSON.stringify(object));
+});
+
 _fairmontMultimethods.Method.define(decode, isAny, isData, function (_, array) {
-  return array;
+  return array; // no op
 });
 
 exports.encode = encode = _fairmontMultimethods.Method.create({
@@ -86,7 +90,11 @@ _fairmontMultimethods.Method.define(encode, isBase64, _fairmontHelpers.isString,
 });
 
 _fairmontMultimethods.Method.define(encode, _fairmontHelpers.isObject, function (object) {
-  return encode("base64", JSON.stringify(object));
+  return encode("base64", decode(object));
+});
+
+_fairmontMultimethods.Method.define(encode, _fairmontHelpers.isString, _fairmontHelpers.isObject, function (encoding, object) {
+  return encode(encoding, decode(object));
 });
 
 _fairmontMultimethods.Method.define(encode, isBinary, isData, function (_, array) {
