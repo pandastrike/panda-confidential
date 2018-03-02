@@ -236,21 +236,21 @@ do ->
 ## key
 
 ### key.Symmetric
-### Private
-### Public
-### Shared
-### isSymmetric
-### isPrivate
-### isPublic
-### isShared
-### equal
+### key.Private
+### key.Public
+### key.Shared
+### key.isSymmetric
+### key.isPrivate
+### key.isPublic
+### key.isShared
+### key.equal
 
 ## keyPair
 
-### Encryption
-### Signature
-### isEncryption
-### isSignature
+### keyPair.Encryption
+### keyPair.Signature
+### keyPair.isEncryption
+### keyPair.isSignature
 
 # Helpers
 
@@ -282,21 +282,24 @@ do ->
 [hash]: #hash
 [nacl]: #nacl
 
-[SymmetricKey]: #symmetric
-[PrivateKey]: #private
-[PublicKey]: #public
-[SharedKey]: #shared
-[EncryptionKeyPair]: #encryption
-[SignatureKeyPair]: #signature
-[isSymmetric]: #issymmetric
-[isPrivate]: #isprivate
-[isPublic]: #isprivate
-[isShared]: #isshared
-[isEncryption]: #isencryption
-[isSignature]: #issignature
-[isSignedMessage]: #issignedmessage
-[equal]: #equal
+[SymmetricKey]: #keysymmetric
+[PrivateKey]: #keyprivate
+[PublicKey]: #keypublic
+[SharedKey]: #keyshared
+[EncryptionKeyPair]: #keypairencryption
+[SignatureKeyPair]: #keypairsignature
+[isSymmetric]: #keyissymmetric
+[isPrivate]: #keyisprivate
+[isPublic]: #keyisprivate
+[isShared]: #keyisshared
+[isEncryption]: #keypairisencryption
+[isSignature]: #keypairissignature
+[equal]: #keyequal
 
+[signedMessage]: #signedmessage
+[isSignedMessage]: #issignedmessage
+
+[classes]: #classes
 [classKey]: #key
 [classSymmetricKey]: #symmetrickey
 [classPrivateKey]: #privatekey
@@ -304,7 +307,7 @@ do ->
 [classSharedKey]: #sharedkey
 [classEncryptionKeyPair]: #encryptionkeypair
 [classSignatureKeyPair]: #signaturekeypair
-[classSignedMessage]: #signedmessage
+[classSignedMessage]: #signedmessage-1
 
 
 [Uint8Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
