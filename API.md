@@ -421,7 +421,7 @@ ___The key pair you generate for signing is _not_ suitable for encryption.___
    outputs all the properties of this instance as a Base64 encoded stringified object.
 
 - `dumpMessage`
- - _dump &rarr; Value_
+  - _dumpMessage &rarr; Value_
 
   outputs the message as a string with the encoding matching the value of the `encoding` property.  If `encoding` is `binary`, this method returns the message as an Uint8Array.
 
