@@ -389,7 +389,7 @@ To use this method you may either:
 ##### Example
 ```coffeescript
 import {confidential} from "panda-confidential"
-{key} = confidential()
+{key, keyPair} = confidential()
 
 do ->
   # Generate encryption key pairs for persons A and B.
