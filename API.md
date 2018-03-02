@@ -307,13 +307,96 @@ do ->
 ```
 
 ## Key Type System
+panda-confidential uses a key type system to allow the generics -- `encrypt`, `decrypt`, `sign`, and `verify` -- to select the appropriate action.  This type system is implemented in [key and key-pair classes](#classes), but the following functions are exposed to allow you to access their constructors more effectively.
 
 ## key
 
+
 ### key.Symmetric
+_**key.Symmetric** [Key] &rarr; SymmetricKey_
+
+- _Key_ `<String>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer]: (Optional) A key value literal for this key.  May be a Base64 encoded string or a binary array.
+- __Returns__ _SymmetricKey_: This returns an instance of [SymmetricKey][classSymmetricKey]
+
+When you invoke this function without passing any arguments, panda-confidential will generate a key for you suitable for symmetric encryption.  Though the default TweetNaCl.js implementation of randomBytes is synchronous, panda-confidential wraps it with a promise to allow extension via an asynchronous means.
+
+##### Example
+```coffeescript
+import {confidential} from "panda-confidential"
+{key} = confidential()
+
+do ->
+  # Generate a symmetric key from a key literal.
+  key1 = key.Symmetric "WM4YL5yo+6yKAFaIZGp3QPbcjW9ICEGXlxR/Odnr2+k="
+
+  # Or generate a key from randomBytes
+  key2 = await key.Symmetric()
+```
+
+
 ### key.Private
+_**key.Private** Key &rarr; PrivateKey_
+
+- _Key_ `<String>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer]: A key value literal for this key.  May be a Base64 encoded string or a binary array.
+- __Returns__ _PrivateKey_: This returns an instance of [PrivateKey][classPrivateKey]
+
+This is one half of a key pair.  The key literal argument is required.  See [`keyPair.Encryption`][EncryptionKeyPair] or [`keyPair.Signature`][SignatureKeyPair] for information about generating this kind of key from `randomBytes`.
+
+##### Example
+```coffeescript
+import {confidential} from "panda-confidential"
+{key} = confidential()
+
+do ->
+  # Generate a Private key from a key literal.
+  key1 = key.Private "WM4YL5yo+6yKAFaIZGp3QPbcjW9ICEGXlxR/Odnr2+k="
+```
+
+
 ### key.Public
+_**key.Public** Key &rarr; PublicKey_
+
+- _Key_ `<String>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer]: A key value literal for this key.  May be a Base64 encoded string or a binary array.
+- __Returns__ _PublicKey_: This returns an instance of [PublicKey][classPublicKey]
+
+This is one half of a key pair.  The key literal argument is required.  See [`keyPair.Encryption`][EncryptionKeyPair] or [`keyPair.Signature`][SignatureKeyPair] for information about generating this kind of key from `randomBytes`.
+
+##### Example
+```coffeescript
+import {confidential} from "panda-confidential"
+{key} = confidential()
+
+do ->
+  # Generate a Public key from a key literal.
+  key1 = key.Public "WM4YL5yo+6yKAFaIZGp3QPbcjW9ICEGXlxR/Odnr2+k="
+```
+
+
 ### key.Shared
+_**key.Shared** Key1, Key2 [or Key] &rarr; SharedKey_
+
+- _Key_ `<String>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer]: A key value literal for this key.  May be a Base64 encoded string or a binary array.
+- _Key1_ [`<PrivateKey>`][classPrivateKey] | [`<PublicKey>`][classPublicKey]: A public or private key instance used in the formation of the shared key.  If this one is private, the other must be a public key.  Or vice versa.
+- _Key2_ [`<PublicKey>`][classPublicKey] | [`<PrivateKey>`][classPrivateKey]: A public or private key instance used in the formation of the shared key.  If this one is private, the other must be a public key.  Or vice versa.
+- __Returns__ _SharedKey_: This returns an instance of [SharedKey][classSharedKey]
+
+This key type is used in [TweetNaCl.js public key encryption interface][tweetnacl-box].  It is a special key formed by using one person's private key and another's public key, yielding a shared secret.
+
+To use this method you may either:
+1. Pass in a key literal, like the other keys
+2. Pass in a private key from person A and a public key from person B to [algorithmically generate the shared key][tweetnacl-box-before]
+
+##### Example
+```coffeescript
+import {confidential} from "panda-confidential"
+{key} = confidential()
+
+do ->
+  # Generate encryption key pairs for persons A and B.
+  A = await keyPair.Encryption()
+  B = await keyPair.Encryption()
+  shared = key.Shared A.privateKey, B.publicKey
+```
 ### key.isSymmetric
 ### key.isPrivate
 ### key.isPublic
@@ -375,7 +458,7 @@ This key type is used in [TweetNaCl.js public key encryption interface][tweetnac
 _extends [Key][classKey]_
 
 ### Description
-This key type is used in [TweetNaCl.js public key encryption interface][tweetnacl-box].  It is a special key formed by using on person's private key and another's public key, yielding a shared secret.  This is the key required by [`encrypt`][encrypt] to perform asymmetric encryption.
+This key type is used in [TweetNaCl.js public key encryption interface][tweetnacl-box].  It is a special key formed by using one person's private key and another's public key, yielding a shared secret.  This is the key required by [`encrypt`][encrypt] to perform asymmetric encryption.
 
 ## KeyPair
 ### Properties
@@ -479,6 +562,7 @@ While a signed message can be verified to be internally self-consistent, it is u
 [tweetnacl-random]: https://github.com/dchest/tweetnacl-js#random-bytes-generation
 [tweetnacl-box]:https://github.com/dchest/tweetnacl-js#public-key-authenticated-encryption-box
 [tweetnacl-secretbox]: https://github.com/dchest/tweetnacl-js#naclsecretboxmessage-nonce-key
+[tweetnacl-box-before]:https://github.com/dchest/tweetnacl-js#naclboxbeforetheirpublickey-mysecretkey
 [tweetnacl-box-after]: https://github.com/dchest/tweetnacl-js#naclboxaftermessage-nonce-sharedkey
 [tweetnacl-secretbox-open]: https://github.com/dchest/tweetnacl-js#naclsecretboxopenbox-nonce-key
 [tweetnacl-box-open-after]: https://github.com/dchest/tweetnacl-js#naclboxopenafterbox-nonce-sharedkey
