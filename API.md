@@ -1,10 +1,10 @@
 # Panda Confidential API
 # Functions
 ## randomBytes
-_**randomBytes** Length &rarr; Value_
+_**randomBytes** Length &rarr; ByteArray_
 
 - _Length_ `<Number>`:  Length of the output in bytes.
-- __Returns__ _Value_: random data -- This is an Uint8Array of length `Length`, filled with pseudo-random values.
+- __Returns__ _ByteArray_: random data -- This is an Uint8Array of length `Length`, filled with pseudo-random values.
 
 Generate an Uint8Array of the given length filled with pseudo-random data.  By default, this is the [implementation from TweetNaCl.js][tweetnacl-random], designed to seek out robust sources of random number generation in browser and Node.js platforms.  TweetNaCl.js will throw if it is unable to locate a suitable source on your platform.  
 
@@ -384,7 +384,7 @@ This key type is used in [TweetNaCl.js public key encryption interface][tweetnac
 
 To use this method you may either:
 1. Pass in a key literal, like the other keys
-2. Pass in a private key from person A and a public key from person B to [algorithmically generate the shared key][tweetnacl-box-before]
+2. Pass in a private key from person A and a public key from person B to [algorithmically generate a shared secret][tweetnacl-box-before]
 
 ##### Example
 ```coffeescript
@@ -397,11 +397,135 @@ do ->
   B = await keyPair.Encryption()
   shared = key.Shared A.privateKey, B.publicKey
 ```
+
+
 ### key.isSymmetric
+_**key.isSymmetric** Key &rarr; Boolean_
+
+- _Key_ : The input for this type check.
+- __Returns__ _Boolean_: The boolean result of this type check.
+
+This examines the type of the key you input, returning `true` if the input is an instance of [SymmetricKey][classSymmetricKey] and `false` for anything else.
+
+##### Example
+```coffeescript
+import {confidential} from "panda-confidential"
+{key} = confidential()
+
+do ->
+  # Generate a symmetric key.
+  myKey = await key.Symmetric()
+
+  # Type check
+  key.isSymmetric myKey     # true
+  key.isSymmetric "foobar"  # false
+```
+
+
 ### key.isPrivate
+_**key.isPrivate** Key &rarr; Boolean_
+
+- _Key_ : The input for this type check.
+- __Returns__ _Boolean_: The boolean result of this type check.
+
+This examines the type of the key you input, returning `true` if the input is an instance of [PrivateKey][classPrivateKey] and `false` for anything else.
+
+##### Example
+```coffeescript
+import {confidential} from "panda-confidential"
+{key, keyPair} = confidential()
+
+do ->
+  # Generate an encryption key-pair.
+  {privateKey} = await keyPair.Encryption()
+
+  # Type check
+  key.isPrivate privateKey    # true
+  key.isPrivate "foobar"      # false
+```
+
+
+
 ### key.isPublic
+_**key.isPublic** Key &rarr; Boolean_
+
+- _Key_ : The input for this type check.
+- __Returns__ _Boolean_: The boolean result of this type check.
+
+This examines the type of the key you input, returning `true` if the input is an instance of [PublicKey][classPublicKey] and `false` for anything else.
+
+##### Example
+```coffeescript
+import {confidential} from "panda-confidential"
+{key, keyPair} = confidential()
+
+do ->
+  # Generate an encryption key-pair.
+  {publicKey} = await keyPair.Encryption()
+
+  # Type check
+  key.isPublic publicKey    # true
+  key.isPublic "foobar"     # false
+```
+
 ### key.isShared
+_**key.isShared** Key &rarr; Boolean_
+
+- _Key_ : The input for this type check.
+- __Returns__ _Boolean_: The boolean result of this type check.
+
+This examines the type of the key you input, returning `true` if the input is an instance of [SharedKey][classSharedKey] and `false` for anything else.
+
+##### Example
+```coffeescript
+import {confidential} from "panda-confidential"
+{key, keyPair} = confidential()
+
+do ->
+  # Generate encryption key pairs for persons A and B.
+  A = await keyPair.Encryption()
+  B = await keyPair.Encryption()
+
+  # Use that to make a shared key.
+  shared = key.Shared A.privateKey, B.publicKey
+
+  # Type check
+  key.isShared shared   # true
+  key.isShared "foobar"     # false
+```
+
+
 ### key.equal
+_**key.equal** Key1, Key2 &rarr; Boolean_
+
+- _Key1_ [`<SymmetricKey>`][classSymmetricKey] | [`<PrivateKey>`][classPrivateKey] | [`<PublicKey>`][classPublicKey] | [`<SharedKey>`][classSharedKey] | `<String>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer]: The first key for this comparison
+- _Key2_ [`<SymmetricKey>`][classSymmetricKey] | [`<PrivateKey>`][classPrivateKey] | [`<PublicKey>`][classPublicKey] | [`<SharedKey>`][classSharedKey] | `<String>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer]: The second key for this comparison
+- __Returns__ _Boolean_: The boolean result of this comparison.
+
+Check if two keys (or any values) are the same.
+
+This wraps the TweetNaCl.js implementation of a [constant time comparison for large values][tweetnacl-equal].   `equal` is a generic that allows you to pass in strings, raw data, or any key class -- in any combination.  Returns `true` if the values are equal and `false` otherwise.
+
+##### Example
+```coffeescript
+import {confidential} from "panda-confidential"
+{key, verify} = confidential()
+
+do ->
+  # Receive signed message from person A.
+  msg = acceptIncomingSignedMessageFromA()
+  publicKey = msg.publicKeys[0]
+
+  # Lookup the public key for person A.
+  referenceKey = lookupPublicKeyForA()
+
+  if key.equal(publicKey, referenceKey)
+    # We're safe to verify and then use the message
+    ....
+  else
+    # Uh oh.
+    throw new Error "Unable to confirm public key identity"
+```
 
 ## keyPair
 
@@ -569,3 +693,4 @@ While a signed message can be verified to be internally self-consistent, it is u
 [tweetnacl-sign]: https://github.com/dchest/tweetnacl-js#naclsigndetachedmessage-secretkey
 [tweetnacl-verify]: https://github.com/dchest/tweetnacl-js#naclsigndetachedverifymessage-signature-publickey
 [tweetnacl-utils]: https://github.com/dchest/tweetnacl-util-js#documentation
+[tweetnacl-equal]:https://github.com/dchest/tweetnacl-js#naclverifyx-y
