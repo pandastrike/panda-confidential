@@ -19,8 +19,10 @@ Method.define decode, isUTF8, isString,
   (_, string) -> decodeUTF8 string
 Method.define decode, isBase64, isString,
   (_, string) -> decodeBase64 string
+Method.define decode, isObject,
+  (object) -> decode "utf8", JSON.stringify object
 Method.define decode, isAny, isData,
-  (_, array) -> array
+  (_, array) -> array  # no op
 
 encode = Method.create default: (args...) ->
   throw new Error "Unable to encode data #{args}"
@@ -35,7 +37,9 @@ Method.define encode, isUTF8, isString,
 Method.define encode, isBase64, isString,
   (_, string) ->  encode "base64", decode "utf8", string
 Method.define encode, isObject,
-  (object) -> encode "base64", JSON.stringify object
+  (object) -> encode "base64", decode object
+Method.define encode, isString, isObject,
+  (encoding, object) -> encode encoding, decode object
 Method.define encode, isBinary, isData,
   (_, array) -> array  # no op
 
