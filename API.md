@@ -460,7 +460,7 @@ While a signed message can be verified to be internally self-consistent, it is u
 [isSignedMessage]: #issignedmessage
 
 [classes]: #classes
-[classKey]: #key
+[classKey]: #key-1
 [classSymmetricKey]: #symmetrickey
 [classPrivateKey]: #privatekey
 [classPublicKey]: #publickey
