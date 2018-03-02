@@ -32,7 +32,10 @@ Signature = (() => {
         _rec8 = new _powerAssertRecorder(),
         _rec9 = new _powerAssertRecorder(),
         _rec10 = new _powerAssertRecorder(),
-        _rec11 = new _powerAssertRecorder();
+        _rec11 = new _powerAssertRecorder(),
+        _rec12 = new _powerAssertRecorder(),
+        _rec13 = new _powerAssertRecorder(),
+        _rec14 = new _powerAssertRecorder();
 
     var A, B, blob, isSignedMessage, key, keyPair, message, nacl, output, privateKey, publicKey, sign, signedMsg, verify;
     ({ sign, verify, key, keyPair, isSignedMessage, nacl } = (0, _index.confidential)());
@@ -89,40 +92,58 @@ Signature = (() => {
       line: 31,
       async: true
     }), "failed to verify");
+    (0, _powerAssert2.default)(_rec8._expr(_rec8._capt(_rec8._capt(key, "arguments/0/callee/object").equal(_rec8._capt(_rec8._capt(_rec8._capt(signedMsg, "arguments/0/arguments/0/object/object").publicKeys, "arguments/0/arguments/0/object")[0], "arguments/0/arguments/0"), _rec8._capt(_rec8._capt(A, "arguments/0/arguments/1/object").publicKey, "arguments/0/arguments/1")), "arguments/0"), {
+      content: "assert(key.equal(signedMsg.publicKeys[0], A.publicKey), \"public key is wrong\")",
+      filepath: "tests/regular/signature.coffee",
+      line: 32,
+      async: true
+    }), "public key is wrong");
     //# Case 2
     //###############################
     // Person A and B sign a message with key pairs.
     signedMsg = sign(A, message);
     signedMsg = sign(B, signedMsg);
-    (0, _powerAssert2.default)(_rec8._expr(_rec8._capt(_rec8._capt(signedMsg, "arguments/0/left") && _rec8._capt(isSignedMessage(_rec8._capt(signedMsg, "arguments/0/right/arguments/0")), "arguments/0/right"), "arguments/0"), {
+    (0, _powerAssert2.default)(_rec9._expr(_rec9._capt(_rec9._capt(signedMsg, "arguments/0/left") && _rec9._capt(isSignedMessage(_rec9._capt(signedMsg, "arguments/0/right/arguments/0")), "arguments/0/right"), "arguments/0"), {
       content: "assert(signedMsg && isSignedMessage(signedMsg), \"bad signature\")",
       filepath: "tests/regular/signature.coffee",
-      line: 39,
+      line: 40,
       async: true
     }), "bad signature");
-    (0, _powerAssert2.default)(_rec9._expr(_rec9._capt(_rec9._capt(_rec9._capt(signedMsg, "arguments/0/left/callee/object").dumpMessage(), "arguments/0/left") === _rec9._capt(message, "arguments/0/right"), "arguments/0"), {
+    (0, _powerAssert2.default)(_rec10._expr(_rec10._capt(_rec10._capt(_rec10._capt(signedMsg, "arguments/0/left/callee/object").dumpMessage(), "arguments/0/left") === _rec10._capt(message, "arguments/0/right"), "arguments/0"), {
       content: "assert(signedMsg.dumpMessage() === message, \"message must be the same\")",
       filepath: "tests/regular/signature.coffee",
-      line: 40,
+      line: 41,
       async: true
     }), "message must be the same");
     // Person C verifies the message from both.
     output = verify(signedMsg);
-    (0, _powerAssert2.default)(_rec10._expr(_rec10._capt(_rec10._capt(output, "arguments/0/left") === true, "arguments/0"), {
+    (0, _powerAssert2.default)(_rec11._expr(_rec11._capt(_rec11._capt(output, "arguments/0/left") === true, "arguments/0"), {
       content: "assert(output === true, \"failed to verify\")",
       filepath: "tests/regular/signature.coffee",
-      line: 44,
+      line: 45,
       async: true
     }), "failed to verify");
+    (0, _powerAssert2.default)(_rec12._expr(_rec12._capt(_rec12._capt(key, "arguments/0/callee/object").equal(_rec12._capt(_rec12._capt(_rec12._capt(signedMsg, "arguments/0/arguments/0/object/object").publicKeys, "arguments/0/arguments/0/object")[0], "arguments/0/arguments/0"), _rec12._capt(_rec12._capt(A, "arguments/0/arguments/1/object").publicKey, "arguments/0/arguments/1")), "arguments/0"), {
+      content: "assert(key.equal(signedMsg.publicKeys[0], A.publicKey), \"public key is wrong\")",
+      filepath: "tests/regular/signature.coffee",
+      line: 46,
+      async: true
+    }), "public key is wrong");
+    (0, _powerAssert2.default)(_rec13._expr(_rec13._capt(_rec13._capt(key, "arguments/0/callee/object").equal(_rec13._capt(_rec13._capt(_rec13._capt(signedMsg, "arguments/0/arguments/0/object/object").publicKeys, "arguments/0/arguments/0/object")[1], "arguments/0/arguments/0"), _rec13._capt(_rec13._capt(B, "arguments/0/arguments/1/object").publicKey, "arguments/0/arguments/1")), "arguments/0"), {
+      content: "assert(key.equal(signedMsg.publicKeys[1], B.publicKey), \"public key is wrong\")",
+      filepath: "tests/regular/signature.coffee",
+      line: 47,
+      async: true
+    }), "public key is wrong");
     //# Case 3
     //###############################
     // Person D recieves a base64 encoded blob of the signed message and verifies.
     blob = signedMsg.dump();
     output = verify(blob);
-    return (0, _powerAssert2.default)(_rec11._expr(_rec11._capt(_rec11._capt(output, "arguments/0/left") === true, "arguments/0"), {
+    return (0, _powerAssert2.default)(_rec14._expr(_rec14._capt(_rec14._capt(output, "arguments/0/left") === true, "arguments/0"), {
       content: "assert(output === true, \"failed to verify\")",
       filepath: "tests/regular/signature.coffee",
-      line: 51,
+      line: 54,
       async: true
     }), "failed to verify");
   });

@@ -1,5 +1,5 @@
 # Panda Confidential API
-
+# Functions
 ## randomBytes
 _**randomBytes** Length &rarr; Value_
 
@@ -56,7 +56,7 @@ _**encrypt** Key, Plaintext [, Encoding] &rarr; Ciphertext_
 
 Encrypts the given data with the given key.  
 
-When a [symmetric key][SymmetricKey] is used, `encrypt` uses [symmetric encryption][secretbox] with a random nonce [it generates][randombytes].
+When a [symmetric key][SymmetricKey] is used, `encrypt` uses [symmetric encryption][tweetnacl-secretbox] with a random nonce [it generates][randombytes].
 
 ##### Example
 ```coffeescript
@@ -73,7 +73,9 @@ do ->
 ```
 
 
-When a [shared key][SharedKey] is used, `encrypt` uses [asymmetric encryption][box-after] with a random nonce [it generates][randombytes].
+When a [shared key][SharedKey] is used, `encrypt` uses [asymmetric encryption][tweetnacl-box-after] with a random nonce [it generates][randombytes].
+
+___The private keys you generate for signing are _not_ suitable for encryption.___
 
 ##### Example
 ```coffeescript
@@ -102,7 +104,7 @@ _**decrypt** Key, Blob [, Encoding] &rarr; Plaintext_
 
 Decrypts the given data with the given key.  
 
-When a [symmetric key][SymmetricKey] is used, `decrypt` uses a [symmetric decryption operation][secretbox-open].
+When a [symmetric key][SymmetricKey] is used, `decrypt` uses a [symmetric decryption operation][tweetnacl-secretbox-open].
 
 ##### Example
 ```coffeescript
@@ -120,7 +122,9 @@ do ->
   plaintext = await decrypt myKey, ciphertext
 ```
 
-When a [shared key][SharedKey] is used, `decrypt` uses an [asymmetric decryption operation][box-open-after].
+When a [shared key][SharedKey] is used, `decrypt` uses an [asymmetric decryption operation][tweetnacl-box-open-after].
+
+___The private keys you generate for signing are _not_ suitable for encryption.___
 
 ##### Example
 ```coffeescript
@@ -141,7 +145,89 @@ do ->
 ```
 
 ## sign
+_**sign** KeyPair [or PrivateKey, PublicKey], Message [, Encoding] &rarr; SignedMessage_
+
+- _KeyPair_ [`<SignatureKeyPair>`][SignatureKeyPair]:  The private and public keys of a single person wishing to sign the Message.  If you supply this, you do not need to provide the keys separately.
+- _PrivateKey_ [`<PrivateKey>`][PrivateKey]:  The private key of the person wishing to sign the message.  If you do not provide the private-public key pair directly, you must supply them individually here.
+- _PublicKey_ [`<PublicKey>`][PublicKey]:  The public key of the person wishing to sign the message.  If you do not provide the private-public key pair directly, you must supply them individually here.
+- _Message_ `<String>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer] | [`<SignedMessage>`][classSignedMessage]: Message to be signed.
+- _Encoding_ `utf8` | `base64`  (Optional): Specifies the encoding of the Message string.  This value defaults to `utf8` and is ignored when the Message is an Uint8Array, Node.js buffer, or SignedMessage.
+- __Returns__ _SignedMessage_: This returns an instance of [SignedMessage][classSignedMessage] containing the Message, its original encoding, a list of the public keys of the signatories, and a list of the signatures.
+
+Signs the given message with the given private-signing-key using [TweetNaCl.js signing implementation][tweetnacl-sign].  You may provide a signing key-pair, or provide the private and public keys as separate arguments.  
+
+___The private keys you generate for encryption are _not_ suitable for signing.___
+
+##### Example
+```coffeescript
+import {confidential} from "panda-confidential"
+{sign} = confidential()
+
+do ->
+  # Somehow get the signing key-pair for person A.  See keypair.Signature() for generating keys suitable for signing.
+  A_KeyPair = lookupKeyPair()
+
+  # Person A signs a message.
+  message = "Hello World!"
+  signedMsg = sign A_KeyPair, message
+
+  # The SignedMessage class holds instantiated data in binary, but you may retrieve the message or convert the whole data to a base64 blob at any time.
+  msg = signedMsg.dumpMessage()  # utf8 encoded `message` field
+  blob = signedMsg.dump()        # base64 encoded stringified object
+```
+
+Multiple people can sign a message, so `sign` also operates on previously signed messages.  The output is the same SignedMessage instance, with an additional signature and matching public key in its lists.
+
+##### Example
+```coffeescript
+import {confidential} from "panda-confidential"
+{sign, signedMessage} = confidential()
+
+do ->
+  # Somehow get the signing key-pair for person B.  See keypair.Signature() for generating keys suitable for signing.
+  B_KeyPair = lookupKeyPair()
+
+  # Get the previously signed message.  If you converted it to a base64 string blob for transport, you can re-instantiate it.
+  blob = fetchSignedMessageBlob()
+  signedMsg = signedMessage blob  # Now we have a SignedMessage instance.
+  final = sign B_KeyPair, signedMsg
+
+  # The result has the same message and encoding fields, but now has an additional set of signature + public key.
+  final.signatures.length == 2  # true
+  final.publicKeys.length == 2  # true
+```
+
 ## verify
+_**verify** SignedMessage &rarr; Result_
+
+- _SignedMessage_ [`<SignedMessage>`][classSignedMessage]: Signed message to be verified.
+- __Returns__ _Result_: The boolean result of the verification process.  If the signatures checkout, `true`. Otherwise, `false`.
+
+Verifies the signatures against the original message and the attached public keys.  Verification occurs via [TweetNaCl.js signing implementation][tweetnacl-verify].  Everything needed to verify message integrity exists within the SignedMessage instance, but it is up to you to verify the public keys are correct.
+
+> See [key.equal()][equal] for information on key comparison.
+
+___The private keys you generate for encryption are _not_ suitable for signing.___
+
+##### Example
+```coffeescript
+import {confidential} from "panda-confidential"
+{verify, signedMessage} = confidential()
+
+do ->
+  # Get the signed message.  If you converted it to a base64 string blob for transport, you can re-instantiate it.
+  blob = fetchSignedMessageBlob()
+  signedMsg = signedMessage blob  # Now we have a SignedMessage instance.
+  isValid = verify signedMsg
+
+  if isValid
+    # Return verified message.
+    signedMsg.dumpMessage()
+  else
+    # Uh oh.
+    throw new Error "Unable to verify message signatures."
+```
+
 ## encode
 ## decode
 
@@ -157,6 +243,7 @@ do ->
 ### isPrivate
 ### isPublic
 ### isShared
+### equal
 
 ## keyPair
 
@@ -173,6 +260,16 @@ do ->
 ## signedMessage
 ## isSignedMessage
 
+# Classes
+## Key
+## SymmetricKey
+## PrivateKey
+## PublicKey
+## SharedKey
+## EncryptionKeyPair
+## SignatureKeyPair
+## SignedMessage
+
 
 [randombytes]: #randombytes
 [encrypt]: #encrypt
@@ -181,6 +278,9 @@ do ->
 [verify]: #verify
 [encode]: #encode
 [decode]: #decode
+[isData]: #isdata
+[hash]: #hash
+[nacl]: #nacl
 
 [SymmetricKey]: #symmetric
 [PrivateKey]: #private
@@ -188,6 +288,23 @@ do ->
 [SharedKey]: #shared
 [EncryptionKeyPair]: #encryption
 [SignatureKeyPair]: #signature
+[isSymmetric]: #issymmetric
+[isPrivate]: #isprivate
+[isPublic]: #isprivate
+[isShared]: #isshared
+[isEncryption]: #isencryption
+[isSignature]: #issignature
+[isSignedMessage]: #issignedmessage
+[equal]: #equal
+
+[classKey]: #key
+[classSymmetricKey]: #symmetrickey
+[classPrivateKey]: #privatekey
+[classPublicKey]: #publickey
+[classSharedKey]: #sharedkey
+[classEncryptionKeyPair]: #encryptionkeypair
+[classSignatureKeyPair]: #signaturekeypair
+[classSignedMessage]: #signedmessage
 
 
 [Uint8Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
@@ -195,7 +312,9 @@ do ->
 
 
 [tweetnacl-random]: https://github.com/dchest/tweetnacl-js#random-bytes-generation
-[secretbox]: https://github.com/dchest/tweetnacl-js#naclsecretboxmessage-nonce-key
-[box-after]: https://github.com/dchest/tweetnacl-js#naclboxaftermessage-nonce-sharedkey
-[secretbox-open]: https://github.com/dchest/tweetnacl-js#naclsecretboxopenbox-nonce-key
-[box-open-after]:https://github.com/dchest/tweetnacl-js#naclboxopenafterbox-nonce-sharedkey
+[tweetnacl-secretbox]: https://github.com/dchest/tweetnacl-js#naclsecretboxmessage-nonce-key
+[tweetnacl-box-after]: https://github.com/dchest/tweetnacl-js#naclboxaftermessage-nonce-sharedkey
+[tweetnacl-secretbox-open]: https://github.com/dchest/tweetnacl-js#naclsecretboxopenbox-nonce-key
+[tweetnacl-box-open-after]: https://github.com/dchest/tweetnacl-js#naclboxopenafterbox-nonce-sharedkey
+[tweetnacl-sign]: https://github.com/dchest/tweetnacl-js#naclsigndetachedmessage-secretkey
+[tweetnacl-verify]: https://github.com/dchest/tweetnacl-js#naclsigndetachedverifymessage-signature-publickey

@@ -1,5 +1,5 @@
 import nacl from "tweetnacl"
-import {privateKey, publicKey, sharedKey, symmetricKey, isPrivateKey, isPublicKey, isSharedKey, isSymmetricKey} from "./keys"
+import {privateKey, publicKey, sharedKey, symmetricKey, isPrivateKey, isPublicKey, isSharedKey, isSymmetricKey, equal} from "./keys"
 import {encryptionKeyPair, signatureKeyPair, isEncryptionKeyPair, isSignatureKeyPair} from "./key-pairs"
 import {signedMessage, isSignedMessage} from "./signed-message"
 import encrypt from "./encrypt"
@@ -7,7 +7,7 @@ import decrypt from "./decrypt"
 import sign from "./sign"
 import verify from "./verify"
 import hash from "./hash"
-import {encode, decode, isData} from "./utils"
+import {encode, decode, isData, isEqual} from "./utils"
 
 confidential = ->
   c =
@@ -23,6 +23,7 @@ confidential = ->
     isPublic: isPublicKey
     isShared: isSharedKey
     isSymmetric: isSymmetricKey
+    equal: equal
 
   # Key pair types.  Pair generation requires randomBytes
   c.keyPair =
@@ -30,6 +31,10 @@ confidential = ->
     Signature: signatureKeyPair c.randomBytes
     isEncryption: isEncryptionKeyPair
     isSignature: isSignatureKeyPair
+
+  # Signed message type.
+  c.signedMessage = signedMessage
+  c.isSignedMessage = isSignedMessage
 
   # Main functions, 3 pairs of opposing operations.
   # encrypt needs randomBytes for nonce generation
@@ -42,10 +47,8 @@ confidential = ->
 
   # Helper functions
   c.nacl = nacl      # Base methods directly use tweetnacl.
-  c.hash = hash      # wrapper around nacl's SHA-512 hash
+  c.hash = hash      # wrapper around tweetnacl's SHA-512 hash
   c.isData = isData  # Is Uint8Array or Node.js buffer?
-  c.signedMessage = signedMessage
-  c.isSignedMessage = isSignedMessage
   c
 
 export {confidential}

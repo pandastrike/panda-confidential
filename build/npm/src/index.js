@@ -44,7 +44,6 @@ var confidential;
 exports.confidential = confidential = function () {
   var c;
   c = {
-    nacl: _tweetnacl2.default,
     randomBytes: _tweetnacl2.default.randomBytes
   };
   // Key types.  Symmetric key generation requires randomBytes.
@@ -56,7 +55,8 @@ exports.confidential = confidential = function () {
     isPrivate: _keys.isPrivateKey,
     isPublic: _keys.isPublicKey,
     isShared: _keys.isSharedKey,
-    isSymmetric: _keys.isSymmetricKey
+    isSymmetric: _keys.isSymmetricKey,
+    equal: _keys.equal
   };
   // Key pair types.  Pair generation requires randomBytes
   c.keyPair = {
@@ -65,6 +65,9 @@ exports.confidential = confidential = function () {
     isEncryption: _keyPairs.isEncryptionKeyPair,
     isSignature: _keyPairs.isSignatureKeyPair
   };
+  // Signed message type.
+  c.signedMessage = _signedMessage.signedMessage;
+  c.isSignedMessage = _signedMessage.isSignedMessage;
   // Main functions, 3 pairs of opposing operations.
   // encrypt needs randomBytes for nonce generation
   c.encrypt = (0, _encrypt2.default)(c.randomBytes);
@@ -74,10 +77,9 @@ exports.confidential = confidential = function () {
   c.encode = _utils.encode;
   c.decode = _utils.decode;
   // Helper functions
-  c.hash = _hash2.default; // wrapper around nacl's SHA-512 hash
+  c.nacl = _tweetnacl2.default; // Base methods directly use tweetnacl.
+  c.hash = _hash2.default; // wrapper around tweetnacl's SHA-512 hash
   c.isData = _utils.isData; // Is Uint8Array or Node.js buffer?
-  c.signedMessage = _signedMessage.signedMessage;
-  c.isSignedMessage = _signedMessage.isSignedMessage;
   return c;
 };
 

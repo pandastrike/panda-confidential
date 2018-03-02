@@ -29,6 +29,7 @@ Signature = ->
   # Person B uses A's public key to verify and open the message.
   output = verify signedMsg
   assert output == true, "failed to verify"
+  assert key.equal(signedMsg.publicKeys[0], A.publicKey), "public key is wrong"
 
 
   ## Case 2
@@ -42,6 +43,8 @@ Signature = ->
   # Person C verifies the message from both.
   output = verify signedMsg
   assert output == true, "failed to verify"
+  assert key.equal(signedMsg.publicKeys[0], A.publicKey), "public key is wrong"
+  assert key.equal(signedMsg.publicKeys[1], B.publicKey), "public key is wrong"
 
   ## Case 3
   ################################
