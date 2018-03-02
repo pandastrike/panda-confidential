@@ -235,7 +235,7 @@ do ->
 
 ## key
 
-### Symmetric
+### key.Symmetric
 ### Private
 ### Public
 ### Shared
