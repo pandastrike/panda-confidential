@@ -2,7 +2,7 @@
 
 ### Functions
 - [randomBytes][randombytes]
-  - [Overriding randomBytes][#overriding-randombytes]
+  - [Overriding randomBytes](#overriding-randombytes)
 - [encrypt][encrypt]
 - [decrypt][decrypt]
 - [sign][sign]
@@ -25,8 +25,8 @@
 - [key.equal][equal]
 
 #### keyPair
-- [keyPair.Encryption][Encryption]
-- [keyPair.Signature][Signature]
+- [keyPair.Encryption][EncryptionKeyPair]
+- [keyPair.Signature][SignatureKeyPair]
 - [keyPair.isEncryption][isEncryption]
 - [keyPair.isSignature][isSignature]
 
