@@ -923,7 +923,7 @@ While a signed message can be verified to be internally self-consistent, it is u
 [signedMessage]: #signedmessage
 [isSignedMessage]: #issignedmessage
 
-[classes]: #classes
+[classes]: #classes-1
 [classKey]: #key-2
 [classSymmetricKey]: #symmetrickey
 [classPrivateKey]: #privatekey
