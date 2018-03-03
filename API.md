@@ -1,4 +1,50 @@
 # Panda Confidential API
+
+### Functions
+- [randomBytes][randombytes]
+  - [Overriding randomBytes][#overriding-randombytes]
+- [encrypt][encrypt]
+- [decrypt][decrypt]
+- [sign][sign]
+- [verify][verify]
+- [encode][encode]
+- [decode][decode]
+- [hash][hash]
+- [isData][isdata]
+- [nacl][nacl]
+
+#### key
+- [key.Symmetric][SymmetricKey]
+- [key.Private][PrivateKey]
+- [key.Public][PublicKey]
+- [key.Shared][SharedKey]
+- [key.isSymmetric][isSymmetric]
+- [key.isPrivate][isPrivate]
+- [key.isPublic][isPublic]
+- [key.isShared][isShared]
+- [key.equal][equal]
+
+#### keyPair
+- [keyPair.Encryption][Encryption]
+- [keyPair.Signature][Signature]
+- [keyPair.isEncryption][isEncryption]
+- [keyPair.isSignature][isSignature]
+
+#### Other
+[signedMessage][signedMessage]
+[isSignedMessage][isSignedMessage]
+
+### [Classes][classes]
+- [Key][classKey]
+- [SymmetricKey][classSymmetricKey]
+- [PrivateKey][classPrivateKey]
+- [PublicKey][classPrivateKey]
+- [SharedKey][classSharedKey]
+- [KeyPair][classKeyPair]
+- [EncryptionKeyPair][classEncryptionKeyPair]
+- [SignatureKeyPair][classSignatureKeyPair]
+- [SignedMessage][classSignedMessage]
+
 # Functions
 ## randomBytes
 _**randomBytes** Length &rarr; ByteArray_
@@ -307,6 +353,62 @@ do ->
   data2 = decode message: "Hello World!"
   key.equal data, data2    # true
 ```
+
+## hash
+_**hash** Data [, Encoding] &rarr; Hash_
+
+- _Data_ `<String>` | `<Object>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer]: The data to be hashed.
+- _Encoding_ `utf8` | `base64`: (Optional) The encoding of the string Data input. Defaults to `utf8`  This value is ignored if Data is an Uint8Array or Node.js Buffer.
+- __Returns__ _Hash_: A Base64 encoded string of the SHA-512 hash result.
+
+This wraps the [SHA-512 Hashing implementation in TweetNaCl.js][tweetnacl-hash].  This generic is capable of accepting a variety of input types:
+
+- When you input a string, `hash` decodes according to the Encoding you provide - defaulting to `utf8` - and performs the SHA-512 hash operation.
+- When you input an object, `hash` stringifies the object using `utf8` encoding hashing.
+- When you input an Uint8Array or Node.js Buffer, `hash` hases directly.
+
+##### Example
+```coffeescript
+import {confidential} from "panda-confidential"
+{hash} = confidential()
+
+do ->
+  hash("Hello World!") == "hhhE1nBOhXP+w02WfiC8/vPUJM9IvgTm3AjyvVjHKXQzcQFerYkcw88cnTS0kmS1EHUbH/nlN5N7xGtdb/TsyA=="
+
+  hash(message: "Hello World!") == "U1Dk3GihntqlckS9TPTdoMRzEa/zorUq4jHYkjCFUhl52R/ppuT/hFiDs/jT7KM9JJ56woDkxIVqOC6tBg+hiA=="
+```
+
+## isData
+_**isData** Data &rarr; Boolean_
+
+- _Data_ : The input for this type check.
+- __Returns__ _Boolean_: The boolean result of this type check.
+
+This examines the type of input, returning `true` if the input is an instance of [Buffer][Buffer] _or_ [Uint8Array][Uint8Array], and `false` for anything else.
+
+This type check is used throughout panda-confidential to avoid checking for both Buffer and Uint8Array when either are acceptable.  It is exposed in this API to afford the same convenience to those who wish to use it extending panda-confidential.
+
+##### Example
+```coffeescript
+import {confidential} from "panda-confidential"
+{isData} = confidential()
+
+do ->
+  data =
+    new Uint8Array [ 72, 101, 108, 108, 111, 32, 87, 111, 114, 108, 100, 33 ]
+
+  isData data             # true
+  isData "Hello World!"   # false
+
+  # Only applies in Node.js
+  data = Buffer.from "Hello World!"
+
+  isData data             # true
+  isData "Hello World!"   # false
+```
+
+## nacl
+This is the TweetNaCl.js package imported by panda-confidential.  It is exposed in this API as a matter of convenience to those who would extend panda-confidential.  However, reassigning this value ___DOES NOT___ override the underlying TweetNaCl.js methods used by the generics (`encrypt`, `decrypt`, `sign`, and `verify`).
 
 ## Key Type System
 panda-confidential uses a key type system to allow the generics -- `encrypt`, `decrypt`, `sign`, and `verify` -- to select the appropriate action.  This type system is implemented in [key and key-pair classes](#classes), but the following functions are exposed to allow you to access their constructors more effectively.
@@ -694,62 +796,6 @@ do ->
   isSignedMessage msg         # true
   isSignedMessage "foobar"    # false
 ```
-
-## hash
-_**hash** Data [, Encoding] &rarr; Hash_
-
-- _Data_ `<String>` | `<Object>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer]: The data to be hashed.
-- _Encoding_ `utf8` | `base64`: (Optional) The encoding of the string Data input. Defaults to `utf8`  This value is ignored if Data is an Uint8Array or Node.js Buffer.
-- __Returns__ _Hash_: A Base64 encoded string of the SHA-512 hash result.
-
-This wraps the [SHA-512 Hashing implementation in TweetNaCl.js][tweetnacl-hash].  This generic is capable of accepting a variety of input types:
-
-- When you input a string, `hash` decodes according to the Encoding you provide - defaulting to `utf8` - and performs the SHA-512 hash operation.
-- When you input an object, `hash` stringifies the object using `utf8` encoding hashing.
-- When you input an Uint8Array or Node.js Buffer, `hash` hases directly.
-
-##### Example
-```coffeescript
-import {confidential} from "panda-confidential"
-{hash} = confidential()
-
-do ->
-  hash("Hello World!") == "hhhE1nBOhXP+w02WfiC8/vPUJM9IvgTm3AjyvVjHKXQzcQFerYkcw88cnTS0kmS1EHUbH/nlN5N7xGtdb/TsyA=="
-
-  hash(message: "Hello World!") == "U1Dk3GihntqlckS9TPTdoMRzEa/zorUq4jHYkjCFUhl52R/ppuT/hFiDs/jT7KM9JJ56woDkxIVqOC6tBg+hiA=="
-```
-
-## isData
-_**isData** Data &rarr; Boolean_
-
-- _Data_ : The input for this type check.
-- __Returns__ _Boolean_: The boolean result of this type check.
-
-This examines the type of input, returning `true` if the input is an instance of [Buffer][Buffer] _or_ [Uint8Array][Uint8Array], and `false` for anything else.
-
-This type check is used throughout panda-confidential to avoid checking for both Buffer and Uint8Array when either are acceptable.  It is exposed in this API to afford the same convenience to those who wish to use it extending panda-confidential.
-
-##### Example
-```coffeescript
-import {confidential} from "panda-confidential"
-{isData} = confidential()
-
-do ->
-  data =
-    new Uint8Array [ 72, 101, 108, 108, 111, 32, 87, 111, 114, 108, 100, 33 ]
-
-  isData data             # true
-  isData "Hello World!"   # false
-
-  # Only applies in Node.js
-  data = Buffer.from "Hello World!"
-
-  isData data             # true
-  isData "Hello World!"   # false
-```
-
-## nacl
-This is the TweetNaCl.js package imported by panda-confidential.  It is exposed in this API as a matter of convenience to those who would extend panda-confidential.  However, reassigning this value ___DOES NOT___ override the underlying TweetNaCl.js methods used by the generics (`encrypt`, `decrypt`, `sign`, and `verify`).
 
 # Classes
 Classes in panda-confidential are lightweight wrappers for values.  They provide a type-system to support the generics (`encrypt`, `decrypt`, `sign`, and `verify`) and a couple of convenience methods.  Their constructors ready values for use with the underlying TweetNaCl.js invocations (`Uint8Array`), but you can easily access the value by `dump`ing it into a form that's easier for transport or placing into a datastore.
