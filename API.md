@@ -10,6 +10,8 @@
 - [encode][encode]
 - [decode][decode]
 - [hash][hash]
+- [signedMessage][signedMessage]
+- [isSignedMessage][isSignedMessage]
 - [isData][isdata]
 - [nacl][nacl]
 
@@ -31,8 +33,6 @@
 - [keyPair.isSignature][isSignature]
 
 #### Other
-[signedMessage][signedMessage]
-[isSignedMessage][isSignedMessage]
 
 ### [Classes][classes]
 - [Key][classKey]
@@ -376,6 +376,67 @@ do ->
   hash("Hello World!") == "hhhE1nBOhXP+w02WfiC8/vPUJM9IvgTm3AjyvVjHKXQzcQFerYkcw88cnTS0kmS1EHUbH/nlN5N7xGtdb/TsyA=="
 
   hash(message: "Hello World!") == "U1Dk3GihntqlckS9TPTdoMRzEa/zorUq4jHYkjCFUhl52R/ppuT/hFiDs/jT7KM9JJ56woDkxIVqOC6tBg+hiA=="
+```
+
+## signedMessage
+_**key.signedMessage** Message &rarr; SignedMessage_
+
+- _Key_ `<String>` | `<Object>`: A signed message literal that needs to be formally instanciated.
+- __Returns__ _SignedMessage_: This returns an instance of [SignedMessage][classSignedMessage]
+
+This function wraps the constructor for the [SignedMessage][classSignedMessage] class.  It accepts either an object literal or a Base64 encoded stringified object literal, like the one output by `SignedMessage::dump()`.
+
+##### Example
+```coffeescript
+import {confidential} from "panda-confidential"
+{sign, verify, signedMessage, keyPair} = confidential()
+
+do ->
+  # Normally get person A's keys from a datastore, but we generate them here.
+  A = await keyPair.Signature()
+
+  # Receive a signed message from person B.
+  blob = getSignedMessageBlob()
+
+  # Verify the message integrity.
+  if verify blob
+    # Convert the Base64 blob into a instantiated SignedMessage class.  
+    msg = signedMessage blob
+
+    # Sign with person A's keys
+    msg = sign A, msg
+
+    # Return a stringified blob for transport.
+    msg.dump()
+  else
+    # uh oh
+    throw new Error "Unable to verify message signature"
+```
+
+
+## isSignedMessage
+_**isSignedMessage** Message &rarr; Boolean_
+
+- _Message_ : The input for this type check.
+- __Returns__ _Boolean_: The boolean result of this type check.
+
+This examines the type of the object you input, returning `true` if the input is an instance of [SignedMessage][classSignedMessage] and `false` for anything else.
+
+##### Example
+```coffeescript
+import {confidential} from "panda-confidential"
+{keyPair, signedMessage, isSignedMessage, sign} = confidential()
+
+do ->
+  # Generate an signature key-pair.
+  pair = await keyPair.Signature()
+
+  # Generate a signed message.
+  msg = "Hello World!"
+  msg = sign pair, msg
+
+  isSignedMessage msg         # true
+  isSignedMessage "foobar"    # false
 ```
 
 ## isData
@@ -736,66 +797,7 @@ do ->
 ```
 
 
-## signedMessage
-_**key.signedMessage** Message &rarr; SignedMessage_
 
-- _Key_ `<String>` | `<Object>`: A signed message literal that needs to be formally instanciated.
-- __Returns__ _SignedMessage_: This returns an instance of [SignedMessage][classSignedMessage]
-
-This function wraps the constructor for the [SignedMessage][classSignedMessage] class.  It accepts either an object literal or a Base64 encoded stringified object literal, like the one output by `SignedMessage::dump()`.
-
-##### Example
-```coffeescript
-import {confidential} from "panda-confidential"
-{sign, verify, signedMessage, keyPair} = confidential()
-
-do ->
-  # Normally get person A's keys from a datastore, but we generate them here.
-  A = await keyPair.Signature()
-
-  # Receive a signed message from person B.
-  blob = getSignedMessageBlob()
-
-  # Verify the message integrity.
-  if verify blob
-    # Convert the Base64 blob into a instantiated SignedMessage class.  
-    msg = signedMessage blob
-
-    # Sign with person A's keys
-    msg = sign A, msg
-
-    # Return a stringified blob for transport.
-    msg.dump()
-  else
-    # uh oh
-    throw new Error "Unable to verify message signature"
-```
-
-
-## isSignedMessage
-_**isSignedMessage** Message &rarr; Boolean_
-
-- _Message_ : The input for this type check.
-- __Returns__ _Boolean_: The boolean result of this type check.
-
-This examines the type of the object you input, returning `true` if the input is an instance of [SignedMessage][classSignedMessage] and `false` for anything else.
-
-##### Example
-```coffeescript
-import {confidential} from "panda-confidential"
-{keyPair, signedMessage, isSignedMessage, sign} = confidential()
-
-do ->
-  # Generate an signature key-pair.
-  pair = await keyPair.Signature()
-
-  # Generate a signed message.
-  msg = "Hello World!"
-  msg = sign pair, msg
-
-  isSignedMessage msg         # true
-  isSignedMessage "foobar"    # false
-```
 
 # Classes
 Classes in panda-confidential are lightweight wrappers for values.  They provide a type-system to support the generics (`encrypt`, `decrypt`, `sign`, and `verify`) and a couple of convenience methods.  Their constructors ready values for use with the underlying TweetNaCl.js invocations (`Uint8Array`), but you can easily access the value by `dump`ing it into a form that's easier for transport or placing into a datastore.
@@ -922,12 +924,12 @@ While a signed message can be verified to be internally self-consistent, it is u
 [isSignedMessage]: #issignedmessage
 
 [classes]: #classes
-[classKey]: #key-1
+[classKey]: #key-2
 [classSymmetricKey]: #symmetrickey
 [classPrivateKey]: #privatekey
 [classPublicKey]: #publickey
 [classSharedKey]: #sharedkey
-[classKeyPair]: #keypair-1
+[classKeyPair]: #keypair-2
 [classEncryptionKeyPair]: #encryptionkeypair
 [classSignatureKeyPair]: #signaturekeypair
 [classSignedMessage]: #signedmessage-1
