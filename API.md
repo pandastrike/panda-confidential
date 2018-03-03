@@ -145,7 +145,9 @@ do ->
 ```
 
 ## sign
-_**sign** KeyPair [or PrivateKey, PublicKey], Message [, Encoding] &rarr; SignedMessage_
+_**sign** KeyPair, Message [, Encoding] &rarr; SignedMessage_
+
+_**sign** PrivateKey, PublicKey, Message [, Encoding] &rarr; SignedMessage_
 
 - _KeyPair_ [`<SignatureKeyPair>`][classSignatureKeyPair]:  The private and public keys of a single person wishing to sign the Message.  If you supply this, you do not need to provide the keys separately.
 - _PrivateKey_ [`<PrivateKey>`][classPrivateKey]:  The private key of the person wishing to sign the message.  If you do not provide the private-public key pair directly, you must supply them individually here.
@@ -373,7 +375,9 @@ do ->
 
 
 ### key.Shared
-_**key.Shared** Key1, Key2 [or Key] &rarr; SharedKey_
+_**key.Shared** Key1, Key2 &rarr; SharedKey_
+
+_**key.Shared** Key &rarr; SharedKey_
 
 - _Key_ `<String>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer]: A key value literal for this key.  May be a Base64 encoded string or a binary array.
 - _Key1_ [`<PrivateKey>`][classPrivateKey] | [`<PublicKey>`][classPublicKey]: A public or private key instance used in the formation of the shared key.  If this one is private, the other must be a public key.  Or vice versa.
@@ -528,19 +532,224 @@ do ->
 ```
 
 ## keyPair
+panda-confidential uses a key type system to allow the generics -- `encrypt`, `decrypt`, `sign`, and `verify` -- to select the appropriate action.  This type system is implemented in [key and key-pair classes](#classes).
+
+Key-pairs are sets of related keys used for public key cryptography and are generated together.  The two main types of key-pairs are for encryption and signing, and they are incompatible with each other. The following functions wrap TweetNaCl.js generation methods while making it clear how the keys should be used.
 
 ### keyPair.Encryption
-### keyPair.Signature
-### keyPair.isEncryption
-### keyPair.isSignature
+_**keyPair.Encryption** &rarr; EncryptionKeyPair_
 
-# Helpers
+- __Returns__ _EncryptionKeyPair_: This returns an instance of [EncryptionKeyPair][classEncryptionKeyPair]
+
+This function generates a key-pair suitable for asymmetric encryption.  It uses the panda-confidential instance of [randomBytes][randombytes] to generate the values.
+
+___The private keys you generate for encryption are _not_ suitable for signing.___
+
+##### Example
+```coffeescript
+import {confidential} from "panda-confidential"
+{keyPair, key, encrypt} = confidential()
+
+do ->
+  # Generate a key-pair suitable for encryption for person A.
+  {privateKey, publicKey} = await keyPair.Encryption()
+
+  # Lookup the public key for person B.
+  B_public = lookupPublicKey()
+
+  # Now you may encrypt a message for person B.
+  myKey = key.Shared privateKey, B_public
+  message = "Hello World!"
+  ciphertext = encrypt mykey, message
+```
+
+
+### keyPair.Signature
+_**keyPair.Signature** &rarr; SignatureKeyPair_
+
+- __Returns__ _SignatureKeyPair_: This returns an instance of [SignatureKeyPair][classSignatureKeyPair]
+
+This function generates a key-pair suitable for signing.  It uses the panda-confidential instance of [randomBytes][randombytes] to generate the values.
+
+___The private keys you generate for signing are _not_ suitable for encryption.___
+
+##### Example
+```coffeescript
+import {confidential} from "panda-confidential"
+{keyPair, sign} = confidential()
+
+do ->
+  # Generate a key-pair suitable for signing for person A.
+  A = {privateKey, publicKey} = await keyPair.Encryption()
+
+  # Now you may sign a message for person B.
+  message = "Hello World!"
+  sign A, message
+```
+
+
+### keyPair.isEncryption
+_**keyPair.isEncryption** Pair &rarr; Boolean_
+
+- _Pair_ : The input for this type check.
+- __Returns__ _Boolean_: The boolean result of this type check.
+
+This examines the type of the key-pair you input, returning `true` if the input is an instance of [EncryptionKeyPair][classEncryptionKeyPair] and `false` for anything else.
+
+##### Example
+```coffeescript
+import {confidential} from "panda-confidential"
+{keyPair} = confidential()
+
+do ->
+  # Generate an encryption key-pair.
+  pair = await keyPair.Encryption()
+
+  # Type check
+  keyPair.isEncryption pair         # true
+  keyPair.isEncryption "foobar"     # false
+```
+
+
+### keyPair.isSignature
+_**keyPair.isSignature** Pair &rarr; Boolean_
+
+- _Pair_ : The input for this type check.
+- __Returns__ _Boolean_: The boolean result of this type check.
+
+This examines the type of the key-pair you input, returning `true` if the input is an instance of [SignatureKeyPair][classSignatureKeyPair] and `false` for anything else.
+
+##### Example
+```coffeescript
+import {confidential} from "panda-confidential"
+{keyPair} = confidential()
+
+do ->
+  # Generate a signature key-pair.
+  pair = await keyPair.Signature()
+
+  # Type check
+  keyPair.isSignature pair         # true
+  keyPair.isSignature "foobar"     # false
+```
+
+
+## signedMessage
+_**key.signedMessage** Message &rarr; SignedMessage_
+
+- _Key_ `<String>` | `<Object>`: A signed message literal that needs to be formally instanciated.
+- __Returns__ _SignedMessage_: This returns an instance of [SignedMessage][classSignedMessage]
+
+This function wraps the constructor for the [SignedMessage][classSignedMessage] class.  It accepts either an object literal or a Base64 encoded stringified object literal, like the one output by `SignedMessage::dump()`.
+
+##### Example
+```coffeescript
+import {confidential} from "panda-confidential"
+{sign, verify, signedMessage, keyPair} = confidential()
+
+do ->
+  # Normally get person A's keys from a datastore, but we generate them here.
+  A = await keyPair.Signature()
+
+  # Receive a signed message from person B.
+  blob = getSignedMessageBlob()
+
+  # Verify the message integrity.
+  if verify blob
+    # Convert the Base64 blob into a instantiated SignedMessage class.  
+    msg = signedMessage blob
+
+    # Sign with person A's keys
+    msg = sign A, msg
+
+    # Return a stringified blob for transport.
+    msg.dump()
+  else
+    # uh oh
+    throw new Error "Unable to verify message signature"
+```
+
+
+## isSignedMessage
+_**isSignedMessage** Message &rarr; Boolean_
+
+- _Message_ : The input for this type check.
+- __Returns__ _Boolean_: The boolean result of this type check.
+
+This examines the type of the object you input, returning `true` if the input is an instance of [SignedMessage][classSignedMessage] and `false` for anything else.
+
+##### Example
+```coffeescript
+import {confidential} from "panda-confidential"
+{keyPair, signedMessage, isSignedMessage, sign} = confidential()
+
+do ->
+  # Generate an signature key-pair.
+  pair = await keyPair.Signature()
+
+  # Generate a signed message.
+  msg = "Hello World!"
+  msg = sign pair, msg
+
+  isSignedMessage msg         # true
+  isSignedMessage "foobar"    # false
+```
+
+## hash
+_**hash** Data [, Encoding] &rarr; Hash_
+
+- _Data_ `<String>` | `<Object>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer]: The data to be hashed.
+- _Encoding_ `utf8` | `base64`: (Optional) The encoding of the string Data input. Defaults to `utf8`  This value is ignored if Data is an Uint8Array or Node.js Buffer.
+- __Returns__ _Hash_: A Base64 encoded string of the SHA-512 hash result.
+
+This wraps the [SHA-512 Hashing implementation in TweetNaCl.js][tweetnacl-hash].  This generic is capable of accepting a variety of input types:
+
+- When you input a string, `hash` decodes according to the Encoding you provide - defaulting to `utf8` - and performs the SHA-512 hash operation.
+- When you input an object, `hash` stringifies the object using `utf8` encoding hashing.
+- When you input an Uint8Array or Node.js Buffer, `hash` hases directly.
+
+##### Example
+```coffeescript
+import {confidential} from "panda-confidential"
+{hash} = confidential()
+
+do ->
+  hash("Hello World!") == "hhhE1nBOhXP+w02WfiC8/vPUJM9IvgTm3AjyvVjHKXQzcQFerYkcw88cnTS0kmS1EHUbH/nlN5N7xGtdb/TsyA=="
+
+  hash(message: "Hello World!") == "U1Dk3GihntqlckS9TPTdoMRzEa/zorUq4jHYkjCFUhl52R/ppuT/hFiDs/jT7KM9JJ56woDkxIVqOC6tBg+hiA=="
+```
+
+## isData
+_**isData** Data &rarr; Boolean_
+
+- _Data_ : The input for this type check.
+- __Returns__ _Boolean_: The boolean result of this type check.
+
+This examines the type of input, returning `true` if the input is an instance of [Buffer][Buffer] _or_ [Uint8Array][Uint8Array], and `false` for anything else.
+
+This type check is used throughout panda-confidential to avoid checking for both Buffer and Uint8Array when either are acceptable.  It is exposed in this API to afford the same convenience to those who wish to use it extending panda-confidential.
+
+##### Example
+```coffeescript
+import {confidential} from "panda-confidential"
+{isData} = confidential()
+
+do ->
+  data =
+    new Uint8Array [ 72, 101, 108, 108, 111, 32, 87, 111, 114, 108, 100, 33 ]
+
+  isData data             # true
+  isData "Hello World!"   # false
+
+  # Only applies in Node.js
+  data = Buffer.from "Hello World!"
+
+  isData data             # true
+  isData "Hello World!"   # false
+```
 
 ## nacl
-## hash
-## isData
-## signedMessage
-## isSignedMessage
+This is the TweetNaCl.js package imported by panda-confidential.  It is exposed in this API as a matter of convenience to those who would extend panda-confidential.  However, reassigning this value ___DOES NOT___ override the underlying TweetNaCl.js methods used by the generics (`encrypt`, `decrypt`, `sign`, and `verify`).
 
 # Classes
 Classes in panda-confidential are lightweight wrappers for values.  They provide a type-system to support the generics (`encrypt`, `decrypt`, `sign`, and `verify`) and a couple of convenience methods.  Their constructors ready values for use with the underlying TweetNaCl.js invocations (`Uint8Array`), but you can easily access the value by `dump`ing it into a form that's easier for transport or placing into a datastore.
@@ -694,3 +903,4 @@ While a signed message can be verified to be internally self-consistent, it is u
 [tweetnacl-verify]: https://github.com/dchest/tweetnacl-js#naclsigndetachedverifymessage-signature-publickey
 [tweetnacl-utils]: https://github.com/dchest/tweetnacl-util-js#documentation
 [tweetnacl-equal]:https://github.com/dchest/tweetnacl-js#naclverifyx-y
+[tweetnacl-hash]:https://github.com/dchest/tweetnacl-js#hashing
