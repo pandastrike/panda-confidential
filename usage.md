@@ -14,10 +14,10 @@ These functions are [_generics_][generics], accepting multiple kinds of inputs t
 What follows is a walkthrough of some common use-cases for panda-confidential. Please see the [full API documentation][api-docs] for more detailed information about any function or type you see below.
 
 # Contents
-- [Getting Started][#getting-started]
-- [Symmetric Encryption and Decryption][#symmetric-encrytion-and-decryption]
-- [Asymmetric Encryption and Decryption][#asymmetric-encrytion-and-decryption]
-- [Signing and Verifying Messages][#signing-and-verifying-messages]
+- [Getting Started](#getting-started)
+- [Symmetric Encryption and Decryption](#symmetric-encrytion-and-decryption)
+- [Asymmetric Encryption and Decryption](#asymmetric-encrytion-and-decryption)
+- [Signing and Verifying Messages](#signing-and-verifying-messages)
 
 ## Getting Started
 
@@ -107,11 +107,11 @@ We add a new requirement to our app.  Now we need to let people share notes, and
 import {confidential} from "panda-confidential"
 
 # Instantiate Panda-Confidential
-{encode, randomBytes, keyPair, key, encrypt} = confidential()
+{keyPair, key, encrypt} = confidential()
 
-shareNote = (senderAccountID, recipientAccountID, note) ->
-  # Generate an unguessable id for this note.
-  noteID = encode "base64", await randomBytes 16
+shareNote = (senderAccountID, recipientAccountID, noteID) ->
+  # Fetch the stored note the sender wants to share.
+  note = getNote senderAccountID, noteID
 
   # Fetch or generate an encryption key-pair for account.
   if senderPrivateKey = await getPrivateKeyFromAccount senderAccountID
@@ -175,11 +175,44 @@ We again need an instance of SharedKey, but this time we are working on behalf o
 We pass both the SharedKey and the encrypted note to `decrypt` and get back the original note.  Bob is able to read the note Alice wrote and be sure she is the one who encrypted it.
 
 ## Signing and Verifying Messages
+We add one more requirement to our app.  Now we need to let people publish a note and prove it is unaltered.  
+
+### Signing
+```coffeescript
+import {confidential} from "panda-confidential"
+
+# Instantiate Panda-Confidential
+{encode, randomBytes, keyPair, key, encrypt} = confidential()
+
+publishNote = (accountID, noteID) ->
+  # Fetch the stored note the sender wants to publish.
+  note = getNote accountID, noteID
+
+  # Fetch or generate an signing key-pair for account.
+  if AccountKeyPair = await getSigningPairFromAccount accountID
+  else
+    AccountKeyPair = await key.Signature()
+    await createAccount senderAccountID, AccountKeyPair.dump()
+
+  # Sign the note with the private key, include the public key for verification.
+  signedNote = await sign AccountKeyPair, note
+
+  # Publish
+  await publish AccountID, signedNote
+```
+
+Set aside the details for getting account information or publishing.  To keep this discussion clear, consider two people using the app: Alice and Bob.
+
+In these few lines of code, we create a [digitial signature][digitial-signature].  Signing with her private key allows Alice to claim authorship and prevents bad actors from presenting an altered version of the note with attribution to the original author.
+
 
 
 
 [symmetric-encryption]: https://en.wikipedia.org/wiki/Symmetric-key_algorithm
 [pke]: https://en.wikipedia.org/wiki/Public-key_cryptography
+[digitial-signature]: https://en.wikipedia.org/wiki/Digital_signature
+
+
 [tweetnacl-randombytes]:https://github.com/dchest/tweetnacl-js#random-bytes-generation
 [tweetnacl-secretbox]: https://github.com/dchest/tweetnacl-js#secret-key-authenticated-encryption-secretbox
 [tweetnacl-box]:https://github.com/dchest/tweetnacl-js#public-key-authenticated-encryption-box
