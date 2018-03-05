@@ -6,7 +6,7 @@ symmetric = ->
   {encrypt, decrypt, key} = confidential()
 
   # Generate symmetric key of correct length that should be saved.
-  KEY = await key.Symmetric()
+  KEY = await key.symmetric()
   assert (KEY && key.isSymmetric KEY), "bad key"
 
   # Person A symmetrically encrypts their data.

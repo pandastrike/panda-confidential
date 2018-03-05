@@ -16,10 +16,10 @@
 - [nacl][nacl]
 
 #### key
-- [key.Symmetric][SymmetricKey]
-- [key.Private][PrivateKey]
-- [key.Public][PublicKey]
-- [key.Shared][SharedKey]
+- [key.symmetric][SymmetricKey]
+- [key.private][PrivateKey]
+- [key.public][PublicKey]
+- [key.shared][SharedKey]
 - [key.isSymmetric][isSymmetric]
 - [key.isPrivate][isPrivate]
 - [key.isPublic][isPublic]
@@ -27,8 +27,8 @@
 - [key.equal][equal]
 
 #### keyPair
-- [keyPair.Encryption][EncryptionKeyPair]
-- [keyPair.Signature][SignatureKeyPair]
+- [keyPair.encryption][EncryptionKeyPair]
+- [keyPair.signature][SignatureKeyPair]
 - [keyPair.isEncryption][isEncryption]
 - [keyPair.isSignature][isSignature]
 
@@ -57,9 +57,9 @@ Generate an Uint8Array of the given length filled with pseudo-random data.  By d
 This method is exposed for your needs _and_ is used internally by various functions in panda-confidential to generate random values:
 
 - [encrypt][encrypt]
-- [key.Symmetric][SymmetricKey]
-- [keyPair.Encryption][EncryptionKeyPair]
-- [keyPair.Signature][SignatureKeyPair]
+- [key.symmetric][SymmetricKey]
+- [keyPair.encryption][EncryptionKeyPair]
+- [keyPair.signature][SignatureKeyPair]
 
 That includes key, key-pair, and encryption nonce generation.
 
@@ -89,7 +89,7 @@ c.randomBytes = myRandomGenerator
 
 do ->
   randomValue = await randomBytes 32
-  myKey = await key.Symmetric()  # random values come from your generator.
+  myKey = await key.symmetric()  # random values come from your generator.
 ```
 
 ## encrypt
@@ -110,7 +110,7 @@ import {confidential} from "panda-confidential"
 {encrypt} = confidential()
 
 do ->
-  # Somehow get the symmetric key for your setup.  See key.Symmetric() for generating keys suitable for symmetric encryption.
+  # Somehow get the symmetric key for your setup.  See key.symmetric() for generating keys suitable for symmetric encryption.
   myKey = lookupSymmetricKey()
 
   # Person A symmetrically encrypts their data.
@@ -135,7 +135,7 @@ do ->
   message = "Hello World!"
 
   # Person A encrypts the message for person B by making a shared key out of their _private_ key and B's _public_ key.
-  sharedKey = key.Shared A_private, B_public
+  sharedKey = key.shared A_private, B_public
   ciphertext = await encrypt sharedKey, message
 ```
 
@@ -186,7 +186,7 @@ do ->
   ciphertext = fetchCiphertext()
 
   # Person B decrypts the message from person A by making a shared key out of A's _public_ key and their _private_ key.
-  sharedKey = key.Shared A_public, B_private
+  sharedKey = key.shared A_public, B_private
   message = await decrypt sharedKey, ciphertext
 ```
 
@@ -220,8 +220,8 @@ do ->
   signedMsg = sign A_KeyPair, message
 
   # The SignedMessage class holds instantiated data in binary, but you may retrieve the message or convert the whole data to a base64 blob at any time.
-  msg = signedMsg.dumpMessage()  # utf8 encoded `message` field
-  blob = signedMsg.dump()        # base64 encoded stringified object
+  msg = signedMsg.encodeMessage()  # utf8 encoded `message` field
+  blob = signedMsg.encode()        # base64 encoded stringified object
 ```
 
 Multiple people can sign a message, so `sign` also operates on previously signed messages.  The output is the same SignedMessage instance, with an additional signature and matching public key in its lists.
@@ -270,7 +270,7 @@ do ->
 
   if isValid
     # Return verified message.
-    signedMsg.dumpMessage()
+    signedMsg.encodeMessage()
   else
     # Uh oh.
     throw new Error "Unable to verify message signatures."
@@ -384,7 +384,7 @@ _**key.signedMessage** Message &rarr; SignedMessage_
 - _Key_ `<String>` | `<Object>`: A signed message literal that needs to be formally instanciated.
 - __Returns__ _SignedMessage_: This returns an instance of [SignedMessage][classSignedMessage]
 
-This function wraps the constructor for the [SignedMessage][classSignedMessage] class.  It accepts either an object literal or a Base64 encoded stringified object literal, like the one output by `SignedMessage::dump()`.
+This function wraps the constructor for the [SignedMessage][classSignedMessage] class.  It accepts either an object literal or a Base64 encoded stringified object literal, like the one output by `SignedMessage::encode()`.
 
 ##### Example
 ```coffeescript
@@ -393,7 +393,7 @@ import {confidential} from "panda-confidential"
 
 do ->
   # Normally get person A's keys from a datastore, but we generate them here.
-  A = await keyPair.Signature()
+  A = await keyPair.signature()
 
   # Receive a signed message from person B.
   blob = getSignedMessageBlob()
@@ -407,7 +407,7 @@ do ->
     msg = sign A, msg
 
     # Return a stringified blob for transport.
-    msg.dump()
+    msg.encode()
   else
     # uh oh
     throw new Error "Unable to verify message signature"
@@ -477,8 +477,8 @@ panda-confidential uses a key type system to allow the generics -- `encrypt`, `d
 ## key
 
 
-### key.Symmetric
-_**key.Symmetric** [Key] &rarr; SymmetricKey_
+### key.symmetric
+_**key.symmetric** [Key] &rarr; SymmetricKey_
 
 - _Key_ `<String>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer]: (Optional) A key value literal for this key.  May be a Base64 encoded string or a binary array.
 - __Returns__ _SymmetricKey_: This returns an instance of [SymmetricKey][classSymmetricKey]
@@ -492,15 +492,15 @@ import {confidential} from "panda-confidential"
 
 do ->
   # Generate a symmetric key from a key literal.
-  key1 = key.Symmetric "WM4YL5yo+6yKAFaIZGp3QPbcjW9ICEGXlxR/Odnr2+k="
+  key1 = key.symmetric "WM4YL5yo+6yKAFaIZGp3QPbcjW9ICEGXlxR/Odnr2+k="
 
   # Or generate a key from randomBytes
-  key2 = await key.Symmetric()
+  key2 = await key.symmetric()
 ```
 
 
-### key.Private
-_**key.Private** Key &rarr; PrivateKey_
+### key.private
+_**key.private** Key &rarr; PrivateKey_
 
 - _Key_ `<String>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer]: A key value literal for this key.  May be a Base64 encoded string or a binary array.
 - __Returns__ _PrivateKey_: This returns an instance of [PrivateKey][classPrivateKey]
@@ -514,12 +514,12 @@ import {confidential} from "panda-confidential"
 
 do ->
   # Generate a Private key from a key literal.
-  key1 = key.Private "WM4YL5yo+6yKAFaIZGp3QPbcjW9ICEGXlxR/Odnr2+k="
+  key1 = key.private "WM4YL5yo+6yKAFaIZGp3QPbcjW9ICEGXlxR/Odnr2+k="
 ```
 
 
-### key.Public
-_**key.Public** Key &rarr; PublicKey_
+### key.public
+_**key.public** Key &rarr; PublicKey_
 
 - _Key_ `<String>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer]: A key value literal for this key.  May be a Base64 encoded string or a binary array.
 - __Returns__ _PublicKey_: This returns an instance of [PublicKey][classPublicKey]
@@ -533,14 +533,14 @@ import {confidential} from "panda-confidential"
 
 do ->
   # Generate a Public key from a key literal.
-  key1 = key.Public "WM4YL5yo+6yKAFaIZGp3QPbcjW9ICEGXlxR/Odnr2+k="
+  key1 = key.public "WM4YL5yo+6yKAFaIZGp3QPbcjW9ICEGXlxR/Odnr2+k="
 ```
 
 
-### key.Shared
-_**key.Shared** Key1, Key2 &rarr; SharedKey_
+### key.shared
+_**key.shared** Key1, Key2 &rarr; SharedKey_
 
-_**key.Shared** Key &rarr; SharedKey_
+_**key.shared** Key &rarr; SharedKey_
 
 - _Key_ `<String>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer]: A key value literal for this key.  May be a Base64 encoded string or a binary array.
 - _Key1_ [`<PrivateKey>`][classPrivateKey] | [`<PublicKey>`][classPublicKey]: A public or private key instance used in the formation of the shared key.  If this one is private, the other must be a public key.  Or vice versa.
@@ -560,9 +560,9 @@ import {confidential} from "panda-confidential"
 
 do ->
   # Generate encryption key pairs for persons A and B.
-  A = await keyPair.Encryption()
-  B = await keyPair.Encryption()
-  shared = key.Shared A.privateKey, B.publicKey
+  A = await keyPair.encryption()
+  B = await keyPair.encryption()
+  shared = key.shared A.privateKey, B.publicKey
 ```
 
 
@@ -581,7 +581,7 @@ import {confidential} from "panda-confidential"
 
 do ->
   # Generate a symmetric key.
-  myKey = await key.Symmetric()
+  myKey = await key.symmetric()
 
   # Type check
   key.isSymmetric myKey     # true
@@ -604,7 +604,7 @@ import {confidential} from "panda-confidential"
 
 do ->
   # Generate an encryption key-pair.
-  {privateKey} = await keyPair.Encryption()
+  {privateKey} = await keyPair.encryption()
 
   # Type check
   key.isPrivate privateKey    # true
@@ -628,7 +628,7 @@ import {confidential} from "panda-confidential"
 
 do ->
   # Generate an encryption key-pair.
-  {publicKey} = await keyPair.Encryption()
+  {publicKey} = await keyPair.encryption()
 
   # Type check
   key.isPublic publicKey    # true
@@ -650,11 +650,11 @@ import {confidential} from "panda-confidential"
 
 do ->
   # Generate encryption key pairs for persons A and B.
-  A = await keyPair.Encryption()
-  B = await keyPair.Encryption()
+  A = await keyPair.encryption()
+  B = await keyPair.encryption()
 
   # Use that to make a shared key.
-  shared = key.Shared A.privateKey, B.publicKey
+  shared = key.shared A.privateKey, B.publicKey
 
   # Type check
   key.isShared shared   # true
@@ -699,8 +699,8 @@ panda-confidential uses a key type system to allow the generics -- `encrypt`, `d
 
 Key-pairs are sets of related keys used for public key cryptography and are generated together.  The two main types of key-pairs are for encryption and signing, and they are incompatible with each other. The following functions wrap TweetNaCl.js generation methods while making it clear how the keys should be used.
 
-### keyPair.Encryption
-_**keyPair.Encryption** &rarr; EncryptionKeyPair_
+### keyPair.encryption
+_**keyPair.encryption** &rarr; EncryptionKeyPair_
 
 - __Returns__ _EncryptionKeyPair_: This returns an instance of [EncryptionKeyPair][classEncryptionKeyPair]
 
@@ -715,20 +715,20 @@ import {confidential} from "panda-confidential"
 
 do ->
   # Generate a key-pair suitable for encryption for person A.
-  {privateKey, publicKey} = await keyPair.Encryption()
+  {privateKey, publicKey} = await keyPair.encryption()
 
   # Lookup the public key for person B.
   B_public = lookupPublicKey()
 
   # Now you may encrypt a message for person B.
-  myKey = key.Shared privateKey, B_public
+  myKey = key.shared privateKey, B_public
   message = "Hello World!"
   ciphertext = encrypt mykey, message
 ```
 
 
-### keyPair.Signature
-_**keyPair.Signature** &rarr; SignatureKeyPair_
+### keyPair.signature
+_**keyPair.signature** &rarr; SignatureKeyPair_
 
 - __Returns__ _SignatureKeyPair_: This returns an instance of [SignatureKeyPair][classSignatureKeyPair]
 
@@ -743,7 +743,7 @@ import {confidential} from "panda-confidential"
 
 do ->
   # Generate a key-pair suitable for signing for person A.
-  A = {privateKey, publicKey} = await keyPair.Encryption()
+  A = {privateKey, publicKey} = await keyPair.encryption()
 
   # Now you may sign a message for person B.
   message = "Hello World!"
@@ -766,7 +766,7 @@ import {confidential} from "panda-confidential"
 
 do ->
   # Generate an encryption key-pair.
-  pair = await keyPair.Encryption()
+  pair = await keyPair.encryption()
 
   # Type check
   keyPair.isEncryption pair         # true
@@ -789,7 +789,7 @@ import {confidential} from "panda-confidential"
 
 do ->
   # Generate a signature key-pair.
-  pair = await keyPair.Signature()
+  pair = await keyPair.signature()
 
   # Type check
   keyPair.isSignature pair         # true
@@ -800,15 +800,15 @@ do ->
 
 
 # Classes
-Classes in panda-confidential are lightweight wrappers for values.  They provide a type-system to support the generics (`encrypt`, `decrypt`, `sign`, and `verify`) and a couple of convenience methods.  Their constructors ready values for use with the underlying TweetNaCl.js invocations (`Uint8Array`), but you can easily access the value by `dump`ing it into a form that's easier for transport or placing into a datastore.
+Classes in panda-confidential are lightweight wrappers for values.  They provide a type-system to support the generics (`encrypt`, `decrypt`, `sign`, and `verify`) and a couple of convenience methods.  Their constructors ready values for use with the underlying TweetNaCl.js invocations (`Uint8Array`), but you can easily access the value by `encode`ing it into a form that's easier for transport or placing into a datastore.
 
 ## Key
 ### Properties
   - `key` - key's value stored as an Uint8Array of bytes, ready for use within TweetNaCl.js.
 
 ### Methods
-- `dump`
-  - _dump &rarr; Value_
+- `encode`
+  - _encode &rarr; Value_
 
    outputs the value of `key` as a Base64 encoded string.
 
@@ -847,8 +847,8 @@ This key type is used in [TweetNaCl.js public key encryption interface][tweetnac
   - `publicKey` - The public key of this key pair.  This is an instance of [PublicKey][classPublicKey].
 
 ### Methods
-- `dump`
-  - _dump &rarr; Value_
+- `encode`
+  - _encode &rarr; Value_
 
    outputs all the properties of this instance as a Base64 encoded stringified object.
 
@@ -860,32 +860,32 @@ This class is not used directly within panda-confidential, but its descendants a
 ## EncryptionKeyPair
 _extends [KeyPair][classKeyPair]_
 
-This key pair is used by panda-confidential for public key encryption.  You may generate a pair by invoking [`keyPair.Encryption()`][EncryptionKeyPair].
+This key pair is used by panda-confidential for public key encryption.  You may generate a pair by invoking [`keyPair.encryption()`][EncryptionKeyPair].
 
 ___The key pair you generate for encryption is _not_ suitable for signing.___
 
 ## SignatureKeyPair
 _extends [KeyPair][classKeyPair]_
 
-This key pair is used by panda-confidential for message signing.  You may generate a pair by invoking [`keyPair.Signature()`][SignatureKeyPair].
+This key pair is used by panda-confidential for message signing.  You may generate a pair by invoking [`keyPair.signature()`][SignatureKeyPair].
 
 ___The key pair you generate for signing is _not_ suitable for encryption.___
 
 ## SignedMessage
 ### Properties
   - `message` - The message that has been signed, stored as an Uint8Array of bytes, ready for use within TweetNaCl.js.
-  - `encoding` - The encoding of the original message.  When this value is `binary`, dumping the message will return an Uint8Array.
+  - `encoding` - The encoding of the original message.  When this value is `binary`, encoding the message will return an Uint8Array.
   - `signatures` - A list of signatures generated by signing the `message` with a private key.  These are stored as Uint8Arrays, ready for use within TweetNaCl.js.
   - `publicKeys` - A list of the public keys used to validate the matching signatures in the `signatures` list. These are stored as Uint8Arrays, ready for use within TweetNaCl.js.
 
 ### Methods
-- `dump`
-  - _dump &rarr; Value_
+- `encode`
+  - _encode &rarr; Value_
 
    outputs all the properties of this instance as a Base64 encoded stringified object.
 
-- `dumpMessage`
-  - _dumpMessage &rarr; Value_
+- `encodeMessage`
+  - _encodeMessage &rarr; Value_
 
   outputs the message as a string with the encoding matching the value of the `encoding` property.  If `encoding` is `binary`, this method returns the message as an Uint8Array.
 

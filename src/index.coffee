@@ -15,10 +15,10 @@ confidential = ->
 
   # Key types.  Symmetric key generation requires randomBytes.
   c.key =
-    Private: privateKey
-    Public: publicKey
-    Shared: sharedKey
-    Symmetric: symmetricKey c.randomBytes
+    private: privateKey
+    public: publicKey
+    shared: sharedKey
+    symmetric: symmetricKey c.randomBytes
     isPrivate: isPrivateKey
     isPublic: isPublicKey
     isShared: isSharedKey
@@ -27,8 +27,8 @@ confidential = ->
 
   # Key pair types.  Pair generation requires randomBytes
   c.keyPair =
-    Encryption: encryptionKeyPair c.randomBytes
-    Signature: signatureKeyPair c.randomBytes
+    encryption: encryptionKeyPair c.randomBytes
+    signature: signatureKeyPair c.randomBytes
     isEncryption: isEncryptionKeyPair
     isSignature: isSignatureKeyPair
 

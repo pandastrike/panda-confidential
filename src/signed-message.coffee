@@ -6,13 +6,13 @@ import {encode, decode, isData} from "./utils"
 
 class SignedMessage
   constructor: ({@message, @encoding, @publicKeys, @signatures}) ->
-  dump: ->
+  encode: ->
     encode
       message: encode "base64", @message
       encoding: @encoding
       publicKeys: (encode "base64", key for key in @publicKeys)
       signatures: (encode "base64", sig for sig in @signatures)
-  dumpMessage: -> encode @encoding, @message
+  encodeMessage: -> encode @encoding, @message
 
 isSignedMessage = isType SignedMessage
 

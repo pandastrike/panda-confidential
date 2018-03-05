@@ -2,7 +2,7 @@ import assert from "assert"
 
 asymmetric = ({keyPair, key, encrypt, decrypt, nacl}) -> ->
   # Test Key Pair Generation
-  A = {privateKey, publicKey} = await keyPair.Encryption()
+  A = {privateKey, publicKey} = await keyPair.encryption()
   assert (privateKey && key.isPrivate privateKey), "must make private key"
   assert (publicKey && key.isPublic publicKey), "must make public key"
   assert privateKey.key.length == nacl.box.secretKeyLength,
@@ -11,18 +11,18 @@ asymmetric = ({keyPair, key, encrypt, decrypt, nacl}) -> ->
     "public key is improper length"
 
   # Test Encrypt - Decrypt Cycle
-  B = await keyPair.Encryption()
+  B = await keyPair.encryption()
   message = "Hello World!"
 
   # Person A encrypts the message for person B.
-  key1 = key.Shared A.privateKey, B.publicKey
+  key1 = key.shared A.privateKey, B.publicKey
   assert (key1 && key.isShared(key1) && (key1.key.length == nacl.box.sharedKeyLength)), "failed to create shared key."
   cipher = await encrypt key1, message
   assert (cipher && message != cipher), "failed to create a ciphertext"
 
   # Person B gets the cipher and decrypts the message with counterpart.
-  key2 = key.Shared B.privateKey, A.publicKey
-  assert.equal key1.dump(), key2.dump(), "shared keys must be identical"
+  key2 = key.shared B.privateKey, A.publicKey
+  assert.equal key1.encode(), key2.encode(), "shared keys must be identical"
   output = decrypt key2, cipher
   assert.equal message, output, "failed to decrypt"
 

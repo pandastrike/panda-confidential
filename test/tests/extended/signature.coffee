@@ -2,7 +2,7 @@ import assert from "assert"
 
 Signature = ({sign, verify, key, keyPair, isSignedMessage, nacl}) -> ->
   # Test Key Pair Generation
-  A = {privateKey, publicKey} = await keyPair.Signature()
+  A = {privateKey, publicKey} = await keyPair.signature()
   assert (privateKey && key.isPrivate privateKey), "must make private key"
   assert (publicKey && key.isPublic publicKey), "must make public key"
   assert privateKey.key.length == nacl.sign.secretKeyLength,
@@ -12,7 +12,7 @@ Signature = ({sign, verify, key, keyPair, isSignedMessage, nacl}) -> ->
 
 
   # Test Encrypt - Decrypt Cycle
-  B = await keyPair.Signature()
+  B = await keyPair.signature()
   message = "Hello World!"
 
   ## Case 1
@@ -20,7 +20,7 @@ Signature = ({sign, verify, key, keyPair, isSignedMessage, nacl}) -> ->
   # Person A signs a message.
   signedMsg = sign A.privateKey, A.publicKey, message
   assert (signedMsg && isSignedMessage signedMsg), "bad signature"
-  assert signedMsg.dumpMessage() == message, "message must be the same"
+  assert signedMsg.encodeMessage() == message, "message must be the same"
 
   # Person B uses A's public key to verify and open the message.
   output = verify signedMsg
@@ -33,7 +33,7 @@ Signature = ({sign, verify, key, keyPair, isSignedMessage, nacl}) -> ->
   signedMsg = sign A, message
   signedMsg = sign B, signedMsg
   assert (signedMsg && isSignedMessage signedMsg), "bad signature"
-  assert signedMsg.dumpMessage() == message, "message must be the same"
+  assert signedMsg.encodeMessage() == message, "message must be the same"
   assert key.equal(signedMsg.publicKeys[0], A.publicKey), "public key is wrong"
   assert key.equal(signedMsg.publicKeys[1], B.publicKey), "public key is wrong"
 
@@ -44,7 +44,7 @@ Signature = ({sign, verify, key, keyPair, isSignedMessage, nacl}) -> ->
   ## Case 3
   ################################
   # Person D recieves a base64 encoded blob of the signed message and verifies.
-  blob = signedMsg.dump()
+  blob = signedMsg.encode()
   output = verify blob
   assert output == true, "failed to verify"
 

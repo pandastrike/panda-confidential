@@ -1,11 +1,12 @@
 import {isKind} from "fairmont-helpers"
+import {encode} from "../utils"
 
 class KeyPair
   constructor: ({@privateKey, @publicKey}) ->
-  dump: ->
-    JSON.stringify
-      privateKey: @privateKey.dump()
-      publicKey: @publicKey.dump()
+  encode: ->
+    encode
+      privateKey: @privateKey.encode()
+      publicKey: @publicKey.encode()
 
 isKeyPair = isKind KeyPair
 

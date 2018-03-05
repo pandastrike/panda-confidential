@@ -4,7 +4,7 @@ import {encode} from "../utils"
 
 class Key
   constructor: (@key) ->
-  dump: -> encode "base64", @key
+  encode: (encoding="base64")-> encode encoding, @key
 
 isKey = isKind Key
 

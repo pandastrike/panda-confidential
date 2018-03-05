@@ -1,22 +1,12 @@
 # Using Panda-Confidential
-Cryptography is hard.  But panda-confidential (and the stack it relies on) is so powerful, it can be jarring to see how simple it is to use.
+Cryptography is hard.  But panda-confidential (and the stack it relies on) is so powerful, it can be jarring to see how simple it is to use.  Here are some common scenarios where its simplicity shines.
 
-Panda-confidential wraps the TweetNaCl.js interface with pairs of opposing functions:
-1. `encrypt` and `decrypt`
-2. `sign` and `verify`
-3. `encode` and `decode`
-
-These functions are [_generics_][generics], accepting multiple kinds of inputs to decide what action to take.  Panda-Confidential establishes a key type system the generics use to determine your intention in a clear and error-free way.  But, the details -- the kinds of things that are easy to get wrong in ways that are hard to detect: like key length, robust randomness, algorithm, etc -- are all handled by TweetNaCl.js.
-
-[generics]: https://en.wikipedia.org/wiki/Generic_programming
-
-
-What follows is a walkthrough of some common use-cases for panda-confidential. Please see the [full API documentation][api-docs] for more detailed information about any function or type you see below.
+_Please see the [full API documentation][api-docs] for more detailed information._
 
 # Contents
 - [Getting Started](#getting-started)
 - [Symmetric Encryption and Decryption](#symmetric-encrytion-and-decryption)
-- [Asymmetric Encryption and Decryption](#asymmetric-encrytion-and-decryption)
+- [Authenticated Asymmetric Encryption and Decryption](#authenticated-asymmetric-encrytion-and-decryption)
 - [Signing and Verifying Messages](#signing-and-verifying-messages)
 
 ## Getting Started
@@ -37,174 +27,148 @@ import {confidential} from "panda-confidential"
 ```
 Also, because panda-confidential is extensible, is uses instantiation to prevent any unexpected changes by third parties.  Once you have an instance, you can destructure its properties and get going!
 
+Panda-confidential wraps the TweetNaCl.js interface with pairs of opposing functions:
+1. `encrypt` and `decrypt`
+2. `sign` and `verify`
+3. `encode` and `decode`
+
+These functions are [_generics_][generics], accepting multiple kinds of inputs to decide what action to take.  But, the details -- the kinds of things that are easy to get wrong in ways that are hard to detect: like key length, robust randomness, algorithm, etc -- are all handled by TweetNaCl.js.
+
+Panda-Confidential establishes a key type system, and the above generics use those to determine your intention in a clear and error-free way.  That is, you can't accidentally a key for an operation it's not designed for.
+
+Here are the key types...
+- SymmetricKey
+- PrivateKey
+- PublicKey
+- SharedKey
+
+... and the key-pair types.
+- EncryptionKeyPair
+- SignatureKeyPair
+
+[generics]: https://en.wikipedia.org/wiki/Generic_programming
+
 ## Symmetric Encryption and Decryption
-Here is our scenario: We want to build an app that lets a person write notes that are backed up in the cloud.  One of the requirements is that the data gets encrypted before it is sent to the datastore. Here's our first version.
-
-### Encryption
-```coffeescript
-import {confidential} from "panda-confidential"
-
-# Instantiate Panda-Confidential
-{encode, randomBytes, key, encrypt} = confidential()
-
-saveNote = (accountID, note) ->
-  # Generate an unguessable id for this note.
-  noteID = encode "base64", await randomBytes 16
-
-  # Fetch or generate symmetric encryption key for account.
-  if personalKey = await getKeyFromAccount accountID
-    key.Symmetric personalKey
-  else
-    personalKey = await key.Symmetric()
-    await createAccount accountID, personalKey.dump()
-
-  # Encrypt this person's note.
-  encryptedNote = await encrypt personalKey, note
-
-  # Ship the ciphertext to our datastore.
-  await DB.save noteID, encryptedNote
-```
-
-Set aside the details for getting account information or storing the note ciphertext. In just a few lines of code, we are able to use [symmetric encryption][symmetric-encryption] to encrypt this person's private data.
-
-We start by generating a random id for this note.  TweetNaCl.js provides a way to get [robust randomness regardless of platform][tweetnacl-randombytes].  Because `randomBytes` returns an Uint8Array, we need to `encode` it to be a Base64 string.
-
-We need an instance of SymmetricKey to use symmetric encryption.  We access its constructor through `key.Symmetric`.  If we are able to retieve a key from this person's account, we simply pass in the value to the constructor.  If the person's account does not exist or does not have an encryption key, we invoke the constructor without arguments to have panda-confidential generate an appropriate key.
-
-We encrypt by simply passing the SymmetricKey and the text of the note to `encrypt`.  Under the hood, panda-confidential is uses the [TweetNaCl.js implementation of symmetric encryption][tweetnacl-secretbox], but you don't need to sweat the details.  The result of `encrypt` is a Base64 encoded string ciphertext that we can store in a database.
-
-### Decryption
-We also need a method to retrieve encrypted data from the datastore.
+Alice would like to encrypt her data at rest.  This calls for [symmetric encryption][symmetric-encryption], allowing Alice to encrypt and decrypt private data with the same key.
 
 ```coffeescript
 import {confidential} from "panda-confidential"
 
 # Instantiate Panda-Confidential
-{key, decrypt} = confidential()
+{key, encrypt, decrypt} = confidential()
 
-getNote = (accountID, noteID) ->
-  # Fetch symmetric encryption key for account.
-  if personalKey = key.Symmetric await getKeyFromAccount accountID
+do ->
+  # Generate a symmetric key.
+  aliceKey = await key.symmetric()
 
-  # Fetch the ciphertext from our datastore.
-  encryptedNote = await DB.get noteID
+  # Alice encrypts her data.
+  message = "Hello World!"
+  ciphertext = await encrypt aliceKey, message
 
-  # Return this person's decrypted note.
-  await decrypt personalKey, encryptedNote
+  # Some time later, Alice decrypts that ciphertext with the same key.
+  result = decrypt aliceKey, ciphertext
+  result == message   # true
 ```
 
-`decrypt` opposes `encrypt` and works just as simply.
+To ask `encrypt` to use symmetric encryption, we need an instance of `SymmetricKey`, which we can access through its constructor `key.symmetric`.
+1. If we already have a key, we can create a SymmetricKey by passing it to the constructor.
+2. If we want a _new_ key, we can invoke the constructor without arguments to have panda-confidential generate an appropriate key.  And don't worry -- TweetNaCl.js provides a way to get [robust randomness regardless of platform][tweetnacl-randombytes].  
 
-We need an instance of SymmetricKey to use symmetric encryption.  We again access its constructor through `key.Symmetric` and pass in the key value we fetch from this person's account.
+We just need to pass our SymmetricKey and the plaintext to `encrypt`. Under the hood, panda-confidential is uses the [TweetNaCl.js implementation of symmetric encryption][tweetnacl-secretbox].  `encrypt` returns a Base64 encoded string ciphertext that we can store in a database.
 
-We pass both the SymmetricKey and the encrypted note to `decrypt` and get back the original note.
+`decrypt` opposes `encrypt` and works just as simply.  When we are ready to retrieve the original plaintext, we pass the same SymmetricKey to `decrypt`, along with the ciphertext.
 
-## Asymmetric Encryption and Decryption
-We add a new requirement to our app.  Now we need to let people share notes, and do so securely.
 
-### Encryption
+## Authenticated Asymmetric Encryption and Decryption
+Alice would like to securely send a message to Bob.  This calls for [asymmetric encryption][pke], allowing Alice to encrypt a message only Bob can decrypt.  It's also part of best-practices to add _authentication_, to make sure Bob can confirm that Alice encrypted the message.
+
 ```coffeescript
 import {confidential} from "panda-confidential"
 
 # Instantiate Panda-Confidential
-{keyPair, key, encrypt} = confidential()
+{keyPair, key, encrypt, decrypt} = confidential()
 
-shareNote = (senderAccountID, recipientAccountID, noteID) ->
-  # Fetch the stored note the sender wants to share.
-  note = getNote senderAccountID, noteID
+do ->
+  # Come up with key-pairs for Alice and Bob.
+  Alice = await keyPair.encryption()
+  Bob = await keyPair.encryption()
 
-  # Fetch or generate an encryption key-pair for account.
-  if senderPrivateKey = await getPrivateKeyFromAccount senderAccountID
-    senderPrivateKey = key.Private senderPrivateKey
-  else
-    senderKeyPair = await key.Encryption()
-    await createAccount senderAccountID, senderKeyPair.dump()
-    {privateKey:senderPrivateKey} = senderKeyPair
+  # Alice authenticates with her private key and encrypts with Bob's public key.
+  # Combine them into a SharedKey instance.
+  ALICE_KEY = key.shared Alice.privateKey, Bob.publicKey
 
-  # Fetch the recipient's _public_ key
-  recipientPublicKey = await getPublicKeyFromAccount recipientAccountID
-  recipientPublicKey = key.Public recipientPublicKey
+  # Alice encrypts her data.
+  message = "Hello World!"
+  ciphertext = await encrypt ALICE_KEY, message
 
-  # Encrypt the note so only the recipient may decrypt.
-  KEY = key.Shared senderPrivateKey, recipientPublicKey
-  encryptedNote = await encrypt KEY, note
 
-  # Send the ciphertext to the recipient.
-  await sendEncryptedNote recipientAccountID, encryptedNote
+  # Some time later, Bob gets the ciphertext...
+
+  # He uses the inverse keys to make the _same_ SharedKey value.
+  BOB_KEY = key.shared Alice.publicKey, Bob.privateKey
+  BOB_KEY.encode() == ALICE_KEY.encode()   # true
+
+  # Bob decrypts the ciphertext he recieved.
+  result = decrypt BOB_KEY, ciphertext
+  result == message  # true
 ```
 
-Set aside the details for getting account information or sending the note between people.  To keep this discussion clear, consider two people using the app: Alice and Bob.
+To ask `encrypt` to use asymmetric encryption, we need to assign key-pairs to the people involved, one public (PublicKey) and one private (PrivateKey).
+1. If we already have a key-pair, we can create a PublicKey and a PrivateKey by passing the key to the constructors `key.public` and `key.private`, respectively.
+2. If we want a _new_ key-pair, we can invoke the constructor `keyPair.encryption` without arguments.  This provides a key-pair suitable for encryption, but _not_ signing. And don't worry -- TweetNaCl.js provides a way to get [robust randomness regardless of platform][tweetnacl-randombytes].  
 
-In these few lines of code, we perform [asymmetric cryptography][pke] to allow Alice to encrypt her note so that only Bob may decrypt it.  Alice also authenticates her note, so Bob can be sure that Alice is the one that did the encryption.
+#### Authentication Comes Standard
+TweetNaCl.js enforces the best-practice of combining encryption with authentication through the use of the SharedKey.  Alice uses her PrivateKey and Bob's PublicKey. Bob uses the inverse, Alice's PublicKey and his PrivateKey.  The `key.shared` constructor yields the same, shared secret for both.  Since only the SharedKey can decrypt the message, and only Alice's private key can make the shared key on her end, Bob can be confident that Alice encrypted the message he outputs.
 
-Asymmetric cryptography uses key-pairs, one public and one private, for each person involved.  If Alice's account does not exist or have a key-pair, we may construct one using `keyPair.Encryption()`.
+We pass the SharedKey and the message to `encrypt`.  Under the hood, panda-confidential is uses the [TweetNaCl.js implementation of asymmetric encryption][tweetnacl-box], returning Base64 encoded string ciphertext that we can safely send over the network.
 
-To accomplish the dual goals of asymmetric encryption _and_ authentication in a clear way, TweetNaCl.js requires a special key.  Using the private key from Alice and the public key from Bob, it forms a new, shared key.  On Bob's end, he can use Alice's _public_ key and his _private_ key to generate the _same_ shared key.  Since only the shared key can decrypt the note, and only Alice's private key can make the shared key on her end, Bob can be confident that Alice encrypted the note.
+We just need to pass our SymmetricKey and the plaintext to `encrypt`. Under the hood, panda-confidential is uses the [TweetNaCl.js implementation of symmetric encryption][tweetnacl-secretbox].  `encrypt` returns a Base64 encoded string ciphertext that we can store in a database.
 
-Panda-Confidential has three additional key types to support that procedure: PublicKey, PrivateKey, and SharedKey.
+`decrypt` opposes `encrypt` and works just as simply.  Bob creates the SharedKey and passes it and the ciphertext to `decrypt`.
 
-In our code, we gather the private key from Alice (as an instance of PrivateKey) and a public key from Bob (as an instance of PublicKey).  Then we use the constructor `key.Shared` to generate a SharedKey to use with `encrypt`.
-
-We encrypt by simply passing the SharedKey and the text of the note to `encrypt`.  Under the hood, panda-confidential is uses the [TweetNaCl.js implementation of asymmetric encryption][tweetnacl-box], returning Base64 encoded string ciphertext that we can safely send over the network.
-
-### Decryption
-```coffeescript
-import {confidential} from "panda-confidential"
-
-# Instantiate Panda-Confidential
-{key, decrypt} = confidential()
-
-handleNote = (senderAccountID, recipientAccountID, encryptedNote) ->
-  # Fetch the sender's _public_ key
-  senderPublicKey = await getPublicKeyFromAccount senderAccountID
-  senderPublicKey = key.Public senderPublicKey
-
-  # Fetch the recipient's _private_ key
-  recipientPrivateKey = await getPrivateKeyFromAccount recipientAccountID
-  recipientPrivateKey = key.Private recipientPrivateKey
-
-  # Return the sender's decrypted note.
-  KEY = key.Shared senderPublicKey, recipientPrivateKey
-  await decrypt KEY, encryptedNote
-```
-
-`decrypt` opposes `encrypt` and works just as simply.
-
-We again need an instance of SharedKey, but this time we are working on behalf of Bob, so we use Bob's _private_ key and Alice's _public_ key.
-
-We pass both the SharedKey and the encrypted note to `decrypt` and get back the original note.  Bob is able to read the note Alice wrote and be sure she is the one who encrypted it.
 
 ## Signing and Verifying Messages
-We add one more requirement to our app.  Now we need to let people publish a note and prove it is unaltered.  
+Alice wishes to publish a message, claim authorship, and ensure that her claim cannot be attributed to an altered version.  This calls for [digitial signature][digitial-signature].
 
-### Signing
 ```coffeescript
 import {confidential} from "panda-confidential"
 
 # Instantiate Panda-Confidential
-{encode, randomBytes, keyPair, key, encrypt} = confidential()
+{keyPair, sign, verify} = confidential()
 
-publishNote = (accountID, noteID) ->
-  # Fetch the stored note the sender wants to publish.
-  note = getNote accountID, noteID
+do ->
+  # Come up with signing key-pairs for Alice and Bob.
+  Alice = await keyPair.signature()
 
-  # Fetch or generate an signing key-pair for account.
-  if AccountKeyPair = await getSigningPairFromAccount accountID
-  else
-    AccountKeyPair = await key.Signature()
-    await createAccount senderAccountID, AccountKeyPair.dump()
+  # Alice signs her message.
+  message = "Hello World!"
+  signedMsg = await sign Alice, message
+  blob = signedMsg.encode()  # You can output Base64 string for transport
 
-  # Sign the note with the private key, include the public key for verification.
-  signedNote = await sign AccountKeyPair, note
 
-  # Publish
-  await publish AccountID, signedNote
+  # Some time later, Bob looks at the signed message...
+
+  # Bob would like to verify that Alice truly signed this message.
+  result = verify signedMsg
+  result == true   # true
+
+  # Bob decides to also sign the message
+  Bob = await keyPair.signature()
+  signedMsg = sign Bob, signedMsg
+
+  # Some time later, Charlotte verfies the signatures from Alice and Bob.
+  result = verify signedMsg
+  result == true  # true
 ```
 
-Set aside the details for getting account information or publishing.  To keep this discussion clear, consider two people using the app: Alice and Bob.
+Digital signing relies on public key identity, so you need to handle key-pairs similar to those in asymmetric encryption.  To avoid any confusion (and to enforce the best practice of separate encryption and signing keys), TweetNaCl.js makes these key pairs incompatible.
 
-In these few lines of code, we create a [digitial signature][digitial-signature].  Signing with her private key allows Alice to claim authorship and prevents bad actors from presenting an altered version of the note with attribution to the original author.
+1. If we already have a key-pair, we can create a PublicKey and a PrivateKey by passing the key to the constructors `key.public` and `key.private`, respectively.
+2. If we want a _new_ key-pair, we can invoke the constructor `keyPair.signature` without arguments.  This provides a key-pair suitable for signing, but _not_ encryption. And don't worry -- TweetNaCl.js provides a way to get [robust randomness regardless of platform][tweetnacl-randombytes].
 
+To sign a message, we just need to pass signing public and private keys (or together as a key-pair) and the message to `sign`. Under the hood, panda-confidential is uses the [TweetNaCl.js implementation of digital signing][tweetnacl-sign].  `sign` returns an instance of SignedMessage, containing both the original message, the signature(s) generated with the PrivateKey(s), and the PublicKey(s) needed to verify the signature(s).  Multiple people can sign a single message, so just pass the SignedMessage instance to `sign` instead of a plain message to add on signatures.
+
+`verify` opposes `sign` and works just as simply.  Everything needed for verification is contained within an instance of SignedMessage, so just pass it to `verify`.  `verify` returns the boolean result of the verification of _all_ signatures.
 
 
 
@@ -216,3 +180,4 @@ In these few lines of code, we create a [digitial signature][digitial-signature]
 [tweetnacl-randombytes]:https://github.com/dchest/tweetnacl-js#random-bytes-generation
 [tweetnacl-secretbox]: https://github.com/dchest/tweetnacl-js#secret-key-authenticated-encryption-secretbox
 [tweetnacl-box]:https://github.com/dchest/tweetnacl-js#public-key-authenticated-encryption-box
+[tweetnacl-sign]:https://github.com/dchest/tweetnacl-js#signatures
