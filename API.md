@@ -279,13 +279,15 @@ do ->
 ## encode
 _**encode** Encoding, Data &rarr; Result_
 
-- _Encoding_ `utf8` | `base64` | `binary`: The desired encoding of the Result.
+- _Encoding_ `utf8` | `base64` | `base64url` | `binary`: The desired encoding of the Result.
 - _Data_ [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer] | `<String>` | `<Object>`: The Data to be encoded.  This is usually binary data, but `encode` can process other types.
 - __Returns__ _Result_: The encoded Result of the input Data, usually a string.
 
 Encodes an input into a desired output.  This generic is designed to be flexible enough to handle many input types and is used extensively to construct the `encrypt`-`decrypt` and `sign`-`verify` generics, as well as the key and key-pair class constructors.  It is exposed to allow extensions to panda-confidential access to its expressive power.  
 
 The underlying `utf8` and `base64` encoding is handled by the [TweetNaCl-Utils-JS][tweetnacl-utils] helpers, written in [Universal JavasScript][universal].
+
+_For the scenarios below, `base64url` does the same as `base64`, but outputs a URL-safe equivalent based on [RFC 4648's "base64url" mapping](https://tools.ietf.org/html/rfc4648#section-5)_
 
 When an Uint8Array or Node.js Buffer is input:
 - `utf8`: `encode` outputs a UTF8 encoded string.
