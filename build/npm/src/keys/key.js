@@ -18,8 +18,8 @@ exports.Key = Key = class Key {
     this.key = key;
   }
 
-  dump() {
-    return (0, _utils.encode)("base64", this.key);
+  encode(encoding = "base64") {
+    return (0, _utils.encode)(encoding, this.key);
   }
 
 };

@@ -27,7 +27,7 @@ SignedMessage = class SignedMessage {
     this.signatures = signatures1;
   }
 
-  dump() {
+  encode() {
     var key, sig;
     return (0, _utils.encode)({
       message: (0, _utils.encode)("base64", this.message),
@@ -55,7 +55,7 @@ SignedMessage = class SignedMessage {
     });
   }
 
-  dumpMessage() {
+  encodeMessage() {
     return (0, _utils.encode)(this.encoding, this.message);
   }
 

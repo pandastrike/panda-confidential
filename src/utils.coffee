@@ -7,6 +7,7 @@ import {Method} from "fairmont-multimethods"
 isEqual = (x) -> (y) -> x == y
 isUTF8 = isEqual "utf8"
 isBase64 = isEqual "base64"
+isBase64URLSafe = isEqual "base64url"
 isBinary = isEqual "binary"
 
 isUint8Array = isType Uint8Array
@@ -36,8 +37,18 @@ Method.define encode, isUTF8, isString,
   (_, string) ->  encode "utf8", decode "base64", string
 Method.define encode, isBase64, isString,
   (_, string) ->  encode "base64", decode "utf8", string
+Method.define encode, isBase64, isObject,
+  (_, object) ->  encode "base64", decode object
 Method.define encode, isObject,
-  (object) -> encode "base64", decode object
+  (object) -> encode "base64", object
+Method.define encode, isBase64URLSafe, isAny,
+  (_, thing) ->
+    # Based on RFC 4648's "base64url" mapping:
+    # https://tools.ietf.org/html/rfc4648#section-5
+    encode "base64", thing
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/\=+$/, '')
 Method.define encode, isString, isObject,
   (encoding, object) -> encode encoding, decode object
 Method.define encode, isBinary, isData,

@@ -15,7 +15,7 @@ var _fairmontMultimethods = require("fairmont-multimethods");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var decode, decodeBase64, decodeUTF8, encode, encodeBase64, encodeUTF8, isAny, isBase64, isBinary, isData, isEqual, isUTF8, isUint8Array;
+var decode, decodeBase64, decodeUTF8, encode, encodeBase64, encodeUTF8, isAny, isBase64, isBase64URLSafe, isBinary, isData, isEqual, isUTF8, isUint8Array;
 
 ({ decodeBase64, decodeUTF8, encodeBase64, encodeUTF8 } = _tweetnaclUtil2.default);
 
@@ -28,6 +28,8 @@ isEqual = function (x) {
 isUTF8 = isEqual("utf8");
 
 isBase64 = isEqual("base64");
+
+isBase64URLSafe = isEqual("base64url");
 
 isBinary = isEqual("binary");
 
@@ -89,8 +91,18 @@ _fairmontMultimethods.Method.define(encode, isBase64, _fairmontHelpers.isString,
   return encode("base64", decode("utf8", string));
 });
 
-_fairmontMultimethods.Method.define(encode, _fairmontHelpers.isObject, function (object) {
+_fairmontMultimethods.Method.define(encode, isBase64, _fairmontHelpers.isObject, function (_, object) {
   return encode("base64", decode(object));
+});
+
+_fairmontMultimethods.Method.define(encode, _fairmontHelpers.isObject, function (object) {
+  return encode("base64", object);
+});
+
+_fairmontMultimethods.Method.define(encode, isBase64URLSafe, isAny, function (_, thing) {
+  // Based on RFC 4648's "base64url" mapping:
+  // https://tools.ietf.org/html/rfc4648#section-5
+  return encode("base64", thing).replace(/\+/g, '-').replace(/\//g, '_').replace(/\=+$/, '');
 });
 
 _fairmontMultimethods.Method.define(encode, _fairmontHelpers.isString, _fairmontHelpers.isObject, function (encoding, object) {

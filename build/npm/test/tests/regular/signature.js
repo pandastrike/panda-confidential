@@ -40,7 +40,7 @@ Signature = (() => {
     var A, B, blob, isSignedMessage, key, keyPair, message, nacl, output, privateKey, publicKey, sign, signedMsg, verify;
     ({ sign, verify, key, keyPair, isSignedMessage, nacl } = (0, _index.confidential)());
     // Test Key Pair Generation
-    A = ({ privateKey, publicKey } = yield keyPair.Signature());
+    A = ({ privateKey, publicKey } = yield keyPair.signature());
     (0, _powerAssert2.default)(_rec._expr(_rec._capt(_rec._capt(privateKey, "arguments/0/left") && _rec._capt(_rec._capt(key, "arguments/0/right/callee/object").isPrivate(_rec._capt(privateKey, "arguments/0/right/arguments/0")), "arguments/0/right"), "arguments/0"), {
       content: "assert(privateKey && key.isPrivate(privateKey), \"must make private key\")",
       filepath: "tests/regular/signature.coffee",
@@ -66,7 +66,7 @@ Signature = (() => {
       async: true
     }), "public key is improper length");
     // Test Encrypt - Decrypt Cycle
-    B = yield keyPair.Signature();
+    B = yield keyPair.signature();
     message = "Hello World!";
     //# Case 1
     //###############################
@@ -78,8 +78,8 @@ Signature = (() => {
       line: 26,
       async: true
     }), "bad signature");
-    (0, _powerAssert2.default)(_rec6._expr(_rec6._capt(_rec6._capt(_rec6._capt(signedMsg, "arguments/0/left/callee/object").dumpMessage(), "arguments/0/left") === _rec6._capt(message, "arguments/0/right"), "arguments/0"), {
-      content: "assert(signedMsg.dumpMessage() === message, \"message must be the same\")",
+    (0, _powerAssert2.default)(_rec6._expr(_rec6._capt(_rec6._capt(_rec6._capt(signedMsg, "arguments/0/left/callee/object").encodeMessage(), "arguments/0/left") === _rec6._capt(message, "arguments/0/right"), "arguments/0"), {
+      content: "assert(signedMsg.encodeMessage() === message, \"message must be the same\")",
       filepath: "tests/regular/signature.coffee",
       line: 27,
       async: true
@@ -109,8 +109,8 @@ Signature = (() => {
       line: 40,
       async: true
     }), "bad signature");
-    (0, _powerAssert2.default)(_rec10._expr(_rec10._capt(_rec10._capt(_rec10._capt(signedMsg, "arguments/0/left/callee/object").dumpMessage(), "arguments/0/left") === _rec10._capt(message, "arguments/0/right"), "arguments/0"), {
-      content: "assert(signedMsg.dumpMessage() === message, \"message must be the same\")",
+    (0, _powerAssert2.default)(_rec10._expr(_rec10._capt(_rec10._capt(_rec10._capt(signedMsg, "arguments/0/left/callee/object").encodeMessage(), "arguments/0/left") === _rec10._capt(message, "arguments/0/right"), "arguments/0"), {
+      content: "assert(signedMsg.encodeMessage() === message, \"message must be the same\")",
       filepath: "tests/regular/signature.coffee",
       line: 41,
       async: true
@@ -138,7 +138,7 @@ Signature = (() => {
     //# Case 3
     //###############################
     // Person D recieves a base64 encoded blob of the signed message and verifies.
-    blob = signedMsg.dump();
+    blob = signedMsg.encode();
     output = verify(blob);
     return (0, _powerAssert2.default)(_rec14._expr(_rec14._capt(_rec14._capt(output, "arguments/0/left") === true, "arguments/0"), {
       content: "assert(output === true, \"failed to verify\")",

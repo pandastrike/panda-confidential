@@ -48,10 +48,10 @@ exports.confidential = confidential = function () {
   };
   // Key types.  Symmetric key generation requires randomBytes.
   c.key = {
-    Private: _keys.privateKey,
-    Public: _keys.publicKey,
-    Shared: _keys.sharedKey,
-    Symmetric: (0, _keys.symmetricKey)(c.randomBytes),
+    private: _keys.privateKey,
+    public: _keys.publicKey,
+    shared: _keys.sharedKey,
+    symmetric: (0, _keys.symmetricKey)(c.randomBytes),
     isPrivate: _keys.isPrivateKey,
     isPublic: _keys.isPublicKey,
     isShared: _keys.isSharedKey,
@@ -60,8 +60,8 @@ exports.confidential = confidential = function () {
   };
   // Key pair types.  Pair generation requires randomBytes
   c.keyPair = {
-    Encryption: (0, _keyPairs.encryptionKeyPair)(c.randomBytes),
-    Signature: (0, _keyPairs.signatureKeyPair)(c.randomBytes),
+    encryption: (0, _keyPairs.encryptionKeyPair)(c.randomBytes),
+    signature: (0, _keyPairs.signatureKeyPair)(c.randomBytes),
     isEncryption: _keyPairs.isEncryptionKeyPair,
     isSignature: _keyPairs.isSignatureKeyPair
   };

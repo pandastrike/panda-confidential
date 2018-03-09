@@ -11,6 +11,8 @@ var _tweetnacl2 = _interopRequireDefault(_tweetnacl);
 
 var _fairmontHelpers = require("fairmont-helpers");
 
+var _fairmontMultimethods = require("fairmont-multimethods");
+
 var _keyPair = require("./key-pair");
 
 var _keys = require("../keys");
@@ -26,16 +28,29 @@ SignatureKeyPair = class SignatureKeyPair extends _keyPair.KeyPair {};
 exports.isSignatureKeyPair = isSignatureKeyPair = (0, _fairmontHelpers.isType)(SignatureKeyPair);
 
 exports.signatureKeyPair = signatureKeyPair = function (randomBytes) {
-  return _asyncToGenerator(function* () {
-    // Generate a random input to generate a pair. Length comes from TweetNaCl.
-    var input, pair;
-    input = yield randomBytes(_tweetnacl2.default.sign.seedLength);
-    pair = _tweetnacl2.default.sign.keyPair.fromSeed(input);
-    return new SignatureKeyPair({
-      privateKey: (0, _keys.privateKey)(pair.secretKey),
-      publicKey: (0, _keys.publicKey)(pair.publicKey)
-    });
+  var getPair;
+  // Generate a random input to generate a pair. Length comes from TweetNaCl.
+  getPair = _fairmontMultimethods.Method.create({
+    default: (() => {
+      var _ref = _asyncToGenerator(function* () {
+        var input, pair;
+        input = yield randomBytes(_tweetnacl2.default.sign.seedLength);
+        pair = _tweetnacl2.default.sign.keyPair.fromSeed(input);
+        return new SignatureKeyPair({
+          privateKey: (0, _keys.privateKey)(pair.secretKey),
+          publicKey: (0, _keys.publicKey)(pair.publicKey)
+        });
+      });
+
+      return function _default() {
+        return _ref.apply(this, arguments);
+      };
+    })()
   });
+  _fairmontMultimethods.Method.define(getPair, _fairmontHelpers.isObject, function (o) {
+    return new SignatureKeyPair(o);
+  });
+  return getPair;
 };
 
 exports.signatureKeyPair = signatureKeyPair;

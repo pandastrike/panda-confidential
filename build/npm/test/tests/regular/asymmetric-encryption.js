@@ -40,7 +40,7 @@ asymmetric = (() => {
     var A, B, cipher, decrypt, encrypt, key, key1, key2, keyPair, message, output, privateKey, publicKey;
     ({ keyPair, key, encrypt, decrypt } = (0, _index.confidential)());
     // Test Key Pair Generation
-    A = ({ privateKey, publicKey } = yield keyPair.Encryption());
+    A = ({ privateKey, publicKey } = yield keyPair.encryption());
     (0, _powerAssert2.default)(_rec._expr(_rec._capt(_rec._capt(privateKey, "arguments/0/left") && _rec._capt(_rec._capt(key, "arguments/0/right/callee/object").isPrivate(_rec._capt(privateKey, "arguments/0/right/arguments/0")), "arguments/0/right"), "arguments/0"), {
       content: "assert(privateKey && key.isPrivate(privateKey), \"must make private key\")",
       filepath: "tests/regular/asymmetric-encryption.coffee",
@@ -66,10 +66,10 @@ asymmetric = (() => {
       async: true
     }), "public key is improper length");
     // Test Encrypt - Decrypt Cycle
-    B = yield keyPair.Encryption();
+    B = yield keyPair.encryption();
     message = "Hello World!";
     // Person A encrypts the message for person B.
-    key1 = key.Shared(A.privateKey, B.publicKey);
+    key1 = key.shared(A.privateKey, B.publicKey);
     (0, _powerAssert2.default)(_rec5._expr(_rec5._capt(_rec5._capt(_rec5._capt(key1, "arguments/0/left/left") && _rec5._capt(_rec5._capt(key, "arguments/0/left/right/callee/object").isShared(_rec5._capt(key1, "arguments/0/left/right/arguments/0")), "arguments/0/left/right"), "arguments/0/left") && _rec5._capt(_rec5._capt(_rec5._capt(_rec5._capt(key1, "arguments/0/right/left/object/object").key, "arguments/0/right/left/object").length, "arguments/0/right/left") === _rec5._capt(_rec5._capt(_rec5._capt(_tweetnacl2.default, "arguments/0/right/right/object/object").box, "arguments/0/right/right/object").sharedKeyLength, "arguments/0/right/right"), "arguments/0/right"), "arguments/0"), {
       content: "assert(key1 && key.isShared(key1) && key1.key.length === nacl.box.sharedKeyLength, \"failed to create shared key.\")",
       filepath: "tests/regular/asymmetric-encryption.coffee",
@@ -84,14 +84,14 @@ asymmetric = (() => {
       async: true
     }), "failed to create a ciphertext");
     // Person B gets the cipher and decrypts the message with counterpart.
-    key2 = key.Shared(B.privateKey, A.publicKey);
-    _powerAssert2.default.equal(_rec7._expr(_rec7._capt(_rec7._capt(key1, "arguments/0/callee/object").dump(), "arguments/0"), {
-      content: "assert.equal(key1.dump(), key2.dump(), \"shared keys must be identical\")",
+    key2 = key.shared(B.privateKey, A.publicKey);
+    _powerAssert2.default.equal(_rec7._expr(_rec7._capt(_rec7._capt(key1, "arguments/0/callee/object").encode(), "arguments/0"), {
+      content: "assert.equal(key1.encode(), key2.encode(), \"shared keys must be identical\")",
       filepath: "tests/regular/asymmetric-encryption.coffee",
       line: 30,
       async: true
-    }), _rec8._expr(_rec8._capt(_rec8._capt(key2, "arguments/1/callee/object").dump(), "arguments/1"), {
-      content: "assert.equal(key1.dump(), key2.dump(), \"shared keys must be identical\")",
+    }), _rec8._expr(_rec8._capt(_rec8._capt(key2, "arguments/1/callee/object").encode(), "arguments/1"), {
+      content: "assert.equal(key1.encode(), key2.encode(), \"shared keys must be identical\")",
       filepath: "tests/regular/asymmetric-encryption.coffee",
       line: 30,
       async: true

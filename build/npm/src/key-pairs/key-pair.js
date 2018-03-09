@@ -7,6 +7,8 @@ exports.isKeyPair = exports.KeyPair = undefined;
 
 var _fairmontHelpers = require("fairmont-helpers");
 
+var _utils = require("../utils");
+
 var KeyPair, isKeyPair;
 
 exports.KeyPair = KeyPair = class KeyPair {
@@ -18,10 +20,10 @@ exports.KeyPair = KeyPair = class KeyPair {
     this.publicKey = publicKey;
   }
 
-  dump() {
-    return JSON.stringify({
-      privateKey: this.privateKey.dump(),
-      publicKey: this.publicKey.dump()
+  encode() {
+    return (0, _utils.encode)({
+      privateKey: this.privateKey.encode(),
+      publicKey: this.publicKey.encode()
     });
   }
 
