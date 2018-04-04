@@ -8,6 +8,7 @@ _Please see the [full API documentation][api-docs] for more detailed information
 - [Symmetric Encryption and Decryption](#symmetric-encrytion-and-decryption)
 - [Authenticated Asymmetric Encryption and Decryption](#authenticated-asymmetric-encrytion-and-decryption)
 - [Signing and Verifying Messages](#signing-and-verifying-messages)
+- [Using Confidential With AWS KMS](#using-confidential-with-aws-kms)
 
 ## Getting Started
 Install Panda-Confidential with npm, and use your favorite bundler to get it into the browser.
@@ -172,6 +173,10 @@ While `verify` confirms the self-consistency of the `SignedMessage`, it does not
 
 Signature key pairs are only as disposable as the signatures they're used to create, whereas key pairs for asymmetric encryption can (and probably should) have shorter lifespans. TweetNaCl.js enforces this best practice by making the two types of key pairs incompatible, and that is carried through into the Confidential API.
 
+## Using Confidential With AWS KMS
+
+We've extended Confidential for use with the AWS Key Management System API. Please check out our GitHub repository for [panda-confidential-kms][] to learn more.
+
 [api-docs]:https://github.com/pandastrike/panda-confidential/blob/master/API.md
 [symmetric-encryption]: https://en.wikipedia.org/wiki/Symmetric-key_algorithm
 [pke]: https://en.wikipedia.org/wiki/Public-key_cryptography
@@ -180,3 +185,5 @@ Signature key pairs are only as disposable as the signatures they're used to cre
 [tweetnacl-secretbox]: https://github.com/dchest/tweetnacl-js#secret-key-authenticated-encryption-secretbox
 [tweetnacl-box]:https://github.com/dchest/tweetnacl-js#public-key-authenticated-encryption-box
 [tweetnacl-sign]:https://github.com/dchest/tweetnacl-js#signatures
+
+[panda-confidential-kms]:https://github.com/pandastrike/panda-confidential-kms
