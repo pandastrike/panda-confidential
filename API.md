@@ -89,18 +89,15 @@ ___WARNING: Using a robust source of entropy is essential for encryption.  Use t
 
 ```coffeescript
 import {confidential} from "panda-confidential"
-import {myRandomGenerator} from "my-other-library"
+import {randomBytes} from "my-library"
 c = confidential()
 
 # Applies your random generator to panda-confidential functions
-c.randomBytes = myRandomGenerator
-{key, randomBytes} = c
+c.randomBytes = randomBytes
+{key} = c
 
 do ->
-  # get random bytes directly
-  randomValue = await randomBytes 32
-    
-  # use indirectly when generating keys
+  # my-library randomBytes used in key generation
   myKey = await key.symmetric()
 ```
 
@@ -115,39 +112,41 @@ _**encrypt** Key, Plaintext [, Encoding] &rarr; Ciphertext_
 
 Encrypts the given data with the given key.  
 
-When a [symmetric key][classSymmetricKey] is used, `encrypt` uses [symmetric encryption][tweetnacl-secretbox] with a random nonce [it generates][randombytes].
+When given a [symmetric key][classSymmetricKey], `encrypt` uses [symmetric encryption][tweet-nacl-secretbox]. When given a [shared key][classSharedKey], `encrypt` uses [authenticated, asymmetric encryption][tweet-nacl-box]. In either case, `encrypt` generates a random nonce.
 
-##### Example
+**Warning:** The key pairs for signing [do not work for encryption](./usage.md#why-signing-key-pairs-are-different).
+
+##### Example: Symmetric Encryption
 
 ```coffeescript
 import {confidential} from "panda-confidential"
 {encrypt} = confidential()
-import {myKeyLookup} from "my-library"
+import {keyLookup} from "my-library"
 
 do ->
-  myKey = myKeyLookup()  
-  ciphertext = await encrypt myKey, "Hello, World!"
+  alice = keyLookup "Alice/private"
+  ciphertext = await encrypt alice, "Hello, World!"
 ```
 
-When a [shared key][classSharedKey] is used, `encrypt` uses [asymmetric encryption][tweetnacl-box-after] with a random nonce [it generates][randombytes].
+**Warning:** Private keys should only be accessible to their owners.
 
-___The private keys you generate for signing are _not_ suitable for encryption.___
-
-##### Example
+##### Example: Asymmetric Encryption
 
 ```coffeescript
 import {confidential} from "panda-confidential"
 {key, encrypt} = confidential()
-import {myKeyLookup} from "my-library"
+import {keyLookup} from "my-library"
 
 do ->
-  alice = myKeyLookup "Alice/private"
-  bob = myKeyLookup "Bob/public"
+  alice = keyLookup "Alice/private"
+  bob = keyLookup "Bob/public"
   fromAliceToBob = key.shared alice, bob
   ciphertext = await encrypt fromAliceToBob, "Hello, World!"
 ```
 
-## decrypt
+**Warning:** Private keys should only be accessible to their owners.
+
+##### ## decrypt
 
 _**decrypt** Key, Blob [, Encoding] &rarr; Plaintext_
 
@@ -158,29 +157,27 @@ _**decrypt** Key, Blob [, Encoding] &rarr; Plaintext_
 
 Decrypts the given data with the given key.  
 
-When a [symmetric key][classSymmetricKey] is used, `decrypt` uses a [symmetric decryption operation][tweetnacl-secretbox-open].
+When given a [symmetric key][classSymmetricKey], `decrypt` uses [symmetric decryption][tweet-nacl-secretbox-open]. When given a [shared key][classSharedKey], `decrypt` uses [authenticated, asymmetric decryption][tweet-nacl-box-open].
 
-##### Example: Symmetric Encryption
+##### Example: Symmetric Decryption
 
 ```coffeescript
 import {confidential} from "panda-confidential"
 {decrypt} = confidential()
-import {myKeyLookup, fetchCipherText} from "my-library"
+import {keyLookup, receiveMessage} from "my-library"
 
 do ->
-  myKey = myKeyLookup()
-  ciphertext = fetchCiphertext()
-  plaintext = await decrypt myKey, ciphertext
+  alice = keyLookup "Alice/private"
+  ciphertext = receiveMessage()
+  plaintext = await decrypt alice, ciphertext
 ```
 
-When a [shared key][classSharedKey] is used, `decrypt` uses an [asymmetric decryption operation][tweetnacl-box-open-after].
-
-##### Example: Asymmetric Encryption
+##### Example: Asymmetric Decryption
 
 ```coffeescript
 import {confidential} from "panda-confidential"
 {key, decrypt} = confidential()
-import {myKeyLookup, receiveMessage} from "my-library"
+import {keyLookup, receiveMessage} from "my-library"
 
 do ->
   alice = lookupPublicKey "Alice/public"
@@ -203,49 +200,51 @@ _**sign** PrivateKey, PublicKey, Message [, Encoding] &rarr; SignedMessage_
 - _Encoding_ `utf8` | `base64`  (Optional): Specifies the encoding of the Message string.  This value defaults to `utf8` and is ignored when the Message is an Uint8Array, Node.js buffer, or SignedMessage.
 - __Returns__ _SignedMessage_: This returns an instance of [SignedMessage][classSignedMessage] containing the Message, its original encoding, a list of the public keys of the signatories, and a list of the signatures.
 
-Signs the given message with the given private-signing-key using [TweetNaCl.js signing implementation][tweetnacl-sign].  You may provide a signing key-pair, or provide the private and public keys as separate arguments.  
+[Signs the given message][tweet-nacl-sign] with the given private-signing-key.  You may provide a signing key pair, or provide the private and public keys as separate arguments.  
 
-__The private keys you generate for encryption [do not work for signing](./usage.md#why-signing-key-pairs-are-different).__
+**Warning:** The key pairs for signing do not work for encryption.
 
-##### Example
+##### Example: Single Signature
 
 ```coffeescript
 import {confidential} from "panda-confidential"
 {sign} = confidential()
 
+import {keyPairLookup} from "my-library"
+
 do ->
-  # Somehow get the signing key-pair for person A.  See keypair.Signature() for generating keys suitable for signing.
-  A_KeyPair = lookupKeyPair()
+  alice = keyPairLookup "alice/Sign"
+  signedMessage = sign alice, "Hello, World!"
 
-  # Person A signs a message.
-  message = "Hello World!"
-  signedMsg = sign A_KeyPair, message
-
-  # The SignedMessage class holds instantiated data in binary, but you may retrieve the message or convert the whole data to a base64 blob at any time.
-  msg = signedMsg.encodeMessage()  # utf8 encoded `message` field
-  blob = signedMsg.encode()        # base64 encoded stringified object
+  # encode the message
+  # defaults to utf-8
+  message = signedMessage.encodeMessage()
+  
+  # encode the signed message itself
+  # defaults to base64
+  data = signedMessage.encode()
 ```
 
 Multiple people can sign a message, so `sign` also operates on previously signed messages.  The output is the same SignedMessage instance, with an additional signature and matching public key in its lists.
 
-##### Example
+##### Example: Multiple Signatures
 
 ```coffeescript
+import assert from "assert"
 import {confidential} from "panda-confidential"
 {sign, signedMessage} = confidential()
+import {receiveMessage, keyPairLookup} from "my-library"
 
 do ->
-  # Somehow get the signing key-pair for person B.  See keypair.Signature() for generating keys suitable for signing.
-  B_KeyPair = lookupKeyPair()
+  # convert base64 encoded string to SignedMessage
+  message = signedMessage receiveMessage()
+  
+  # add Bob's signature
+  bob = keyPairLookup "Bob/Sign"
+  message = sign bob, message
 
-  # Get the previously signed message.  If you converted it to a base64 string blob for transport, you can re-instantiate it.
-  blob = fetchSignedMessageBlob()
-  signedMsg = signedMessage blob  # Now we have a SignedMessage instance.
-  final = sign B_KeyPair, signedMsg
-
-  # The result has the same message and encoding fields, but now has an additional set of signature + public key.
-  final.signatures.length == 2  # true
-  final.publicKeys.length == 2  # true
+  assert.equal message.signatures.length, 2
+  assert.equal message.publicKeys.length, 2
 ```
 
 ## verify
@@ -255,29 +254,27 @@ _**verify** SignedMessage &rarr; Result_
 - _SignedMessage_ [`<SignedMessage>`][classSignedMessage]: Signed message to be verified.
 - __Returns__ _Result_: The boolean result of the verification process.  If the signatures checkout, `true`. Otherwise, `false`.
 
-Verifies the signatures against the original message and the attached public keys.  Verification occurs via [TweetNaCl.js signing implementation][tweetnacl-verify].  Everything needed to verify message integrity exists within the SignedMessage instance, but it is up to you to verify the public keys are correct.
+[Verifies the signatures][tweetnacl-verify] against the original message and the attached public keys.  Everything needed to verify message integrity exists within the SignedMessage instance, but it is up to you to verify the public keys are correct.
 
-> See [key.equal()][equal] for information on key comparison.
+See [key.equal()][equal] for information on key comparison.
 
-___The private keys you generate for encryption are _not_ suitable for signing.___
+**Warning:** The key pairs for signing do not work for encryption.
 
 ##### Example
 
 ```coffeescript
 import {confidential} from "panda-confidential"
 {verify, signedMessage} = confidential()
+import {receiveMessage} from "my-library"
 
 do ->
-  # Get the signed message.  If you converted it to a base64 string blob for transport, you can re-instantiate it.
-  blob = fetchSignedMessageBlob()
-  signedMsg = signedMessage blob  # Now we have a SignedMessage instance.
-  isValid = verify signedMsg
+  # convert base64 encoded string to SignedMessage
+  message = signedMessage receiveMessage()
 
-  if isValid
+  if verify message
     # Return verified message.
-    signedMsg.encodeMessage()
+    message.encodeMessage()
   else
-    # Uh oh.
     throw new Error "Unable to verify message signatures."
 ```
 
@@ -286,29 +283,8 @@ do ->
 _**encode** Encoding, Data &rarr; Result_
 
 - _Encoding_ `utf8` | `base64` | `base64url` | `binary`: The desired encoding of the Result.
-- _Data_ [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer] | `<String>` | `<Object>`: The Data to be encoded.  This is usually binary data, but `encode` can process other types.
-- __Returns__ _Result_: The encoded Result of the input Data, usually a string.
-
-Encodes an input into a desired output.  This generic is designed to be flexible enough to handle many input types and is used extensively to construct the `encrypt`-`decrypt` and `sign`-`verify` generics, as well as the key and key-pair class constructors.  It is exposed to allow extensions to panda-confidential access to its expressive power.  
-
-The underlying `utf8` and `base64` encoding is handled by the [TweetNaCl-Utils-JS][tweetnacl-utils] helpers, written in [Universal JavasScript][universal].
-
-_For the scenarios below, `base64url` does the same as `base64`, but outputs a URL-safe equivalent based on [RFC 4648's "base64url" mapping](https://tools.ietf.org/html/rfc4648#section-5)_
-
-When an Uint8Array or Node.js Buffer is input:
-
-- `utf8`: `encode` outputs a UTF8 encoded string.
-- `base64`: `encode` outputs a Base64 encoded string.
-- `binary`: `encode` is a no-op.
-
-When a string is input:
-
-- `utf8`: `encode` decodes the string -- assuming Base64 encoding -- and outputs a UTF8 encoded string.
-- `base64`: `encode` decodes the string -- assuming UTF8 encoding -- and outputs a Base64 encoded string.
-
-When an object is input:
-
-- `encode` outputs a base64 encoded, stringified version of the object.  In this case, you are not required to specify a encoding format.
+- _Data_ [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer] | `<String>` | `<Object>`: The Data to be encoded.
+- __Returns__ _Result_: *Data* encoded with *Encoding*.
 
 ##### Example
 
@@ -317,15 +293,17 @@ import {confidential} from "panda-confidential"
 {encode} = confidential()
 
 do ->
-  data =
-    new Uint8Array [ 72, 101, 108, 108, 111, 32, 87, 111, 114, 108, 100, 33 ]
+  data = new Uint8Array [ 
+    72, 101, 108, 108, 111, 32, 
+    87, 111, 114, 108, 100, 33 
+  ]
 
   string = encode "utf8", data
-  string == "Hello World!"  # true
+  assert.equal string, "Hello World!"
 
-  blob = encode message: "Hello World!"
-  blob == "eyJtZXNzYWdlIjoiSGVsbG8gV29ybGQhIn0="        # true
-  encode("utf8", blob) == '{"message":"Hello World!"}'  # true
+  string = encode message: "Hello World!"
+  assert.equal string,
+    "eyJtZXNzYWdlIjoiSGVsbG8gV29ybGQhIn0="
 ```
 
 ## decode
@@ -333,26 +311,8 @@ do ->
 _**decode** Encoding, Data &rarr; Result_
 
 - _Encoding_ `utf8` | `base64` | `binary`: The encoding of the input Data.
-- _Data_ `<String>` | `<Object>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer]: The data to be decoded. This is usually a string, but `decode` can process other types.
-- __Returns__ _Result_: The decoded Result of the input data, usually binary data.
-
-Decodes an input into a desired output.  This generic is designed to be flexible enough to handle many input types and is used extensively to construct the `encrypt`-`decrypt` and `sign`-`verify` generics, as well as the key and key-pair class constructors.  It is exposed to allow extensions to panda-confidential access to its expressive power.  
-
-The underlying `utf8` and `base64` decoding is handled by the [TweetNaCl-Utils-JS][tweetnacl-utils] helpers, written in [Universal JavasScript][universal].
-
-When an Uint8Array or Node.js Buffer is input:
-
-- `decode` is a no-op, regardless of the encoding specified.
-
-When a string is input:
-
-- `utf8`: `decode` decodes the string -- assuming UTF8 encoding -- and outputs an Uint8Array of the resulting data.
-- `base64`: `decode` decodes the string -- assuming Base64 encoding -- and outputs an Uint8Array of the resulting data.
-- `binary`: `deocde` is a no-op.
-
-When an object is input:
-
-- `decode` first stringifies the object and then utf8 decodes it to output an Uint8Array of the resulting data.  In this case, you are not required to specify a decoding format.
+- _Data_ `<String>` | `<Object>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer]: The data to be decoded. 
+- __Returns__ _Result_: *Data* decoded from *Encoding*.
 
 ##### Example
 
