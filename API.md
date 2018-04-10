@@ -97,7 +97,7 @@ _**encrypt** key, plaintext [, encoding] &rarr; ciphertext-with-nonce_
 
 When given a [symmetric key][classSymmetricKey], [`encrypt`][encrypt] uses [symmetric encryption][tweetnacl-secretbox]. When given a [shared key][classSharedKey], [`encrypt`][encrypt] uses [authenticated, asymmetric encryption][tweetnacl-box]. In either case, [`encrypt`][encrypt] generates a random nonce.
 
-**Important** The nonce is included in the result. You do not need to add one. If you wish to use a different nonce, [`decode`][] the result, set the `nonce` property, and re-encode it. [The nonce length is 24 bytes][tweet-nacl-nonce-length].
+**Important** The nonce is included in the result. You do not need to add one. If you wish to use a different nonce, `[decode][]` the result, set the `nonce` property, and re-encode it. [The nonce length is 24 bytes][tweet-nacl-nonce-length].
 
 **Warning:** The key pairs for signing [do not work for encryption](./usage.md#why-signing-key-pairs-are-different).
 
