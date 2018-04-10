@@ -50,7 +50,7 @@
 
 _**randomBytes** length &rarr; bytes_
 
-- _length_ `<integer>`:  Length of the output in bytes.
+- _length_ `<integer>`: Length of the output in bytes.
 - __Returns__ _bytes_ `<Uint8Array>`: array of _length_ pseudo-random bytes.
 
 **Warning:** Throws when unable to locate a suitable source of entropy.
@@ -87,19 +87,25 @@ key.symmetric().then (myKey) ->
 ## encrypt
 _**encrypt** key, plaintext [, encoding] &rarr; ciphertext-with-nonce_
 
-- _key_ [`<SymmetricKey>`][classSymmetricKey] | [`<SharedKey>`][classSharedKey]:  Key to be used in the encryption operation.
+- _key_ [`<SymmetricKey>`][classSymmetricKey] | [`<SharedKey>`][classSharedKey]: Key to be used in the encryption operation.
 
 - _plaintext_ `<string>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer]: Data to be encrypted.
 
 - _encoding_: Encoding of the plaintext string. May be any value accepted by [`decode`][decode]. Defaults to `utf8` for strings and is ignored for instances of [`Uint8Array`][Uint8Array] or `Buffer`.
 
-- Returns _ciphertext-with-nonce_: URL-safe Base64 JSON encoded object, suitable for decryption with [`decrypt`][decrypt], with [`Uint8Array`][Uint8Array] properties `ciphertext` and `nonce`. The `ciphertext` property contains the ciphertext corresponding to the plain text, and the `nonce` property contains a random nonce.
+- Returns _ciphertext-with-nonce_: URL-safe Base64 JSON encoded object, suitable for decryption with [`decrypt`][decrypt].
 
 When given a [symmetric key][classSymmetricKey], [`encrypt`][encrypt] uses [symmetric encryption][tweetnacl-secretbox]. When given a [shared key][classSharedKey], [`encrypt`][encrypt] uses [authenticated, asymmetric encryption][tweetnacl-box]. In either case, [`encrypt`][encrypt] generates a random nonce.
 
-**Important** The nonce is included in the result. You do not need to add one. If you wish to use a different nonce, `[decode][]` the result, set the `nonce` property, and re-encode it. [The nonce length is 24 bytes][tweet-nacl-nonce-length].
-
 **Warning:** The key pairs for signing [do not work for encryption](./usage.md#why-signing-key-pairs-are-different).
+
+### Return Value For `encrypt`
+
+The return value for `encrypt` is encoded as URL-safe Base64 JSON. The encoded object has [`Uint8Array`][Uint8Array] properties `ciphertext` and `nonce`. The `ciphertext` property contains the ciphertext corresponding to the plain text, and the `nonce` property contains a [24 byte][tweetnacl-nonce-length] random nonce.
+
+Since the nonce is included in the result, you do not need to add one. If you wish to use a different nonce, [`decode`][decode] the result, set the `nonce` property, and re-encode it. Confidential supports URL-safe Base64 JSON via the `base64url-json` encoding.
+
+---
 
 ##### Example: Symmetric Encryption
 
@@ -134,14 +140,17 @@ do ->
 
 ## decrypt
 
-_**decrypt** key, ciphertext-with-nonce [, Encoding] &rarr; *plaintext*
+_**decrypt** key, ciphertext-with-nonce [, encoding] &rarr; plaintext_
 
-- _key_ [`<SymmetricKey>`][classSymmetricKey] | [`<SharedKey>`][classSharedKey]  Key to be used in decryption operation.
-- _ciphertext-with-nonce_ `<String>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer] URL-safe Base64 JSON encoding an object with properties `ciphertext` and `nonce`. See *result* for [`encrypt`][encrypt].
-- __encoding_: Encoding of the plaintext string. May be any value accepted by [`encode`][]. Defaults to `utf8`.
-- __Returns__ _plaintext_: decrypted ciphertext.
+- _key_ [`<SymmetricKey>`][classSymmetricKey] | [`<SharedKey>`][classSharedKey]: Key to be used in decryption operation.
 
-When given a [symmetric key][classSymmetricKey], `decrypt` uses [symmetric decryption][tweet-nacl-secretbox-open]. When given a [shared key][classSharedKey], `decrypt` uses [authenticated, asymmetric decryption][tweet-nacl-box-open].
+- _ciphertext-with-nonce_ `<string>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer]: URL-safe Base64 JSON encoding an object with properties `ciphertext` and `nonce`. See also: [_The Return Value For `encrypt`_](#the-return-value-for-encrypt).
+
+- _encoding_: Encoding of the plaintext string. May be any value accepted by [`encode`][encode]. Defaults to `utf8`.
+
+- Returns _plaintext_: decrypted ciphertext.
+
+When given a [symmetric key][classSymmetricKey], [`decrypt`][decrypt] uses [symmetric decryption][tweetnacl-secretbox-open]. When given a [shared key][classSharedKey], [`decrypt`][decrypt] uses [authenticated, asymmetric decryption][tweetnacl-box-open-after].
 
 ##### Example: Symmetric Decryption
 
@@ -177,14 +186,19 @@ _**sign** key-pair, message [, encoding] &rarr; signed-message_
 
 _**sign** private-key, public-key, message [, encoding] &rarr; signed-message_
 
-- _key-pair_ [`<SignatureKeyPair>`][classSignatureKeyPair]:  The public and private keys with which to sign the Message.
-- _private-key_ [`<PrivateKey>`][classPrivateKey]: The private key of the person wishing to sign the message. If you do not provide the private-public key pair directly, you must supply them individually here.
-- _PublicKey_ [`<PublicKey>`][classPublicKey]:  The public key of the person wishing to sign the message. If you do not provide the private-public key pair directly, you must supply them individually here.
-- _Message_ `<String>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer] | [`<SignedMessage>`][classSignedMessage]: Message to be signed.
-- _Encoding_ `utf8` | `base64`  (Optional): Specifies the encoding of the Message string. This value defaults to `utf8` and is ignored when the Message is an Uint8Array, Node.js buffer, or SignedMessage.
-- __Returns__ _SignedMessage_: This returns an instance of [SignedMessage][classSignedMessage] containing the Message, its original encoding, a list of the public keys of the signatories, and a list of the signatures.
+- _key-pair_ [`<SignatureKeyPair>`][classSignatureKeyPair]: The public and private keys with which to sign the Message.
 
-[Signs the given message][tweet-nacl-sign] with the given private-signing-key. You may provide a signing key pair, or provide the private and public keys as separate arguments.
+- _private-key_ [`<PrivateKey>`][classPrivateKey]: The private key of the person wishing to sign the message.
+
+- _public-key_ [`<PublicKey>`][classPublicKey]: The public key of the person wishing to sign the message.
+
+- _message_ `<string>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer] | [`<SignedMessage>`][classSignedMessage]: Message to be signed.
+
+- _encoding_ `utf8` | `base64`: Specifies the encoding for _message_. Defaults to `utf8` for strings and is ignored for instances of [`Uint8Array`][Uint8Array] or `Buffer`.
+
+- Returns _signed-message_: An instance of [SignedMessage][classSignedMessage] containing the _message_, its encoding, a list of the public keys of the signatories, and a list of the signatures.
+
+[Signs the given message][tweetnacl-sign] with the given private-signing-key. You may provide a signing key pair, or provide the private and public keys as separate arguments.
 
 **Warning:** The key pairs for signing do not work for encryption.
 
@@ -198,15 +212,13 @@ import {keyPairLookup} from "my-library"
 
 do ->
   alice = keyPairLookup "alice/Sign"
-  signedMessage = sign alice, "Hello, World!"
+  signed = sign alice, "Hello, World!"
 
-  # encode the message
-  # defaults to utf-8
-  message = signedMessage.encodeMessage()
+  # uses the saved encoding to restore the original message
+  message = encode signed.content
 
-  # encode the signed message itself
-  # defaults to base64
-  data = signedMessage.encode()
+  # encode the signed message object itself
+  send "Bob", encode "base64url-json", signed
 ```
 
 Multiple people can sign a message, so `sign` also operates on previously signed messages. The output is the same SignedMessage instance, with an additional signature and matching public key in its lists.
@@ -341,7 +353,7 @@ This examines the type of the object you input, returning `true` if the input is
 _**isData** Data &rarr; Boolean_
 
 - _Data_ : The input for this type check.
-- __Returns__ _Boolean_:  `true` if the input is an instance of [Buffer][Buffer] _or_ [Uint8Array][Uint8Array], and `false` otherwise.
+- __Returns__ _Boolean_: `true` if the input is an instance of [Buffer][Buffer] _or_ [Uint8Array][Uint8Array], and `false` otherwise.
 
 ## nacl
 This is the TweetNaCl.js package imported by panda-confidential. Unlike [`randomBytes`][], reassigning this value does not alter the behavior of the Confidential API.
@@ -828,4 +840,4 @@ While a signed message can be verified to be internally self-consistent, it is u
 [tweetnacl-utils]: https://github.com/dchest/tweetnacl-util-js#documentation
 [tweetnacl-equal]:https://github.com/dchest/tweetnacl-js#naclverifyx-y
 [tweetnacl-hash]:https://github.com/dchest/tweetnacl-js#hashing
-[tweet-nacl-nonce-length]: https://github.com/dchest/tweetnacl-js#naclsecretboxnoncelength--24
+[tweetnacl-nonce-length]: https://github.com/dchest/tweetnacl-js#naclsecretboxnoncelength--24
