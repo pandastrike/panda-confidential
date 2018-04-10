@@ -10,8 +10,8 @@
 - [encode][encode]
 - [decode][decode]
 - [hash][hash]
-- [signedMessage][signedMessage]
-- [isSignedMessage][isSignedMessage]
+- [signedData][signedData]
+- [isSignedData][isSignedData]
 - [isData][isdata]
 - [nacl][nacl]
 
@@ -43,15 +43,16 @@
 - [KeyPair][classKeyPair]
 - [EncryptionKeyPair][classEncryptionKeyPair]
 - [SignatureKeyPair][classSignatureKeyPair]
-- [SignedMessage][classSignedMessage]
+- [SignedData][classSignedData]
 
 # Functions
+
 ## randomBytes
 
 _**randomBytes** length &rarr; bytes_
 
 - _length_ `<integer>`: Length of the output in bytes.
-- __Returns__ _bytes_ `<Uint8Array>`: array of _length_ pseudo-random bytes.
+- __Returns__ _bytes_ [`<Uint8Array>`][Uint8Array]: array of _length_ pseudo-random bytes.
 
 **Warning:** Throws when unable to locate a suitable source of entropy.
 
@@ -91,21 +92,19 @@ _**encrypt** key, plaintext [, encoding] &rarr; ciphertext-with-nonce_
 
 - _plaintext_ `<string>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer]: Data to be encrypted.
 
-- _encoding_: Encoding of the plaintext string. May be any value accepted by [`decode`][decode]. Defaults to `utf8` for strings and is ignored for instances of [`Uint8Array`][Uint8Array] or `Buffer`.
+- _encoding_: Encoding of the plaintext string. May be any value accepted by [`decode`][decode]. Defaults to `utf8` for strings and ignored otherwise.
 
 - Returns _ciphertext-with-nonce_: URL-safe Base64 JSON encoded object, suitable for decryption with [`decrypt`][decrypt].
 
-When given a [symmetric key][classSymmetricKey], [`encrypt`][encrypt] uses [symmetric encryption][tweetnacl-secretbox]. When given a [shared key][classSharedKey], [`encrypt`][encrypt] uses [authenticated, asymmetric encryption][tweetnacl-box]. In either case, [`encrypt`][encrypt] generates a random nonce.
+When given a [symmetric key][classSymmetricKey], [`encrypt`][encrypt] uses [symmetric encryption][tweetnacl-secretbox]. When given a [shared key][classSharedKey], [`encrypt`][encrypt] uses [authenticated, asymmetric encryption][tweetnacl-box].
 
 **Warning:** The key pairs for signing [do not work for encryption](./usage.md#why-signing-key-pairs-are-different).
 
 ### Return Value For `encrypt`
 
-The return value for `encrypt` is encoded as URL-safe Base64 JSON. The encoded object has [`Uint8Array`][Uint8Array] properties `ciphertext` and `nonce`. The `ciphertext` property contains the ciphertext corresponding to the plain text, and the `nonce` property contains a [24 byte][tweetnacl-nonce-length] random nonce.
+The return value for `encrypt` is encoded as URL-safe Base64 JSON. The encoded object contains properties `ciphertext` and `nonce` of type [`Uint8Array`][Uint8Array] . The `ciphertext` property contains the ciphertext corresponding to the plain text, and the `nonce` property contains a [`nonceLength`][tweetnacl-nonce-length] random nonce.
 
 Since the nonce is included in the result, you do not need to add one. If you wish to use a different nonce, [`decode`][decode] the result, set the `nonce` property, and re-encode it. Confidential supports URL-safe Base64 JSON via the `base64url-json` encoding.
-
----
 
 ##### Example: Symmetric Encryption
 
@@ -157,11 +156,11 @@ When given a [symmetric key][classSymmetricKey], [`decrypt`][decrypt] uses [symm
 ```coffeescript
 import {confidential} from "panda-confidential"
 {decrypt} = confidential()
-import {keyLookup, receiveMessage} from "my-library"
+import {keyLookup, receive} from "my-library"
 
 do ->
   alice = keyLookup "Alice/private"
-  ciphertext = receiveMessage "Alice"
+  ciphertext = receive "Alice"
   plaintext = await decrypt alice, ciphertext
 ```
 
@@ -170,35 +169,35 @@ do ->
 ```coffeescript
 import {confidential} from "panda-confidential"
 {key, decrypt} = confidential()
-import {keyLookup, receiveMessage} from "my-library"
+import {keyLookup, receive} from "my-library"
 
 do ->
   alice = lookupPublicKey "Alice/public"
   bob = lookupPrivateKey "Bob/private"
   toAliceFromBob = key.shared alice, bob
-  ciphertext = receiveMessage "Alice"
+  ciphertext = receive "Alice"
   plaintext = await decrypt toAliceFromBob, ciphertext
 ```
 
 ## sign
 
-_**sign** key-pair, message [, encoding] &rarr; signed-message_
+_**sign** key-pair, data [, encoding] &rarr; signed-data_
 
-_**sign** private-key, public-key, message [, encoding] &rarr; signed-message_
+_**sign** private-key, public-key, data [, encoding] &rarr; signed-data_
 
-- _key-pair_ [`<SignatureKeyPair>`][classSignatureKeyPair]: The public and private keys with which to sign the Message.
+- _key-pair_ [`<SignatureKeyPair>`][classSignatureKeyPair]: The public and private keys with which to sign the Data.
 
-- _private-key_ [`<PrivateKey>`][classPrivateKey]: The private key of the person wishing to sign the message.
+- _private-key_ [`<PrivateKey>`][classPrivateKey]: The private key of the person wishing to sign the data.
 
-- _public-key_ [`<PublicKey>`][classPublicKey]: The public key of the person wishing to sign the message.
+- _public-key_ [`<PublicKey>`][classPublicKey]: The public key of the person wishing to sign the data.
 
-- _message_ `<string>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer] | [`<SignedMessage>`][classSignedMessage]: Message to be signed.
+- _data_ `<string>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer] | [`<SignedData>`][classSignedData]: Data to be signed.
 
-- _encoding_ `utf8` | `base64`: Specifies the encoding for _message_. Defaults to `utf8` for strings and is ignored for instances of [`Uint8Array`][Uint8Array] or `Buffer`.
+- _encoding_ `utf8` | `base64`: Specifies the encoding for _data_. Defaults to `utf8` for strings and ignored otherwise.
 
-- Returns _signed-message_: An instance of [SignedMessage][classSignedMessage] containing the _message_, its encoding, a list of the public keys of the signatories, and a list of the signatures.
+- Returns _signed-data_: An instance of [SignedData][classSignedData] containing the _data_, its encoding, a list of the public keys of the signatories, and a list of the signatures.
 
-[Signs the given message][tweetnacl-sign] with the given private-signing-key. You may provide a signing key pair, or provide the private and public keys as separate arguments.
+[Signs the given data][tweetnacl-sign] with the given private-signing-key. You may provide a signing key pair, or provide the private and public keys as separate arguments.
 
 **Warning:** The key pairs for signing do not work for encryption.
 
@@ -208,50 +207,52 @@ _**sign** private-key, public-key, message [, encoding] &rarr; signed-message_
 import {confidential} from "panda-confidential"
 {sign} = confidential()
 
-import {keyPairLookup} from "my-library"
+import {send, keyPairLookup} from "my-library"
 
 do ->
   alice = keyPairLookup "alice/Sign"
   signed = sign alice, "Hello, World!"
 
-  # uses the saved encoding to restore the original message
-  message = encode signed.content
+  # uses the saved encoding to restore the original data
+  assert.equal "Hello, World!",
+    encode signed.data
 
-  # encode the signed message object itself
+  # encode the signed data object itself
   send "Bob", encode "base64url-json", signed
 ```
 
-Multiple people can sign a message, so `sign` also operates on previously signed messages. The output is the same SignedMessage instance, with an additional signature and matching public key in its lists.
+`sign` accepts [`SignedData`][SignedData] instances to allow multiple signatures. The `signatures` property contains a list of signatures. The `signatories` property contains a list of the corresponding public keys.
 
 ##### Example: Multiple Signatures
 
 ```coffeescript
 import assert from "assert"
 import {confidential} from "panda-confidential"
-{sign, signedMessage} = confidential()
-import {receiveMessage, keyPairLookup} from "my-library"
+{sign, signedData} = confidential()
+import {receive, keyPairLookup} from "my-library"
 
 do ->
-  # convert base64 encoded string to SignedMessage
-  message = signedMessage receiveMessage()
+  # convert base64 encoded string to SignedData
+  signed = signedData receive "Bob"
 
   # add Bob's signature
   bob = keyPairLookup "Bob/Sign"
-  message = sign bob, message
+  signed = sign bob, data
 
-  assert.equal message.signatures.length, 2
-  assert.equal message.publicKeys.length, 2
+  assert.equal signed.signatures.length, 2
+  assert.equal signed.publicKeys.length, 2
 ```
 
 ## verify
-_**verify** SignedMessage &rarr; Result_
 
-- _SignedMessage_ [`<SignedMessage>`][classSignedMessage]: Signed message to be verified.
-- __Returns__ _Result_: The boolean result of the verification process. If the signatures checkout, `true`. Otherwise, `false`.
+_**verify** signed-data &rarr; is-valid_
 
-[Verifies the signatures][tweetnacl-verify] against the original message and the attached public keys. Everything needed to verify message integrity exists within the SignedMessage instance, but it is up to you to verify the public keys are correct.
+- _signed-data_ [`<SignedData>`][classSignedData]: Signed data to be verified.
+- Returns _is-valid_: The boolean result of the verification process. If the signatures are valid, `true`, otherwise, `false`.
 
-See [key.equal][equal] for information on key comparison.
+[Verifies the signatures][tweetnacl-verify] against the original data and the attached public keys.
+
+**Warning:** Everything needed to verify the signatures exists within the [`SignedData`][SignedData] instance, but it is up to you to verify the authenticity of the public keys. See also: [key.equal][equal] for information on key comparison.
 
 **Warning:** The key pairs for signing do not work for encryption.
 
@@ -259,28 +260,32 @@ See [key.equal][equal] for information on key comparison.
 
 ```coffeescript
 import {confidential} from "panda-confidential"
-{verify, signedMessage} = confidential()
-import {receiveMessage} from "my-library"
+{verify, signedData} = confidential()
+import {receive, process} from "my-library"
 
 do ->
-  # convert base64 encoded string to SignedMessage
-  message = signedMessage receiveMessage()
+  # convert base64 encoded string to SignedData
+  signed = signedData receive "Alice"
 
-  if verify message
-    # Return verified message.
-    message.encodeMessage()
+  if verify signed
+    # do something with the verified data.
+    process encode signed.data
   else
-    throw new Error "Unable to verify message signatures."
+    throw new Error "Unable to verify data signatures."
 ```
 
 ## encode
-_**encode** Encoding, Data &rarr; Result_
+
+_**encode** encoding, data &rarr; string_
 
 - _Encoding_ `utf8` | `base64` | `base64url` | `json` | `base64-json` | `base64url-json`: The desired encoding of the Result.
+
 - _Data_ [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer] | `<String>` | `<Object>`: The Data to be encoded.
+
 - __Returns__ _Result_: *Data* encoded with *Encoding*.
 
 ##### Example
+
 ```coffeescript
 import {confidential} from "panda-confidential"
 {encode} = confidential()
@@ -331,23 +336,23 @@ do ->
     hash "Hello, World!"
 ```
 
-## signedMessage
-_**signedMessage** Message &rarr; SignedMessage_
+## signedData
+_**signedData** Data &rarr; SignedData_
 
-- _Message_ `<String>` | `<Object>`: The content of the message.
-- __Returns__ _SignedMessage_: This returns an instance of [SignedMessage][classSignedMessage]
+- _Data_ `<String>` | `<Object>`: The content of the data.
+- __Returns__ _SignedData_: This returns an instance of [SignedData][classSignedData]
 
-This function wraps the constructor for the [SignedMessage][classSignedMessage] class. This is primarily useful for constructing a `SignedMessage` from signed message encoded as URL-safe Base64 JSON.
+This function wraps the constructor for the [SignedData][classSignedData] class. This is primarily useful for constructing a `SignedData` from signed data encoded as URL-safe Base64 JSON.
 
 See [`sign`](#sign) for an example.
 
-## isSignedMessage
-_**isSignedMessage** Message &rarr; Boolean_
+## isSignedData
+_**isSignedData** Data &rarr; Boolean_
 
-- _Message_ : The input for this type check.
+- _Data_ : The input for this type check.
 - __Returns__ _Boolean_: The boolean result of this type check.
 
-This examines the type of the object you input, returning `true` if the input is an instance of [SignedMessage][classSignedMessage] and `false` for anything else.
+This examines the type of the object you input, returning `true` if the input is an instance of [SignedData][classSignedData] and `false` for anything else.
 
 ## isData
 _**isData** Data &rarr; Boolean_
@@ -567,15 +572,15 @@ import {confidential} from "panda-confidential"
 {key, verify} = confidential()
 
 do ->
-  # Receive signed message from person A.
-  msg = acceptIncomingSignedMessageFromA()
+  # Receive signed data from person A.
+  msg = acceptIncomingSignedDataFromA()
   publicKey = msg.publicKeys[0]
 
   # Lookup the public key for person A.
   referenceKey = lookupPublicKeyForA()
 
   if key.equal(publicKey, referenceKey)
-    # We're safe to verify and then use the message
+    # We're safe to verify and then use the data
     ....
   else
     # Uh oh.
@@ -608,10 +613,10 @@ do ->
   # Lookup the public key for person B.
   B_public = lookupPublicKey()
 
-  # Now you may encrypt a message for person B.
+  # Now you may encrypt a data for person B.
   myKey = key.shared privateKey, B_public
-  message = "Hello World!"
-  ciphertext = encrypt mykey, message
+  data = "Hello World!"
+  ciphertext = encrypt mykey, data
 ```
 
 
@@ -633,9 +638,9 @@ do ->
   # Generate a key-pair suitable for signing for person A.
   A = {privateKey, publicKey} = await keyPair.encryption()
 
-  # Now you may sign a message for person B.
-  message = "Hello World!"
-  sign A, message
+  # Now you may sign a data for person B.
+  data = "Hello World!"
+  sign A, data
 ```
 
 
@@ -755,15 +760,15 @@ ___The key pair you generate for encryption is _not_ suitable for signing.___
 ## SignatureKeyPair
 _extends [KeyPair][classKeyPair]_
 
-This key pair is used by panda-confidential for message signing. You may generate a pair by invoking [`keyPair.signature()`][SignatureKeyPair].
+This key pair is used by panda-confidential for data signing. You may generate a pair by invoking [`keyPair.signature()`][SignatureKeyPair].
 
 ___The key pair you generate for signing is _not_ suitable for encryption.___
 
-## SignedMessage
+## SignedData
 ### Properties
-  - `message` - The message that has been signed, stored as an Uint8Array of bytes, ready for use within TweetNaCl.js.
-  - `encoding` - The encoding of the original message. When this value is `binary`, encoding the message will return an Uint8Array.
-  - `signatures` - A list of signatures generated by signing the `message` with a private key. These are stored as Uint8Arrays, ready for use within TweetNaCl.js.
+  - `data` - The data that has been signed, stored as an Uint8Array of bytes, ready for use within TweetNaCl.js.
+  - `encoding` - The encoding of the original data. When this value is `binary`, encoding the data will return an Uint8Array.
+  - `signatures` - A list of signatures generated by signing the `data` with a private key. These are stored as Uint8Arrays, ready for use within TweetNaCl.js.
   - `publicKeys` - A list of the public keys used to validate the matching signatures in the `signatures` list. These are stored as Uint8Arrays, ready for use within TweetNaCl.js.
 
 ### Methods
@@ -772,15 +777,15 @@ ___The key pair you generate for signing is _not_ suitable for encryption.___
 
    outputs all the properties of this instance as a Base64 encoded stringified object.
 
-- `encodeMessage`
-  - _encodeMessage &rarr; Value_
+- `encodeData`
+  - _encodeData &rarr; Value_
 
-  outputs the message as a string with the encoding matching the value of the `encoding` property. If `encoding` is `binary`, this method returns the message as an Uint8Array.
+  outputs the data as a string with the encoding matching the value of the `encoding` property. If `encoding` is `binary`, this method returns the data as an Uint8Array.
 
 ### Description
-Signed messages are self-contained entities that have everything you need to check their integrity. When passed to [`verify`][verify], it matches all the public keys to the signatures and uses TweetNaCl.js to validate the signatures.
+Signed datas are self-contained entities that have everything you need to check their integrity. When passed to [`verify`][verify], it matches all the public keys to the signatures and uses TweetNaCl.js to validate the signatures.
 
-While a signed message can be verified to be internally self-consistent, it is up to you to verify the public keys belong to whoever claims to have sent the message.
+While a signed data can be verified to be internally self-consistent, it is up to you to verify the public keys belong to whoever claims to have sent the data.
 
 
 [randombytes]: #randombytes
@@ -808,8 +813,8 @@ While a signed message can be verified to be internally self-consistent, it is u
 [isSignature]: #keypairissignature
 [equal]: #keyequal
 
-[signedMessage]: #signedmessage
-[isSignedMessage]: #issignedmessage
+[signedData]: #signeddata
+[isSignedData]: #issigneddata
 
 [classes]: #classes-1
 [classKey]: #key-2
@@ -820,7 +825,7 @@ While a signed message can be verified to be internally self-consistent, it is u
 [classKeyPair]: #keypair-2
 [classEncryptionKeyPair]: #encryptionkeypair
 [classSignatureKeyPair]: #signaturekeypair
-[classSignedMessage]: #signedmessage-1
+[classSignedData]: #signeddata-1
 
 
 [Uint8Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
@@ -830,13 +835,13 @@ While a signed message can be verified to be internally self-consistent, it is u
 
 [tweetnacl-random]: https://github.com/dchest/tweetnacl-js#random-bytes-generation
 [tweetnacl-box]:https://github.com/dchest/tweetnacl-js#public-key-authenticated-encryption-box
-[tweetnacl-secretbox]: https://github.com/dchest/tweetnacl-js#naclsecretboxmessage-nonce-key
+[tweetnacl-secretbox]: https://github.com/dchest/tweetnacl-js#naclsecretboxdata-nonce-key
 [tweetnacl-box-before]:https://github.com/dchest/tweetnacl-js#naclboxbeforetheirpublickey-mysecretkey
-[tweetnacl-box-after]: https://github.com/dchest/tweetnacl-js#naclboxaftermessage-nonce-sharedkey
+[tweetnacl-box-after]: https://github.com/dchest/tweetnacl-js#naclboxafterdata-nonce-sharedkey
 [tweetnacl-secretbox-open]: https://github.com/dchest/tweetnacl-js#naclsecretboxopenbox-nonce-key
 [tweetnacl-box-open-after]: https://github.com/dchest/tweetnacl-js#naclboxopenafterbox-nonce-sharedkey
-[tweetnacl-sign]: https://github.com/dchest/tweetnacl-js#naclsigndetachedmessage-secretkey
-[tweetnacl-verify]: https://github.com/dchest/tweetnacl-js#naclsigndetachedverifymessage-signature-publickey
+[tweetnacl-sign]: https://github.com/dchest/tweetnacl-js#naclsigndetacheddata-secretkey
+[tweetnacl-verify]: https://github.com/dchest/tweetnacl-js#naclsigndetachedverifydata-signature-publickey
 [tweetnacl-utils]: https://github.com/dchest/tweetnacl-util-js#documentation
 [tweetnacl-equal]:https://github.com/dchest/tweetnacl-js#naclverifyx-y
 [tweetnacl-hash]:https://github.com/dchest/tweetnacl-js#hashing
