@@ -1,58 +1,20 @@
 # Panda Confidential API
 
-### Functions
-- [randomBytes][randombytes]
-  - [Overriding randomBytes](#overriding-randombytes)
-- [encrypt][encrypt]
-- [decrypt][decrypt]
-- [sign][sign]
-- [verify][verify]
-- [encode][encode]
-- [decode][decode]
-- [hash][hash]
-- [signedData][signedData]
-- [isSignedData][isSignedData]
-- [isData][isdata]
-- [nacl][nacl]
-
-#### key
-- [key.symmetric][SymmetricKey]
-- [key.private][PrivateKey]
-- [key.public][PublicKey]
-- [key.shared][SharedKey]
-- [key.isSymmetric][isSymmetric]
-- [key.isPrivate][isPrivate]
-- [key.isPublic][isPublic]
-- [key.isShared][isShared]
-- [key.equal][equal]
-
-#### keyPair
-- [keyPair.encryption][EncryptionKeyPair]
-- [keyPair.signature][SignatureKeyPair]
-- [keyPair.isEncryption][isEncryption]
-- [keyPair.isSignature][isSignature]
-
-#### Other
-
-### [Classes][classes]
-- [Key][classKey]
-- [SymmetricKey][classSymmetricKey]
-- [PrivateKey][classPrivateKey]
-- [PublicKey][classPrivateKey]
-- [SharedKey][classSharedKey]
-- [KeyPair][classKeyPair]
-- [EncryptionKeyPair][classEncryptionKeyPair]
-- [SignatureKeyPair][classSignatureKeyPair]
-- [SignedData][classSignedData]
-
 # Functions
+
+## confidential
+
+_**confidential** [randomBytes] &rarr; api_
+
+- _randomBytes_: `<function>`. Provide a custom implementation for [`randomBytes`][randomBytes]. **Warning:** A robust source of entropy is necessary for encryption. Use this feature with caution.
+- Returns _api_: <object>. An instance of the Confidential API. 
 
 ## randomBytes
 
 _**randomBytes** length &rarr; bytes_
 
 - _length_ `<integer>`: Length of the output in bytes.
-- __Returns__ _bytes_ [`<Uint8Array>`][Uint8Array]: array of _length_ pseudo-random bytes.
+- Returns _bytes_ [`<Uint8Array>`][Uint8Array]: array of _length_ pseudo-random bytes.
 
 **Warning:** Throws when unable to locate a suitable source of entropy.
 
@@ -66,58 +28,35 @@ randomBytes 32
   # ...
 ```
 
-### Overriding `randomBytes`
-
-You may override `randomBytes` by simply reassigning the `randomBytes` property of an instance of the Confidential API.
-
-**Warning:** A robust source of entropy is necessary for encryption. Use this feature with caution.
-
-##### Example
-```coffeescript
-import {confidential} from "panda-confidential"
-import {randomBytes} from "my-library"
-c = {key} = confidential()
-
-# Replcae with custom function
-c.randomBytes = randomBytes
-# my-library randomBytes used in key generation
-key.symmetric().then (myKey) ->
-  # ...
-```
-
 ## encrypt
-_**encrypt** key, plaintext [, encoding] &rarr; ciphertext-with-nonce_
 
-- _key_ [`<SymmetricKey>`][classSymmetricKey] | [`<SharedKey>`][classSharedKey]: Key to be used in the encryption operation.
+_**encrypt** key, [nonce,] plaintext &rarr; envelope_
 
-- _plaintext_ `<string>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer]: Data to be encrypted.
+- _key_: [`<SymmetricKey>`][classSymmetricKey] | [`<SharedKey>`][classSharedKey]. Key to be used in the encryption operation.
 
-- _encoding_: Encoding of the plaintext string. May be any value accepted by [`decode`][decode]. Defaults to `utf8` for strings and ignored otherwise.
+- _plaintext_: `<string>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer]. Data to be encrypted.
 
-- Returns _ciphertext-with-nonce_: URL-safe Base64 JSON encoded object, suitable for decryption with [`decrypt`][decrypt].
+- _nonce_: [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer]. A value combined with the plaintext before encryption. A [`nonceLength`][tweetnacl-nonce-length] random nonce is generated if not supplied.
+
+- Returns _envelope_:  [`<Envelope>`][classEnvelope]. Object with properties `ciphertext` and `nonce`. Suitable for use with [`decrypt`][decrypt].
 
 When given a [symmetric key][classSymmetricKey], [`encrypt`][encrypt] uses [symmetric encryption][tweetnacl-secretbox]. When given a [shared key][classSharedKey], [`encrypt`][encrypt] uses [authenticated, asymmetric encryption][tweetnacl-box].
 
-**Warning:** The key pairs for signing [do not work for encryption](./usage.md#why-signing-key-pairs-are-different).
-
-### Return Value For `encrypt`
-
-The return value for `encrypt` is encoded as URL-safe Base64 JSON. The encoded object contains properties `ciphertext` and `nonce` of type [`Uint8Array`][Uint8Array] . The `ciphertext` property contains the ciphertext corresponding to the plain text, and the `nonce` property contains a [`nonceLength`][tweetnacl-nonce-length] random nonce.
-
-Since the nonce is included in the result, you do not need to add one. If you wish to use a different nonce, [`decode`][decode] the result, set the `nonce` property, and re-encode it. Confidential supports URL-safe Base64 JSON via the `base64url-json` encoding.
+**Warning:** Key pairs for signing [do not work for encryption](./usage.md#why-signing-key-pairs-are-different).
 
 ##### Example: Symmetric Encryption
 
 ```coffeescript
 import {confidential} from "panda-confidential"
 {encrypt} = confidential()
-import {keyLookup} from "my-library"
+import {keyLookup, write} from "my-library"
 
 do ->
   alice = keyLookup "Alice/private"
-  ciphertext = await encrypt alice, "Hello, World!"
+  envelope = await encrypt alice, "Hello, World!"
+  # serialize as needed with convert
+  write "greeting", convert to: "safe-base64", envelope
 ```
-
 
 **Warning:** Private keys should only be accessible to their owners.
 
@@ -132,22 +71,21 @@ do ->
   alice = keyLookup "Alice/private"
   bob = keyLookup "Bob/public"
   fromAliceToBob = key.shared alice, bob
-  ciphertext = await encrypt fromAliceToBob, "Hello, World!"
+  envelope = await encrypt fromAliceToBob, "Hello, World!"
+  send "Bob", convert to: "safe-base64", envelope
 ```
 
 **Warning:** Private keys should only be accessible to their owners.
 
 ## decrypt
 
-_**decrypt** key, ciphertext-with-nonce [, encoding] &rarr; plaintext_
+_**decrypt** key, envelope &rarr; plaintext_
 
-- _key_ [`<SymmetricKey>`][classSymmetricKey] | [`<SharedKey>`][classSharedKey]: Key to be used in decryption operation.
+- _key_: [`<SymmetricKey>`][classSymmetricKey] | [`<SharedKey>`][classSharedKey]. Key to be used in decryption operation.
 
-- _ciphertext-with-nonce_ `<string>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer]: URL-safe Base64 JSON encoding an object with properties `ciphertext` and `nonce`. See also: [_The Return Value For `encrypt`_](#the-return-value-for-encrypt).
+- _envelope_:  [`<Envelope>`][classEnvelope]. Object with properties `ciphertext` and `nonce`. Suitable for use with [`decrypt`][decrypt]. As returned by [`encrypt`][encrypt].
 
-- _encoding_: Encoding of the plaintext string. May be any value accepted by [`encode`][encode]. Defaults to `utf8`.
-
-- Returns _plaintext_: decrypted ciphertext.
+- Returns _plaintext_: [`<Uint8Array>`][Uint8Array]. The decrypted ciphertext.
 
 When given a [symmetric key][classSymmetricKey], [`decrypt`][decrypt] uses [symmetric decryption][tweetnacl-secretbox-open]. When given a [shared key][classSharedKey], [`decrypt`][decrypt] uses [authenticated, asymmetric decryption][tweetnacl-box-open-after].
 
@@ -156,12 +94,13 @@ When given a [symmetric key][classSymmetricKey], [`decrypt`][decrypt] uses [symm
 ```coffeescript
 import {confidential} from "panda-confidential"
 {decrypt} = confidential()
-import {keyLookup, receive} from "my-library"
+import {keyLookup, read} from "my-library"
 
 do ->
   alice = keyLookup "Alice/private"
-  ciphertext = receive "Alice"
-  plaintext = await decrypt alice, ciphertext
+  serialized = read "greeting"
+  envelope = convert from: "safe-base64", to: "object", serialized
+  plaintext = await decrypt alice, envelope
 ```
 
 ##### Example: Asymmetric Decryption
@@ -174,32 +113,31 @@ import {keyLookup, receive} from "my-library"
 do ->
   alice = lookupPublicKey "Alice/public"
   bob = lookupPrivateKey "Bob/private"
-  toAliceFromBob = key.shared alice, bob
-  ciphertext = receive "Alice"
-  plaintext = await decrypt toAliceFromBob, ciphertext
+  toBobFromAlice = key.shared alice, bob
+  serialized = receive "Bob"
+  envelope = convert from: "safe-base64", to: "object", serialized
+  plaintext = await decrypt toBobFromAlice, envelope
 ```
 
 ## sign
 
-_**sign** key-pair, data [, encoding] &rarr; signed-data_
+_**sign** key-pair, data &rarr; declaration_
 
-_**sign** private-key, public-key, data [, encoding] &rarr; signed-data_
+_**sign** private-key, public-key, data &rarr; declaration_
 
-- _key-pair_ [`<SignatureKeyPair>`][classSignatureKeyPair]: The public and private keys with which to sign the Data.
+- _key-pair_: [`<SignatureKeyPair>`][classSignatureKeyPair]. The public and private keys with which to sign the Data.
 
-- _private-key_ [`<PrivateKey>`][classPrivateKey]: The private key of the person wishing to sign the data.
+- _private-key_: [`<PrivateKey>`][classPrivateKey]. The private key of the person wishing to sign the data.
 
-- _public-key_ [`<PublicKey>`][classPublicKey]: The public key of the person wishing to sign the data.
+- _public-key_: [`<PublicKey>`][classPublicKey]. The public key of the person wishing to sign the data.
 
-- _data_ `<string>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer] | [`<SignedData>`][classSignedData]: Data to be signed.
+- _data_: `<string>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer] | [`<Declaration>`][classDeclaration]. Data to be signed.
 
-- _encoding_ `utf8` | `base64`: Specifies the encoding for _data_. Defaults to `utf8` for strings and ignored otherwise.
-
-- Returns _signed-data_: An instance of [SignedData][classSignedData] containing the _data_, its encoding, a list of the public keys of the signatories, and a list of the signatures.
+- Returns _declaration_: [`<Declaration>`][classDeclaration]. Object with properties `data`, `signatures`, and `signatories`. Suitable for use with [`verify`][verify].
 
 [Signs the given data][tweetnacl-sign] with the given private-signing-key. You may provide a signing key pair, or provide the private and public keys as separate arguments.
 
-**Warning:** The key pairs for signing do not work for encryption.
+**Warning:** Key pairs for signing do not work for encryption.
 
 ##### Example: Single Signature
 
@@ -210,120 +148,114 @@ import {confidential} from "panda-confidential"
 import {send, keyPairLookup} from "my-library"
 
 do ->
-  alice = keyPairLookup "alice/Sign"
-  signed = sign alice, "Hello, World!"
-
-  # uses the saved encoding to restore the original data
-  assert.equal "Hello, World!",
-    encode signed.data
+  alice = keyPairLookup "Alice/signature"
+  greeting = sign alice, "Hello, World!"
 
   # encode the signed data object itself
-  send "Bob", encode "base64url-json", signed
+  send "Bob", convert to: "safe-base64", declaration
 ```
 
-`sign` accepts [`SignedData`][SignedData] instances to allow multiple signatures. The `signatures` property contains a list of signatures. The `signatories` property contains a list of the corresponding public keys.
-
 ##### Example: Multiple Signatures
+
+`sign` may take a [`Declaration`][classDeclaration] instance to allow multiple signatures. The `signatures` property contains a list of signatures. The `signatories` property contains a list of the corresponding public keys.
 
 ```coffeescript
 import assert from "assert"
 import {confidential} from "panda-confidential"
-{sign, signedData} = confidential()
+{sign, declaration} = confidential()
 import {receive, keyPairLookup} from "my-library"
 
 do ->
-  # convert base64 encoded string to SignedData
-  signed = signedData receive "Bob"
+  # convert JSON to declaration
+  greeting = declaration convert from: "json", receive "Bob"
 
   # add Bob's signature
-  bob = keyPairLookup "Bob/Sign"
-  signed = sign bob, data
+  bob = keyPairLookup "Bob/signature"
+  greeting = sign bob, greeting
 
-  assert.equal signed.signatures.length, 2
-  assert.equal signed.publicKeys.length, 2
+  assert.equal greeting.signatures.length, 2
+  assert.equal greeting.signatories.length, 2
 ```
 
 ## verify
 
-_**verify** signed-data &rarr; is-valid_
+_**verify** declaration &rarr; is-valid_
 
-- _signed-data_ [`<SignedData>`][classSignedData]: Signed data to be verified.
-- Returns _is-valid_: The boolean result of the verification process. If the signatures are valid, `true`, otherwise, `false`.
+- _declaration_ [`<Declaration>`][classDeclaration]: Declaration to be verified.
+- Returns _is-valid_: `<boolean>`. `true` if the signatures are valid, `false` otherwise.
 
 [Verifies the signatures][tweetnacl-verify] against the original data and the attached public keys.
 
-**Warning:** Everything needed to verify the signatures exists within the [`SignedData`][SignedData] instance, but it is up to you to verify the authenticity of the public keys. See also: [key.equal][equal] for information on key comparison.
+**Warning:** Everything needed to verify the signatures exists within the [`Declaration`][classDeclaration] instance, but it is up to you to verify the authenticity of the public keys. See also: [key.equal][equal] for information on key comparison.
 
-**Warning:** The key pairs for signing do not work for encryption.
+**Warning:** Signing key pairs do not work for encryption.
 
 ##### Example
 
 ```coffeescript
 import {confidential} from "panda-confidential"
-{verify, signedData} = confidential()
+{verify, declaration} = confidential()
 import {receive, process} from "my-library"
 
 do ->
-  # convert base64 encoded string to SignedData
-  signed = signedData receive "Alice"
+  # convert JSON to declaration
+  greeting = declaration convert from: "json", receive "Alice"
 
-  if verify signed
+
+  if verify greeting
     # do something with the verified data.
-    process encode signed.data
+    process convert to: "utf8", greeting.data
   else
     throw new Error "Unable to verify data signatures."
 ```
 
-## encode
+## convert
 
-_**encode** encoding, data &rarr; string_
+_**convert** conversion, from &rarr; to_
 
-- _Encoding_ `utf8` | `base64` | `base64url` | `json` | `base64-json` | `base64url-json`: The desired encoding of the Result.
+- _conversion_: `<object>.` Describes the conversion to be applied to _from_.
 
-- _Data_ [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer] | `<String>` | `<Object>`: The Data to be encoded.
+- _from_: The value to be converted.
 
-- __Returns__ _Result_: *Data* encoded with *Encoding*.
+- Returns _to_: The result of the conversion.
 
-##### Example
+### Conversion Description
 
-```coffeescript
-import {confidential} from "panda-confidential"
-{encode} = confidential()
-
-do ->
-  assert.equal "Hello, World!",
-    encode "utf8", Buffer.from "Hello, World!"
-
-  assert.equal "SGVsbG8sIFdvcmxkIQ==",
-    encode "base64", Buffer.from "Hello, World!"
-```
-## decode
-_**decode** Encoding, String &rarr; Result_
-
-- _Encoding_ `utf8` | `base64` | `binary`: The encoding of the input Data.
-- _String_ `<String>`: The data to be decoded.
-- __Returns__ _Result_: *Data* decoded from *Encoding*.
+Confidential offers a variety of conversions, specified using an object with `from` and `to` properties. When one of the properties can be inferred from the argument (ex: a byte array), it's not necessary to specify it. Attempting an unsupported conversion will throw.
 
 ##### Example
 
 ```coffeescript
 import {confidential} from "panda-confidential"
-{decode, key} = confidential()
+{convert} = confidential()
 
 do ->
   assert.equal "Hello, World!",
-    encode "utf8",
-      decode "base64", "SGVsbG8sIFdvcmxkIQ=="
+    convert from: "base64", to: "utf8", "SGVsbG8sIFdvcmxkIQ=="
+
+  # from property can be inferred from the argument
+  assert.equal "Hello, World!",
+    convert to: "utf8", Buffer.from "Hello, World!"
+
 ```
+
+- Supported formats or encodings include: `utf8`, `base64`, and `json`.
+
+- The `safe-base64` specifies a URL-safe Base64 encoding.
+
+- Conversions to the `bytes` format return a [`Uint8Array`][Uint8Array].
+
+- The `bytes` format is inferred (and thus optional) as the `from` specifier for [`Uint8Array`][Uint8Array] and Node.js `Buffer` objects.
+
 
 ## hash
-_**hash** Data [, Encoding] &rarr; Hash_
+_**hash** data &rarr; hash_
 
-- _Data_ `<String>` | `<Object>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer]: The data to be hashed. String values are first decoded according to the given encoding. Objects are first encoded as JSON and then decoded into a byte array.
-- _Encoding:_ (Optional) The encoding of the string Data input. Defaults to `utf8` . This value is ignored if Data is an Uint8Array, Buffer, or Object.
-- __Returns__ _Hash_: A Base64URL encoded string of the SHA-512 hash result.
+- _data_: `<String>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer]. The data to be hashed. 
+- Returns _hash_: [`<Uint8Array>`][Uint8Array]. A byte array containing [the SHA-512 hash][tweetnacl-hash] of _data_.
 
 ##### Example
+
 ```coffeescript
 import {confidential} from "panda-confidential"
 {hash} = confidential()
@@ -333,48 +265,48 @@ do ->
 				ja9DLQi6nx7R5avmzGkpHg+i/g\
 				AGpSVw7xjBne9OYXwzzlLvCm5fv\
 				jGMsDhw==",
-    hash "Hello, World!"
+    convert to: "base64", hash "Hello, World!"
 ```
 
-## signedData
-_**signedData** Data &rarr; SignedData_
+## declaration
 
-- _Data_ `<String>` | `<Object>`: The content of the data.
-- __Returns__ _SignedData_: This returns an instance of [SignedData][classSignedData]
+_**declaration** description &rarr; declaration_
 
-This function wraps the constructor for the [SignedData][classSignedData] class. This is primarily useful for constructing a `SignedData` from signed data encoded as URL-safe Base64 JSON.
+- _description_: `<object>`. An object with `data`, `signatures`, and `signatories` properties.
+- Returns _declaration_: [`<Declaration>`][classDeclaration].
 
-See [`sign`](#sign) for an example.
+Convenience function for constructing [`Declaration`][classDeclaration] instances.
 
-## isSignedData
-_**isSignedData** Data &rarr; Boolean_
+## isDeclaration
 
-- _Data_ : The input for this type check.
-- __Returns__ _Boolean_: The boolean result of this type check.
+_**isDeclaration** value &rarr; is-declaration_
 
-This examines the type of the object you input, returning `true` if the input is an instance of [SignedData][classSignedData] and `false` for anything else.
+- _value_ : A value to be tested.
+- Returns _is-declaration_:`<boolean>`. `true` if _value_ is an instance of [`Declaration`][classDeclaration], `false` otherwise.
 
-## isData
-_**isData** Data &rarr; Boolean_
+## isBytes
 
-- _Data_ : The input for this type check.
-- __Returns__ _Boolean_: `true` if the input is an instance of [Buffer][Buffer] _or_ [Uint8Array][Uint8Array], and `false` otherwise.
+_**isBytes** value &rarr; is-bytes_
+
+- _value_ : The input for this type check.
+- Returns _is-bytes_: `<boolean>`. `true` if the input is an instance of [Buffer][Buffer] _or_ [Uint8Array][Uint8Array], `false` otherwise.
 
 ## nacl
-This is the TweetNaCl.js package imported by panda-confidential. Unlike [`randomBytes`][], reassigning this value does not alter the behavior of the Confidential API.
+
+The TweetNaCl.js module imported by Confidential. Useful for bypassing the Confidential API and accessing TweetNaCl directly. Changing this property will not affect the behavior of an instance of the API.
 
 ## Key Type System
 
-Confidential defines JavaScript types to specialize the behavior of its API for different kinds of keys and key pairs. These classes, and corresponding creation functions, are properties of the Key object.
+Confidential defines JavaScript types to specialize the behavior of its API for different kinds of keys and key pairs. These classes, and corresponding creation functions, are properties of the `key` property.
 
-## Key
+## key
 
-### Key.symmetric
+### key.symmetric
 
 _**key.symmetric** [Key] &rarr; SymmetricKey_
 
 - _Key_ `<String>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer]: (Optional) A key value literal for this key. May be a Base64 encoded string or a byte array.
-- __Returns__ _SymmetricKey_: instance of a Symmetric Key.
+- Returns _SymmetricKey_: instance of a Symmetric Key.
 
 When you invoke this function without passing any arguments, panda-confidential will generate a key for you suitable for symmetric encryption. Though the default TweetNaCl.js implementation of randomBytes is synchronous, panda-confidential wraps it with a promise to allow extension via an asynchronous means.
 
@@ -396,7 +328,7 @@ do ->
 _**key.private** Key &rarr; PrivateKey_
 
 - _Key_ `<String>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer]: A key value literal for this key. May be a Base64 encoded string or a binary array.
-- __Returns__ _PrivateKey_: This returns an instance of [PrivateKey][classPrivateKey]
+- Returns _PrivateKey_: This returns an instance of [PrivateKey][classPrivateKey]
 
 This is one half of a key pair. The key literal argument is required. See [`keyPair.Encryption`][EncryptionKeyPair] or [`keyPair.Signature`][SignatureKeyPair] for information about generating this kind of key from `randomBytes`.
 
@@ -415,7 +347,7 @@ do ->
 _**key.public** Key &rarr; PublicKey_
 
 - _Key_ `<String>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer]: A key value literal for this key. May be a Base64 encoded string or a binary array.
-- __Returns__ _PublicKey_: This returns an instance of [PublicKey][classPublicKey]
+- Returns _PublicKey_: This returns an instance of [PublicKey][classPublicKey]
 
 This is one half of a key pair. The key literal argument is required. See [`keyPair.Encryption`][EncryptionKeyPair] or [`keyPair.Signature`][SignatureKeyPair] for information about generating this kind of key from `randomBytes`.
 
@@ -438,7 +370,7 @@ _**key.shared** Key &rarr; SharedKey_
 - _Key_ `<String>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer]: A key value literal for this key. May be a Base64 encoded string or a binary array.
 - _Key1_ [`<PrivateKey>`][classPrivateKey] | [`<PublicKey>`][classPublicKey]: A public or private key instance used in the formation of the shared key. If this one is private, the other must be a public key. Or vice versa.
 - _Key2_ [`<PublicKey>`][classPublicKey] | [`<PrivateKey>`][classPrivateKey]: A public or private key instance used in the formation of the shared key. If this one is private, the other must be a public key. Or vice versa.
-- __Returns__ _SharedKey_: This returns an instance of [SharedKey][classSharedKey]
+- Returns _SharedKey_: This returns an instance of [SharedKey][classSharedKey]
 
 This key type is used in [TweetNaCl.js public key encryption interface][tweetnacl-box]. It is a special key formed by using one person's private key and another's public key, yielding a shared secret.
 
@@ -463,7 +395,7 @@ do ->
 _**key.isSymmetric** Key &rarr; Boolean_
 
 - _Key_ : The input for this type check.
-- __Returns__ _Boolean_: The boolean result of this type check.
+- Returns _Boolean_: The boolean result of this type check.
 
 This examines the type of the key you input, returning `true` if the input is an instance of [SymmetricKey][classSymmetricKey] and `false` for anything else.
 
@@ -486,7 +418,7 @@ do ->
 _**key.isPrivate** Key &rarr; Boolean_
 
 - _Key_ : The input for this type check.
-- __Returns__ _Boolean_: The boolean result of this type check.
+- Returns _Boolean_: The boolean result of this type check.
 
 This examines the type of the key you input, returning `true` if the input is an instance of [PrivateKey][classPrivateKey] and `false` for anything else.
 
@@ -510,7 +442,7 @@ do ->
 _**key.isPublic** Key &rarr; Boolean_
 
 - _Key_ : The input for this type check.
-- __Returns__ _Boolean_: The boolean result of this type check.
+- Returns _Boolean_: The boolean result of this type check.
 
 This examines the type of the key you input, returning `true` if the input is an instance of [PublicKey][classPublicKey] and `false` for anything else.
 
@@ -532,7 +464,7 @@ do ->
 _**key.isShared** Key &rarr; Boolean_
 
 - _Key_ : The input for this type check.
-- __Returns__ _Boolean_: The boolean result of this type check.
+- Returns _Boolean_: The boolean result of this type check.
 
 This examines the type of the key you input, returning `true` if the input is an instance of [SharedKey][classSharedKey] and `false` for anything else.
 
@@ -560,7 +492,7 @@ _**key.equal** Key1, Key2 &rarr; Boolean_
 
 - _Key1_ [`<SymmetricKey>`][classSymmetricKey] | [`<PrivateKey>`][classPrivateKey] | [`<PublicKey>`][classPublicKey] | [`<SharedKey>`][classSharedKey] | `<String>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer]: The first key for this comparison
 - _Key2_ [`<SymmetricKey>`][classSymmetricKey] | [`<PrivateKey>`][classPrivateKey] | [`<PublicKey>`][classPublicKey] | [`<SharedKey>`][classSharedKey] | `<String>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer]: The second key for this comparison
-- __Returns__ _Boolean_: The boolean result of this comparison.
+- Returns _Boolean_: The boolean result of this comparison.
 
 Check if two keys (or any values) are the same.
 
@@ -595,7 +527,7 @@ Key-pairs are sets of related keys used for public key cryptography and are gene
 ### keyPair.encryption
 _**keyPair.encryption** &rarr; EncryptionKeyPair_
 
-- __Returns__ _EncryptionKeyPair_: This returns an instance of [EncryptionKeyPair][classEncryptionKeyPair]
+- Returns _EncryptionKeyPair_: This returns an instance of [EncryptionKeyPair][classEncryptionKeyPair]
 
 This function generates a key-pair suitable for asymmetric encryption. It uses the panda-confidential instance of [randomBytes][randombytes] to generate the values.
 
@@ -623,7 +555,7 @@ do ->
 ### keyPair.signature
 _**keyPair.signature** &rarr; SignatureKeyPair_
 
-- __Returns__ _SignatureKeyPair_: This returns an instance of [SignatureKeyPair][classSignatureKeyPair]
+- Returns _SignatureKeyPair_: This returns an instance of [SignatureKeyPair][classSignatureKeyPair]
 
 This function generates a key-pair suitable for signing. It uses the panda-confidential instance of [randomBytes][randombytes] to generate the values.
 
@@ -648,7 +580,7 @@ do ->
 _**keyPair.isEncryption** Pair &rarr; Boolean_
 
 - _Pair_ : The input for this type check.
-- __Returns__ _Boolean_: The boolean result of this type check.
+- Returns _Boolean_: The boolean result of this type check.
 
 This examines the type of the key-pair you input, returning `true` if the input is an instance of [EncryptionKeyPair][classEncryptionKeyPair] and `false` for anything else.
 
@@ -671,7 +603,7 @@ do ->
 _**keyPair.isSignature** Pair &rarr; Boolean_
 
 - _Pair_ : The input for this type check.
-- __Returns__ _Boolean_: The boolean result of this type check.
+- Returns _Boolean_: The boolean result of this type check.
 
 This examines the type of the key-pair you input, returning `true` if the input is an instance of [SignatureKeyPair][classSignatureKeyPair] and `false` for anything else.
 
@@ -764,7 +696,20 @@ This key pair is used by panda-confidential for data signing. You may generate a
 
 ___The key pair you generate for signing is _not_ suitable for encryption.___
 
-## SignedData
+## Envelope
+
+The return value for `encrypt` is known as the _envelope_, an object with properties:
+
+- `ciphertext` [`Uint8Array`][Uint8Array]: the corresponding ciphertext for _plaintext_.
+
+- `nonce` [`Uint8Array`][Uint8Array]: a [`nonceLength`][tweetnacl-nonce-length] random nonce.
+
+Since the nonce is included in the result, you do not need to add one. If you wish to use a different nonce, assign it to the `nonce` property of the envelope. You may serialize the envelope using [`convert`][convert].
+
+
+
+## Declaration
+
 ### Properties
   - `data` - The data that has been signed, stored as an Uint8Array of bytes, ready for use within TweetNaCl.js.
   - `encoding` - The encoding of the original data. When this value is `binary`, encoding the data will return an Uint8Array.
@@ -793,8 +738,7 @@ While a signed data can be verified to be internally self-consistent, it is up t
 [decrypt]: #decrypt
 [sign]: #sign
 [verify]: #verify
-[encode]: #encode
-[decode]: #decode
+[convert]: #convert
 [isData]: #isdata
 [hash]: #hash
 [nacl]: #nacl
@@ -813,7 +757,7 @@ While a signed data can be verified to be internally self-consistent, it is up t
 [isSignature]: #keypairissignature
 [equal]: #keyequal
 
-[signedData]: #signeddata
+[declaration]: #declaration
 [isSignedData]: #issigneddata
 
 [classes]: #classes-1
@@ -825,13 +769,12 @@ While a signed data can be verified to be internally self-consistent, it is up t
 [classKeyPair]: #keypair-2
 [classEncryptionKeyPair]: #encryptionkeypair
 [classSignatureKeyPair]: #signaturekeypair
-[classSignedData]: #signeddata-1
-
+[classEnvelope]: #envelope
+[classDeclaration]: #declaration-1
 
 [Uint8Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
 [Buffer]:https://nodejs.org/api/buffer.html
 [universal]: https://medium.com/@ghengeveld/isomorphism-vs-universal-javascript-4b47fb481beb
-
 
 [tweetnacl-random]: https://github.com/dchest/tweetnacl-js#random-bytes-generation
 [tweetnacl-box]:https://github.com/dchest/tweetnacl-js#public-key-authenticated-encryption-box
