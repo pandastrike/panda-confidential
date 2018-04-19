@@ -42,17 +42,19 @@
   "devDependencies": {
     "amen": "^2.0.4",
     "aws-sdk": "^2.200.0",
-    "coffeescript": "2.1.0",
+    "biscotti-cpp": "^1.0.2",
+    "coffeescript": "^2.2.4",
     "command-line-args": "^5.0.2",
     "commander": "^2.14.1",
+    "fairmont-helpers": "^3.3.2",
+    "fairmont-multimethods": "^2.0.2",
     "gulp": "github:gulpjs/gulp#4.0",
     "panda-builder": "1.1.1",
     "source-map-support": "^0.5.0",
-    "sundog": ">=0.0.8 <0.1.0"
+    "sundog": ">=0.0.8 <0.1.0",
+    "through2": "^2.0.3"
   },
   "dependencies": {
-    "fairmont-helpers": "^3.3.2",
-    "fairmont-multimethods": "^2.0.2",
     "tweetnacl": "^1.0.0",
     "tweetnacl-util": "^0.15.0"
   }

@@ -1,0 +1,26 @@
+::
+
+fn
+  name: "randomBytes"
+  $in:
+    length:
+      $t: k "integer"
+      $d: "Length of the output in bytes."
+  $out:
+    bytes:
+      $t: bytes
+      $d: "Array of _length_ pseudo-random bytes."
+::
+
+**Warning:** Throws when unable to locate a suitable source of entropy.
+
+##### Example
+
+```coffeescript
+import {confidential} from "panda-confidential"
+{randomBytes} = confidential()
+
+randomBytes 32
+.then (bytes) ->
+# ...
+```

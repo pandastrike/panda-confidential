@@ -1,136 +1,15 @@
 # Panda Confidential API
-
+:: include "helpers" ::
 
 # Functions
+::
 
+include "confidential"
+include "random-bytes"
+include "encrypt"
+include "decrypt"
 
-## confidential
-
-_**confidential** [ randomBytes ]  &rarr;  api_
-
-- _randomBytes_: `function`. Provide a custom implementation for [`randomBytes`][randombytes]. **Warning:** A robust source of entropy is necessary for encryption. Use this feature with caution.
-
-- Returning _api_: `object`. An instance of the Confidential API.
-
-
-
-## randomBytes
-
-_**randomBytes** length  &rarr;  bytes_
-
-- _length_: `integer`. Length of the output in bytes.
-
-- Returning _bytes_: [`Uint8Array`][uint8array] | [`Buffer`][buffer]. Array of _length_ pseudo-random bytes.
-
-
-
-**Warning:** Throws when unable to locate a suitable source of entropy.
-
-##### Example
-
-```coffeescript
-import {confidential} from "panda-confidential"
-{randomBytes} = confidential()
-
-randomBytes 32
-.then (bytes) ->
-# ...
-```
-
-## encrypt
-
-_**encrypt** key, [ nonce ,] plaintext  &rarr;  envelope_
-
-- _key_: [`key.Symmetric`][key-symmetric] | `key.Asymmetric`. Key to be used in the encryption operation.
-
-- _nonce_: [`Uint8Array`][uint8array] | [`Buffer`][buffer]. A value combined with the plaintext before encryption. A `nonceLength` random nonce is generated if not supplied.
-
-- _plaintext_: `string` | [`Uint8Array`][uint8array] | [`Buffer`][buffer].
-
-- Returning _envelope_: [`Envelope`][envelope]. Object with properties `ciphertext` and `nonce`. Suitable for use with `decrypt`.
-
-
-
-When given a [symmetric key][key-symmetric], [`encrypt`][encrypt] uses [symmetric encryption][tweetnacl-secretbox]. When given a [shared key][key-shared], [`encrypt`][encrypt] uses authenticated, [asymmetric encryption][tweetnacl-box].
-
-**Warning:** Key pairs for signing [do not work for encryption](./usage.md#why-signing-key-pairs-are-different).
-
-##### Example: Symmetric Encryption
-
-```coffeescript
-import {confidential} from "panda-confidential"
-{encrypt} = confidential()
-import {keyLookup, write} from "my-library"
-
-do ->
-  alice = keyLookup "Alice/private"
-  envelope = await encrypt alice, "Hello, World!"
-  # serialize as needed with convert
-  write "greeting", convert to: "safe-base64", envelope
-```
-
-**Warning:** Private keys should only be accessible to their owners.
-
-##### Example: Asymmetric Encryption
-
-```coffeescript
-import {confidential} from "panda-confidential"
-{key, encrypt} = confidential()
-import {keyLookup} from "my-library"
-
-do ->
-  alice = keyLookup "Alice/private"
-  bob = keyLookup "Bob/public"
-  fromAliceToBob = key.shared alice, bob
-  envelope = await encrypt fromAliceToBob, "Hello, World!"
-  send "Bob", convert to: "safe-base64", envelope
-```
-
-**Warning:** Private keys should only be accessible to their owners.
-
-## decrypt
-
-_**decrypt** key, envelope  &rarr;  plaintext_
-
-- _key_: [`key.Symmetric`][key-symmetric] | `key.Asymmetric`. Key to be used in the encryption operation.
-
-- _envelope_: [`Envelope`][envelope]. Object with properties `ciphertext` and nonce. As returned by [`encrypt`][encrypt].
-
-- Returning _plaintext_: [`Uint8Array`][uint8array]. The decrypted ciphertext.
-
-
-
-When given a [symmetric key][key-symmetric], [`decrypt`][decrypt] uses [symmetric decryption][tweetnacl-secretbox-open]. When given a [shared key][key-shared], [`decrypt`][decrypt] uses authenticated, [asymmetric decryption][tweetnacl-box-open-after].
-
-##### Example: Symmetric Decryption
-
-```coffeescript
-import {confidential} from "panda-confidential"
-{decrypt} = confidential()
-import {keyLookup, read} from "my-library"
-
-do ->
-  alice = keyLookup "Alice/private"
-  serialized = read "greeting"
-  envelope = convert from: "safe-base64", to: "object", serialized
-  plaintext = await decrypt alice, envelope
-```
-
-##### Example: Asymmetric Decryption
-
-```coffeescript
-import {confidential} from "panda-confidential"
-{key, decrypt} = confidential()
-import {keyLookup, receive} from "my-library"
-
-do ->
-  alice = keyLookup "Alice/public"
-  bob = keyLookup "Bob/private"
-  toBobFromAlice = key.shared alice, bob
-  serialized = receive "Bob"
-  envelope = convert from: "safe-base64", to: "object", serialized
-  plaintext = await decrypt toBobFromAlice, envelope
-```
+::
 
 ## sign
 

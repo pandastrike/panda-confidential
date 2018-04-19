@@ -1,0 +1,87 @@
+::
+
+h2 = (s) -> "## #{s}\n\n"
+para = "\n\n"
+yields = " &rarr; "
+maps = " &map; "
+it = (f) -> "_#{f()}_"
+bold = (f) -> "**#{f()}**"
+words = (ax) -> ax.join " "
+cat = (ax) -> ax.join ""
+
+list = (a) ->
+  (for name, {$o} of a
+    if $o then "[ #{name} ]" else name)
+    .join ", "
+    .replace /\],/, ",]"
+
+returning = (a) ->
+  for name, d of a
+    return name
+
+describe = (a) ->
+  for name, {$t, $d} of a
+    cat [
+      (it -> name)
+      (": #{$t}." if $t?)
+      (" #{$d.replace /\s+/g, ' '}" if $d?)
+    ]
+ul = (ax) -> cat ("- #{a}#{para}" for a in ax)
+
+alt = (ax) -> ax.join " | "
+
+fn = ({name, $in, $out}) ->
+
+  addRef name
+
+  $$ cat [
+    para
+    h2 name
+    it ->
+      words [
+        bold -> name
+        list $in
+        yields
+        returning $out
+      ]
+    para
+    ul [
+      (describe $in)...
+      "Returning #{describe $out}"
+    ]
+  ]
+
+refs = {}
+addRef = (s, ref) -> refs[s] = (ref ?= s.toLowerCase())
+
+addRef "Uint8Array"
+addRef "Buffer"
+addRef "key.Symmetric", "key-symmetric"
+addRef "Envelope"
+addRef "randomBytes"
+addRef "symmetric key", "key-symmetric"
+addRef "shared key", "key-shared"
+addRef "symmetric encryption", "tweetnacl-secretbox"
+addRef "symmetric decryption", "tweetnacl-secretbox-open"
+addRef "asymmetric encryption", "tweetnacl-box"
+addRef "asymmetric decryption", "tweetnacl-box-open-after"
+
+ln = (s) ->
+  if (ref = refs[s])?
+    "[#{s}][#{ref}]"
+  else
+    "#{s}"
+
+$ln = $ ln
+
+k = (s) ->
+  if (ref = refs[s])?
+    "[`#{s}`][#{ref}]"
+  else
+    "`#{s}`"
+
+$k = $ k
+
+bytes = "#{k 'Uint8Array'} | #{k 'Buffer'}"
+
+::
