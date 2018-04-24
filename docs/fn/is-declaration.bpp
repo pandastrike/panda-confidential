@@ -1,0 +1,6 @@
+## isDeclaration
+
+_**isDeclaration** value &rarr; is-declaration_
+
+- _value_ : A value to be tested.
+- Returns _is-declaration_:`<boolean>`. `true` if _value_ is an instance of [`Declaration`][classDeclaration], `false` otherwise.

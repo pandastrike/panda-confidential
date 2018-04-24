@@ -1,0 +1,5 @@
+## PublicKey
+_extends [Key][classKey]_
+
+### Description
+This key type is used in [TweetNaCl.js public key encryption interface][tweetnacl-box], along with [`key.Private`][class-key-Private]

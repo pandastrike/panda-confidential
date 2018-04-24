@@ -1,0 +1,22 @@
+### keyPair.signature
+_**keyPair.signature** &rarr;[`key.Signature`][class-key-Signature]Pair_
+
+- Returns _[`keyPair.Signature`][class-keypair-Signature]_: This returns an instance of [`keyPair.Signature`][class-keypair-Signature]
+
+This function generates a key-pair suitable for signing. It uses the panda-confidential instance of [randomBytes][randombytes] to generate the values.
+
+___The private keys you generate for signing are _not_ suitable for encryption.___
+
+##### Example
+```coffeescript
+import {confidential} from "panda-confidential"
+{keyPair, sign} = confidential()
+
+do ->
+  # Generate a key-pair suitable for signing for person A.
+  A = {privateKey, publicKey} = await keyPair.encryption()
+
+  # Now you may sign a data for person B.
+  data = "Hello World!"
+  sign A, data
+```

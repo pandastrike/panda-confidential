@@ -1,0 +1,6 @@
+## isBytes
+
+_**isBytes** value &rarr; is-bytes_
+
+- _value_ : The input for this type check.
+- Returns _is-bytes_: `<boolean>`. `true` if the input is an instance of [Buffer][Buffer] _or_ [Uint8Array][Uint8Array], `false` otherwise.

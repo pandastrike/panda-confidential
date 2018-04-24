@@ -19,37 +19,56 @@ returning = (a) ->
   for name, d of a
     return name
 
-describe = (a) ->
+ul = (ax) -> cat ("- #{a}#{para}" for a in ax)
+
+alt = (ax) -> ax.join " | "
+
+sig = ({name, $in, $out}) ->
+  it ->
+    words [
+      bold -> name
+      list $in
+      yields
+      returning $out
+    ]
+
+_args = (a) ->
   for name, {$t, $d} of a
     cat [
       (it -> name)
       (": #{$t}." if $t?)
       (" #{$d.replace /\s+/g, ' '}" if $d?)
     ]
-ul = (ax) -> cat ("- #{a}#{para}" for a in ax)
 
-alt = (ax) -> ax.join " | "
+args = ({$in, $out}) ->
+  ul [
+    (_args $in)...
+    "Returning #{_args $out}"
+  ]
 
-fn = ({name, $in, $out}) ->
-
-  addRef name
-
+_fn = ({name, $in, $out}) ->
   $$ cat [
+    sig {name, $in, $out}
+    para
+    args {name, $in, $out}
+  ]
+
+fnH = (name) ->
+  addRef name
+  cat [
     para
     h2 name
-    it ->
-      words [
-        bold -> name
-        list $in
-        yields
-        returning $out
-      ]
-    para
-    ul [
-      (describe $in)...
-      "Returning #{describe $out}"
-    ]
   ]
+
+fn = (x) ->
+  if x.length?
+    cat [
+      fnH x[0].name
+      (_fn _x for _x in x)...
+    ]
+  else
+    fnH x.name
+    _fn x
 
 refs = {}
 addRef = (s, ref) -> refs[s] = (ref ?= s.toLowerCase())
@@ -65,6 +84,9 @@ addRef "symmetric encryption", "tweetnacl-secretbox"
 addRef "symmetric decryption", "tweetnacl-secretbox-open"
 addRef "asymmetric encryption", "tweetnacl-box"
 addRef "asymmetric decryption", "tweetnacl-box-open-after"
+addRef "key.Public", "class-key-public"
+addRef "key.Private", "class-key-private"
+addRef "keyPair.Signature", "class-keypair-signature"
 
 ln = (s) ->
   if (ref = refs[s])?
@@ -84,4 +106,13 @@ $k = $ k
 
 bytes = "#{k 'Uint8Array'} | #{k 'Buffer'}"
 
+_include = include
+
+include = (path) ->
+  _include path
+  $$ "\n\n"
+
+generate =
+  toc: ->
+  refs: ->
 ::

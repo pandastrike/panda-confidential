@@ -1,0 +1,19 @@
+## hash
+_**hash** data &rarr; hash_
+
+- _data_: `<String>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer]. The data to be hashed.
+- Returns _hash_: [`<Uint8Array>`][Uint8Array]. A byte array containing [the SHA-512 hash][tweetnacl-hash] of _data_.
+
+##### Example
+
+```coffeescript
+import {confidential} from "panda-confidential"
+{hash} = confidential()
+
+do ->
+  assert.equal "N015SpXNz9izWZMYX++bo2jxYN\
+				ja9DLQi6nx7R5avmzGkpHg+i/g\
+				AGpSVw7xjBne9OYXwzzlLvCm5fv\
+				jGMsDhw==",
+    convert to: "base64", hash "Hello, World!"
+```

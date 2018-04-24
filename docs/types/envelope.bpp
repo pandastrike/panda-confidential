@@ -1,0 +1,9 @@
+## Envelope
+
+The return value for `encrypt` is known as the _envelope_, an object with properties:
+
+- `ciphertext` [`Uint8Array`][Uint8Array]: the corresponding ciphertext for _plaintext_.
+
+- `nonce` [`Uint8Array`][Uint8Array]: a [`nonceLength`][tweetnacl-nonce-length] random nonce.
+
+Since the nonce is included in the result, you do not need to add one. If you wish to use a different nonce, assign it to the `nonce` property of the envelope. You may serialize the envelope using [`convert`][convert].

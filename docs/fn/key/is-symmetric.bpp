@@ -1,0 +1,21 @@
+### key.isSymmetric
+_**key.isSymmetric** value &rarr; is-symmetric_
+
+- _value_ : The input for this type check.
+- Returns _Boolean_: The boolean result of this type check.
+
+This examines the type of the key you input, returning `true` if the input is an instance of [`key.Symmetric`][class-key-Symmetric] and `false` for anything else.
+
+##### Example
+```coffeescript
+import {confidential} from "panda-confidential"
+{key} = confidential()
+
+do ->
+  # Generate a symmetric key.
+  myKey = await key.symmetric()
+
+  # Type check
+  key.isSymmetric myKey     # true
+  key.isSymmetric "foobar"  # false
+```

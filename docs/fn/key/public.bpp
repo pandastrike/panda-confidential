@@ -1,0 +1,21 @@
+### key.public
+
+_**key.public** key &rarr; public-key_
+
+- _key_:  [`<Uint8Array>`][Uint8Array] | [`<Buffer>.`][Buffer].
+- Returns a _public-key_: [`<key.Public>`][classKeyPublic].
+
+Wraps _key_ in an instance of [`<key.Public>`][classKeyPublic].
+
+See [`keyPair.Encryption`][EncryptionKeyPair] or [`keyPair.Signature`][SignatureKeyPair] to generate a public key as part of a key pair.
+
+##### Example
+```coffeescript
+import {confidential} from "panda-confidential"
+{key} = confidential()
+
+do ->
+  # Generate a Public key from a key literal.
+  key1 = key.public convert from: "base64",
+    "WM4YL5yo+6yKAFaIZGp3QPbcjW9ICEGXlxR/Odnr2+k="
+```

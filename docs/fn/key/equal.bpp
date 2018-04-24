@@ -1,0 +1,31 @@
+### key.equal
+_**key.equal** Key1, Key2 &rarr; Boolean_
+
+- _Key1_ [`<SymmetricKey>`][classSymmetricKey] | [`<PrivateKey>`][classPrivateKey] | [`<PublicKey>`][classPublicKey] | [`<SharedKey>`][classSharedKey] | `<String>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer]: The first key for this comparison
+- _Key2_ [`<SymmetricKey>`][classSymmetricKey] | [`<PrivateKey>`][classPrivateKey] | [`<PublicKey>`][classPublicKey] | [`<SharedKey>`][classSharedKey] | `<String>` | [`<Uint8Array>`][Uint8Array] | [`<Buffer>`][Buffer]: The second key for this comparison
+- Returns _Boolean_: The boolean result of this comparison.
+
+Check if two keys (or any values) are the same.
+
+This wraps the TweetNaCl.js implementation of a [constant time comparison for large values][tweetnacl-equal]. `equal` is a generic that allows you to pass in strings, raw data, or any key class -- in any combination. Returns `true` if the values are equal and `false` otherwise.
+
+##### Example
+```coffeescript
+import {confidential} from "panda-confidential"
+{key, verify} = confidential()
+
+do ->
+  # Receive signed data from person A.
+  msg = acceptIncomingSignedDataFromA()
+  publicKey = msg.publicKeys[0]
+
+  # Lookup the public key for person A.
+  referenceKey = lookupPublicKeyForA()
+
+  if key.equal(publicKey, referenceKey)
+    # We're safe to verify and then use the data
+    ....
+  else
+    # Uh oh.
+    throw new Error "Unable to confirm public key identity"
+```

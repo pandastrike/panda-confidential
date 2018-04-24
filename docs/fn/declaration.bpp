@@ -1,0 +1,8 @@
+## declaration
+
+_**declaration** description &rarr; declaration_
+
+- _description_: `<object>`. An object with `data`, `signatures`, and `signatories` properties.
+- Returns _declaration_: [`<Declaration>`][classDeclaration].
+
+Convenience function for constructing [`Declaration`][classDeclaration] instances.

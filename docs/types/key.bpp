@@ -1,0 +1,14 @@
+## Key
+### Properties
+  - `key` - key's value stored as an Uint8Array of bytes, ready for use within TweetNaCl.js.
+
+### Methods
+- `encode`
+  - _encode &rarr; Value_
+
+   outputs the value of `key` as a Base64 encoded string.
+
+### Description
+Base class for all keys in panda-confidential. It stores a decoded key ready for use in TweetNaCl.js functions, and can output a Base64 encoded string for transport.
+
+This class is not used directly within panda-confidential, but its descendants all share its interface.
