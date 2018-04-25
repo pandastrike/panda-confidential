@@ -1,13 +1,16 @@
-## convert
-
-_**convert** conversion, from &rarr; to_
-
-- _conversion_: `<object>.` Describes the conversion to be applied to _from_.
-
-- _from_: The value to be converted.
-
-- Returns _to_: The result of the conversion.
-
+::
+fn
+  name: "convert"
+  $in:
+    conversion:
+      $t: k "object"
+      $d: "Describes the conversion to be applied to _from_."
+    from:
+      $d: "The value to be converted."
+  $out:
+    "to":
+      $d: "The result of the conversion."
+::
 ### Conversion Description
 
 Confidential offers a variety of conversions, specified using an object with `from` and `to` properties. When one of the properties can be inferred from the argument (ex: a byte array), it's not necessary to specify it. Attempting an unsupported conversion will throw.

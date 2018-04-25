@@ -47,7 +47,7 @@ args = ({$in, $out}) ->
   ]
 
 _fn = ({name, $in, $out}) ->
-  $$ cat [
+  cat [
     sig {name, $in, $out}
     para
     args {name, $in, $out}
@@ -61,14 +61,16 @@ fnH = (name) ->
   ]
 
 fn = (x) ->
-  if x.length?
-    cat [
+  $$ cat if x.length?
+    [
       fnH x[0].name
       (_fn _x for _x in x)...
     ]
   else
-    fnH x.name
-    _fn x
+    [
+      fnH x.name
+      _fn x
+    ]
 
 refs = {}
 addRef = (s, ref) -> refs[s] = (ref ?= s.toLowerCase())

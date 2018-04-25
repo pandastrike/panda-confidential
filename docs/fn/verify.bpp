@@ -1,13 +1,15 @@
-## verify
-
-_**verify** declaration &rarr; is-valid_
-
-- _declaration_ [`<Declaration>`][classDeclaration]: Declaration to be verified.
-- Returns _is-valid_: `<boolean>`. `true` if the signatures are valid, `false` otherwise.
-
-[Verifies the signatures][tweetnacl-verify] against the original data and the attached public keys.
-
-**Warning:** Everything needed to verify the signatures exists within the [`Declaration`][classDeclaration] instance, but it is up to you to verify the authenticity of the public keys. See also: [key.equal][equal] for information on key comparison.
+::
+fn
+  name: "verify"
+  $in:
+    declaration:
+      $t: k "Declaration"
+  $out:
+    "is-valid":
+      $t: k "boolean"
+      $d: "`true` if the signatures are valid, `false` otherwise."
+::
+**Warning:** Everything needed to verify the signatures exists within the :: k 'Declaration' :: instance, but it is up to you to verify the authenticity of the public keys. See also: :: k 'key.equal' :: for information on key comparison.
 
 **Warning:** Signing key pairs do not work for encryption.
 

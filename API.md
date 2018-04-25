@@ -13,6 +13,10 @@ The TweetNaCl.js module imported by Confidential. Useful for bypassing the Confi
 ## keyPair
 
 # Functions
+
+
+## confidential
+
 _**confidential** [ randomBytes ]  &rarr;  api_
 
 - _randomBytes_: `function`. Provide a custom implementation for [`randomBytes`][randombytes]. **Warning:** A robust source of entropy is necessary for encryption. Use this feature with caution.
@@ -20,6 +24,10 @@ _**confidential** [ randomBytes ]  &rarr;  api_
 - Returning _api_: `object`. An instance of the Confidential API.
 
 
+
+
+
+## randomBytes
 
 _**randomBytes** length  &rarr;  bytes_
 
@@ -41,6 +49,10 @@ randomBytes 32
 .then (bytes) ->
 # ...
 ```
+
+
+
+## encrypt
 
 _**encrypt** key, [ nonce ,] plaintext  &rarr;  envelope_
 
@@ -90,6 +102,10 @@ do ->
 ```
 
 **Warning:** Private keys should only be accessible to their owners.
+
+
+
+## decrypt
 
 _**decrypt** key, envelope  &rarr;  plaintext_
 
@@ -196,16 +212,18 @@ do ->
   assert.equal greeting.signatories.length, 2
 ```
 
+
+
 ## verify
 
-_**verify** declaration &rarr; is-valid_
+_**verify** declaration  &rarr;  is-valid_
 
-- _declaration_ [`<Declaration>`][classDeclaration]: Declaration to be verified.
-- Returns _is-valid_: `<boolean>`. `true` if the signatures are valid, `false` otherwise.
+- _declaration_: `Declaration`.
 
-[Verifies the signatures][tweetnacl-verify] against the original data and the attached public keys.
+- Returning _is-valid_: `boolean`. `true` if the signatures are valid, `false` otherwise.
 
-**Warning:** Everything needed to verify the signatures exists within the [`Declaration`][classDeclaration] instance, but it is up to you to verify the authenticity of the public keys. See also: [key.equal][equal] for information on key comparison.
+
+**Warning:** Everything needed to verify the signatures exists within the  instance, but it is up to you to verify the authenticity of the public keys. See also:  for information on key comparison.
 
 **Warning:** Signing key pairs do not work for encryption.
 
@@ -228,15 +246,18 @@ do ->
     throw new Error "Unable to verify data signatures."
 ```
 
+
+
 ## convert
 
-_**convert** conversion, from &rarr; to_
+_**convert** conversion, from  &rarr;  to_
 
-- _conversion_: `<object>.` Describes the conversion to be applied to _from_.
+- _conversion_: `object`. Describes the conversion to be applied to _from_.
 
-- _from_: The value to be converted.
+- _from_ The value to be converted.
 
-- Returns _to_: The result of the conversion.
+- Returning _to_ The result of the conversion.
+
 
 ### Conversion Description
 
