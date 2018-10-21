@@ -1,5 +1,5 @@
 # This identifies a KMS key by key ID, key Arn, or key alias.
-import {isType} from "fairmont-helpers"
+import {isType} from "panda-parchment"
 
 class KMSKeyID
   constructor: (@id) ->

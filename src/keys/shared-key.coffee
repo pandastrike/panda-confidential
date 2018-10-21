@@ -1,7 +1,7 @@
 # This is a derived key formed from one person's private key and another's public key to form a shared secret key used in PKE encryption.
 import nacl from "tweetnacl"
-import {isType, isString} from "fairmont-helpers"
-import {Method} from "fairmont-multimethods"
+import {isType, isString} from "panda-parchment"
+import {Method} from "panda-generics"
 
 import {Key} from "./key"
 import {isPrivateKey} from "./private-key"

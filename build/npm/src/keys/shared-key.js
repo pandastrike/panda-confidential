@@ -3,15 +3,13 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.isSharedKey = exports.sharedKey = undefined;
+exports.isSharedKey = exports.sharedKey = void 0;
 
-var _tweetnacl = require("tweetnacl");
+var _tweetnacl = _interopRequireDefault(require("tweetnacl"));
 
-var _tweetnacl2 = _interopRequireDefault(_tweetnacl);
+var _pandaParchment = require("panda-parchment");
 
-var _fairmontHelpers = require("fairmont-helpers");
-
-var _fairmontMultimethods = require("fairmont-multimethods");
+var _pandaGenerics = require("panda-generics");
 
 var _key = require("./key");
 
@@ -25,34 +23,32 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 // This is a derived key formed from one person's private key and another's public key to form a shared secret key used in PKE encryption.
 var SharedKey, get, isSharedKey;
-
+exports.isSharedKey = isSharedKey;
+exports.sharedKey = get;
 SharedKey = class SharedKey extends _key.Key {};
+exports.isSharedKey = isSharedKey = (0, _pandaParchment.isType)(SharedKey); // Create a key parsing multimethod.  Default to decoding a key literal...
 
-exports.isSharedKey = isSharedKey = (0, _fairmontHelpers.isType)(SharedKey);
+exports.sharedKey = get = _pandaGenerics.Method.create();
 
-// Create a key parsing multimethod.  Default to decoding a key literal...
-exports.sharedKey = get = _fairmontMultimethods.Method.create();
-
-_fairmontMultimethods.Method.define(get, _utils.isData, function (input) {
+_pandaGenerics.Method.define(get, _utils.isData, function (input) {
   return new SharedKey(input);
 });
 
-_fairmontMultimethods.Method.define(get, _fairmontHelpers.isString, function (input) {
+_pandaGenerics.Method.define(get, _pandaParchment.isString, function (input) {
   return get((0, _utils.decode)("base64", input));
 });
 
-_fairmontMultimethods.Method.define(get, _fairmontHelpers.isString, _fairmontHelpers.isString, function (input, encoding) {
+_pandaGenerics.Method.define(get, _pandaParchment.isString, _pandaParchment.isString, function (input, encoding) {
   return get((0, _utils.decode)(encoding, input));
+}); // ... but the most common usecase is to accept two explicit key classes.
+
+
+_pandaGenerics.Method.define(get, _privateKey.isPrivateKey, _publicKey.isPublicKey, function (privateKey, publicKey) {
+  return get(_tweetnacl.default.box.before(publicKey.key, privateKey.key));
 });
 
-// ... but the most common usecase is to accept two explicit key classes.
-_fairmontMultimethods.Method.define(get, _privateKey.isPrivateKey, _publicKey.isPublicKey, function (privateKey, publicKey) {
-  return get(_tweetnacl2.default.box.before(publicKey.key, privateKey.key));
+_pandaGenerics.Method.define(get, _publicKey.isPublicKey, _privateKey.isPrivateKey, function (publicKey, privateKey) {
+  return get(_tweetnacl.default.box.before(publicKey.key, privateKey.key));
 });
-
-_fairmontMultimethods.Method.define(get, _publicKey.isPublicKey, _privateKey.isPrivateKey, function (publicKey, privateKey) {
-  return get(_tweetnacl2.default.box.before(publicKey.key, privateKey.key));
-});
-
-exports.sharedKey = get;
-exports.isSharedKey = isSharedKey;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImtleXMvc2hhcmVkLWtleS5jb2ZmZWUiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7OztBQUNBOztBQUNBOztBQUNBOztBQUVBOztBQUNBOztBQUNBOztBQUNBOzs7O0FBUkE7QUFBQSxJQUFBLFNBQUEsRUFBQSxHQUFBLEVBQUEsV0FBQTs7O0FBVU0sU0FBQSxHQUFOLE1BQUEsU0FBQSxTQUF3QixRQUF4QixDQUFBLEVBQU07QUFFTixzQkFBQSxXQUFBLEdBQWMsNEJBWmQsU0FZYyxDQUFkLEM7O0FBR0Esb0JBQUEsR0FBQSxHQUFNLHNCQUFBLE1BQUEsRUFBTjs7QUFDQSxzQkFBQSxNQUFBLENBQUEsR0FBQSxFQUFBLGFBQUEsRUFDRSxVQUFBLEtBQUEsRUFBQTtTQUFXLElBQUEsU0FBQSxDQUFBLEtBQUEsQztBQURiLENBQUE7O0FBRUEsc0JBQUEsTUFBQSxDQUFBLEdBQUEsRUFBQSx3QkFBQSxFQUNFLFVBQUEsS0FBQSxFQUFBO1NBQVcsR0FBQSxDQUFJLG1CQUFBLFFBQUEsRUFBSixLQUFJLENBQUosQztBQURiLENBQUE7O0FBRUEsc0JBQUEsTUFBQSxDQUFBLEdBQUEsRUFBQSx3QkFBQSxFQUFBLHdCQUFBLEVBQ0UsVUFBQSxLQUFBLEVBQUEsUUFBQSxFQUFBO1NBQXFCLEdBQUEsQ0FBSSxtQkFBQSxRQUFBLEVBQUosS0FBSSxDQUFKLEM7QUFyQnZCLENBb0JBLEU7OztBQUlBLHNCQUFBLE1BQUEsQ0FBQSxHQUFBLEVBQUEsd0JBQUEsRUFBQSxzQkFBQSxFQUNFLFVBQUEsVUFBQSxFQUFBLFNBQUEsRUFBQTtTQUEyQixHQUFBLENBQUksbUJBQUssR0FBTCxDQUFBLE1BQUEsQ0FBZ0IsU0FBUyxDQUF6QixHQUFBLEVBQStCLFVBQVUsQ0FBN0MsR0FBSSxDQUFKLEM7QUFEN0IsQ0FBQTs7QUFFQSxzQkFBQSxNQUFBLENBQUEsR0FBQSxFQUFBLHNCQUFBLEVBQUEsd0JBQUEsRUFDRSxVQUFBLFNBQUEsRUFBQSxVQUFBLEVBQUE7U0FBMkIsR0FBQSxDQUFJLG1CQUFLLEdBQUwsQ0FBQSxNQUFBLENBQWdCLFNBQVMsQ0FBekIsR0FBQSxFQUErQixVQUFVLENBQTdDLEdBQUksQ0FBSixDO0FBRDdCLENBQUEiLCJzb3VyY2VzQ29udGVudCI6WyIjIFRoaXMgaXMgYSBkZXJpdmVkIGtleSBmb3JtZWQgZnJvbSBvbmUgcGVyc29uJ3MgcHJpdmF0ZSBrZXkgYW5kIGFub3RoZXIncyBwdWJsaWMga2V5IHRvIGZvcm0gYSBzaGFyZWQgc2VjcmV0IGtleSB1c2VkIGluIFBLRSBlbmNyeXB0aW9uLlxuaW1wb3J0IG5hY2wgZnJvbSBcInR3ZWV0bmFjbFwiXG5pbXBvcnQge2lzVHlwZSwgaXNTdHJpbmd9IGZyb20gXCJwYW5kYS1wYXJjaG1lbnRcIlxuaW1wb3J0IHtNZXRob2R9IGZyb20gXCJwYW5kYS1nZW5lcmljc1wiXG5cbmltcG9ydCB7S2V5fSBmcm9tIFwiLi9rZXlcIlxuaW1wb3J0IHtpc1ByaXZhdGVLZXl9IGZyb20gXCIuL3ByaXZhdGUta2V5XCJcbmltcG9ydCB7aXNQdWJsaWNLZXl9IGZyb20gXCIuL3B1YmxpYy1rZXlcIlxuaW1wb3J0IHtkZWNvZGUsIGlzRGF0YX0gZnJvbSBcIi4uL3V0aWxzXCJcblxuY2xhc3MgU2hhcmVkS2V5IGV4dGVuZHMgS2V5XG5cbmlzU2hhcmVkS2V5ID0gaXNUeXBlIFNoYXJlZEtleVxuXG4jIENyZWF0ZSBhIGtleSBwYXJzaW5nIG11bHRpbWV0aG9kLiAgRGVmYXVsdCB0byBkZWNvZGluZyBhIGtleSBsaXRlcmFsLi4uXG5nZXQgPSBNZXRob2QuY3JlYXRlKClcbk1ldGhvZC5kZWZpbmUgZ2V0LCBpc0RhdGEsXG4gIChpbnB1dCkgLT4gbmV3IFNoYXJlZEtleSBpbnB1dFxuTWV0aG9kLmRlZmluZSBnZXQsIGlzU3RyaW5nLFxuICAoaW5wdXQpIC0+IGdldCBkZWNvZGUgXCJiYXNlNjRcIiwgaW5wdXRcbk1ldGhvZC5kZWZpbmUgZ2V0LCBpc1N0cmluZywgaXNTdHJpbmcsXG4gIChpbnB1dCwgZW5jb2RpbmcpIC0+IGdldCBkZWNvZGUgZW5jb2RpbmcsIGlucHV0XG5cbiMgLi4uIGJ1dCB0aGUgbW9zdCBjb21tb24gdXNlY2FzZSBpcyB0byBhY2NlcHQgdHdvIGV4cGxpY2l0IGtleSBjbGFzc2VzLlxuTWV0aG9kLmRlZmluZSBnZXQsIGlzUHJpdmF0ZUtleSwgaXNQdWJsaWNLZXksXG4gIChwcml2YXRlS2V5LCBwdWJsaWNLZXkpIC0+IGdldCBuYWNsLmJveC5iZWZvcmUgcHVibGljS2V5LmtleSwgcHJpdmF0ZUtleS5rZXlcbk1ldGhvZC5kZWZpbmUgZ2V0LCBpc1B1YmxpY0tleSwgaXNQcml2YXRlS2V5LFxuICAocHVibGljS2V5LCBwcml2YXRlS2V5KSAtPiBnZXQgbmFjbC5ib3guYmVmb3JlIHB1YmxpY0tleS5rZXksIHByaXZhdGVLZXkua2V5XG5cblxuZXhwb3J0IHtnZXQgYXMgc2hhcmVkS2V5LCBpc1NoYXJlZEtleX1cbiJdLCJzb3VyY2VSb290IjoiIn0=
+//# sourceURL=keys/shared-key.coffee

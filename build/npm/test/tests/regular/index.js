@@ -3,51 +3,39 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.default = void 0;
 
 var _amen = require("amen");
 
-var _symmetricEncryption = require("./symmetric-encryption");
+var _symmetricEncryption = _interopRequireDefault(require("./symmetric-encryption"));
 
-var _symmetricEncryption2 = _interopRequireDefault(_symmetricEncryption);
+var _asymmetricEncryption = _interopRequireDefault(require("./asymmetric-encryption"));
 
-var _asymmetricEncryption = require("./asymmetric-encryption");
+var _signature = _interopRequireDefault(require("./signature"));
 
-var _asymmetricEncryption2 = _interopRequireDefault(_asymmetricEncryption);
-
-var _signature = require("./signature");
-
-var _signature2 = _interopRequireDefault(_signature);
-
-var _hash = require("./hash");
-
-var _hash2 = _interopRequireDefault(_hash);
+var _hash = _interopRequireDefault(require("./hash"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
-
 var Test;
 
-Test = (() => {
-  var _ref = _asyncToGenerator(function* () {
-    return yield (0, _amen.print)((yield (0, _amen.test)("Panda Confidential", [(0, _amen.test)({
-      description: "Symmetric Encryption",
-      wait: false
-    }, _symmetricEncryption2.default), (0, _amen.test)({
-      description: "Public Key Encryption",
-      wait: false
-    }, _asymmetricEncryption2.default), (0, _amen.test)({
-      description: "Digital Signature",
-      wait: false
-    }, _signature2.default), (0, _amen.test)({
-      description: "SHA-512 Hash",
-      wait: false
-    }, _hash2.default)])));
-  });
+Test = async function () {
+  return await (0, _amen.print)((await (0, _amen.test)("Panda Confidential", [(0, _amen.test)({
+    description: "Symmetric Encryption",
+    wait: false
+  }, _symmetricEncryption.default), (0, _amen.test)({
+    description: "Public Key Encryption",
+    wait: false
+  }, _asymmetricEncryption.default), (0, _amen.test)({
+    description: "Digital Signature",
+    wait: false
+  }, _signature.default), (0, _amen.test)({
+    description: "SHA-512 Hash",
+    wait: false
+  }, _hash.default)])));
+};
 
-  return function Test() {
-    return _ref.apply(this, arguments);
-  };
-})();
-
-exports.default = Test;
+var _default = Test;
+exports.default = _default;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInRlc3RzL3JlZ3VsYXIvaW5kZXguY29mZmVlIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7Ozs7QUFBQTs7QUFFQTs7QUFDQTs7QUFDQTs7QUFDQTs7OztBQUxBLElBQUEsSUFBQTs7QUFPQSxJQUFBLEdBQU8sa0JBQUE7QUFDTCxTQUFBLE1BQU0sa0JBQU0sTUFBTSxnQkFBQSxvQkFBQSxFQUEyQixDQUMzQyxnQkFDRTtBQUFBLElBQUEsV0FBQSxFQUFBLHNCQUFBO0FBQ0EsSUFBQSxJQUFBLEVBQU07QUFETixHQURGLEVBRDJDLDRCQUMzQyxDQUQyQyxFQU0zQyxnQkFDRTtBQUFBLElBQUEsV0FBQSxFQUFBLHVCQUFBO0FBQ0EsSUFBQSxJQUFBLEVBQU07QUFETixHQURGLEVBTjJDLDZCQU0zQyxDQU4yQyxFQVczQyxnQkFDRTtBQUFBLElBQUEsV0FBQSxFQUFBLG1CQUFBO0FBQ0EsSUFBQSxJQUFBLEVBQU07QUFETixHQURGLEVBWDJDLGtCQVczQyxDQVgyQyxFQWdCM0MsZ0JBQ0U7QUFBQSxJQUFBLFdBQUEsRUFBQSxjQUFBO0FBQ0EsSUFBQSxJQUFBLEVBQU07QUFETixHQURGLEVBaEIyQyxhQWdCM0MsQ0FoQjJDLENBQTNCLENBQVosRUFBTjtBQURLLENBQVA7O2VBdUJlLEkiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQge3ByaW50LCB0ZXN0fSBmcm9tIFwiYW1lblwiXG5cbmltcG9ydCBzeW1tZXRyaWMgZnJvbSBcIi4vc3ltbWV0cmljLWVuY3J5cHRpb25cIlxuaW1wb3J0IGFzeW1tZXRyaWMgZnJvbSBcIi4vYXN5bW1ldHJpYy1lbmNyeXB0aW9uXCJcbmltcG9ydCBzaWduYXR1cmUgZnJvbSBcIi4vc2lnbmF0dXJlXCJcbmltcG9ydCBoYXNoIGZyb20gXCIuL2hhc2hcIlxuXG5UZXN0ID0gLT5cbiAgYXdhaXQgcHJpbnQgYXdhaXQgdGVzdCBcIlBhbmRhIENvbmZpZGVudGlhbFwiLCBbXG4gICAgdGVzdFxuICAgICAgZGVzY3JpcHRpb246IFwiU3ltbWV0cmljIEVuY3J5cHRpb25cIlxuICAgICAgd2FpdDogZmFsc2UsXG4gICAgICBzeW1tZXRyaWNcblxuICAgIHRlc3RcbiAgICAgIGRlc2NyaXB0aW9uOiBcIlB1YmxpYyBLZXkgRW5jcnlwdGlvblwiXG4gICAgICB3YWl0OiBmYWxzZSxcbiAgICAgIGFzeW1tZXRyaWNcblxuICAgIHRlc3RcbiAgICAgIGRlc2NyaXB0aW9uOiBcIkRpZ2l0YWwgU2lnbmF0dXJlXCJcbiAgICAgIHdhaXQ6IGZhbHNlLFxuICAgICAgc2lnbmF0dXJlXG5cbiAgICB0ZXN0XG4gICAgICBkZXNjcmlwdGlvbjogXCJTSEEtNTEyIEhhc2hcIlxuICAgICAgd2FpdDogZmFsc2UsXG4gICAgICBoYXNoXG4gIF1cblxuZXhwb3J0IGRlZmF1bHQgVGVzdFxuIl0sInNvdXJjZVJvb3QiOiIifQ==
+//# sourceURL=tests/regular/index.coffee

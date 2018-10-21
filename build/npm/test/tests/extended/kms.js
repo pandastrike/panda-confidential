@@ -3,20 +3,17 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.default = void 0;
 
-var _sundog = require("sundog");
+var _sundog = _interopRequireDefault(require("sundog"));
 
-var _sundog2 = _interopRequireDefault(_sundog);
-
-var _fairmontHelpers = require("fairmont-helpers");
+var _pandaParchment = require("panda-parchment");
 
 var _fairmontMultimethods = require("fairmont-multimethods");
 
 var _kmsKey = require("./kms-key");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 var kms;
 
@@ -31,69 +28,78 @@ kms = function (confidential, SDK) {
         decrypt: kmsDecrypt
       }
     }
-  } = (0, _sundog2.default)(SDK));
-  confidential.randomBytes = (() => {
-    var _ref = _asyncToGenerator(function* (length) {
-      return yield randomKey(length, "buffer");
-    });
+  } = (0, _sundog.default)(SDK));
 
-    return function (_x) {
-      return _ref.apply(this, arguments);
-    };
-  })();
-  ({ encode, decode, isData, randomBytes, nacl } = confidential);
-  // Extension to Symmetric Encryption that encrypts the key with KMS.
-  _fairmontMultimethods.Method.define(confidential.encrypt, _kmsKey.isKMSKeyID, isData, (() => {
-    var _ref2 = _asyncToGenerator(function* ({ id }, plaintext) {
-      var ciphertext, key, length, lockedKey, nonce, r;
-      length = nacl.secretbox.nonceLength + nacl.secretbox.keyLength;
-      r = yield randomBytes(length);
-      key = r.slice(0, nacl.secretbox.keyLength);
-      nonce = r.slice(nacl.secretbox.keyLength);
-      ciphertext = nacl.secretbox(plaintext, nonce, key);
-      lockedKey = yield kmsEncrypt(id, key, "buffer");
-      return encode({
-        lockedKey: lockedKey, // Already base64
-        ciphertext: encode("base64", ciphertext),
-        nonce: encode("base64", nonce)
-      });
-    });
+  confidential.randomBytes = async function (length) {
+    return await randomKey(length, "buffer");
+  };
 
-    return function (_x2, _x3) {
-      return _ref2.apply(this, arguments);
-    };
-  })());
-  _fairmontMultimethods.Method.define(confidential.encrypt, _kmsKey.isKMSKeyID, _fairmontHelpers.isString, _fairmontHelpers.isString, function (key, plaintext, encoding) {
+  ({
+    encode,
+    decode,
+    isData,
+    randomBytes,
+    nacl
+  } = confidential); // Extension to Symmetric Encryption that encrypts the key with KMS.
+
+  _fairmontMultimethods.Method.define(confidential.encrypt, _kmsKey.isKMSKeyID, isData, async function ({
+    id
+  }, plaintext) {
+    var ciphertext, key, length, lockedKey, nonce, r;
+    length = nacl.secretbox.nonceLength + nacl.secretbox.keyLength;
+    r = await randomBytes(length);
+    key = r.slice(0, nacl.secretbox.keyLength);
+    nonce = r.slice(nacl.secretbox.keyLength);
+    ciphertext = nacl.secretbox(plaintext, nonce, key);
+    lockedKey = await kmsEncrypt(id, key, "buffer");
+    return encode({
+      lockedKey: lockedKey,
+      // Already base64
+      ciphertext: encode("base64", ciphertext),
+      nonce: encode("base64", nonce)
+    });
+  });
+
+  _fairmontMultimethods.Method.define(confidential.encrypt, _kmsKey.isKMSKeyID, _pandaParchment.isString, _pandaParchment.isString, function (key, plaintext, encoding) {
     return confidential.encrypt(key, decode(encoding, plaintext));
   });
-  _fairmontMultimethods.Method.define(confidential.encrypt, _kmsKey.isKMSKeyID, _fairmontHelpers.isString, function (key, plaintext) {
-    return confidential.encrypt(key, decode("utf8", plaintext));
-  });
-  // Extension to Symmetric Decryption that encrypts the key with KMS.
-  _fairmontMultimethods.Method.define(confidential.decrypt, _kmsKey.isKMSKeyID, isData, _fairmontHelpers.isString, (() => {
-    var _ref3 = _asyncToGenerator(function* ({ id }, blob, encoding) {
-      var ciphertext, key, lockedKey, nonce;
-      ({ ciphertext, nonce, lockedKey } = JSON.parse(encode("utf8", blob)));
-      ciphertext = decode("base64", ciphertext);
-      nonce = decode("base64", nonce);
-      key = yield kmsDecrypt(lockedKey, "buffer");
-      return encode(encoding, nacl.secretbox.open(ciphertext, nonce, key));
-    });
 
-    return function (_x4, _x5, _x6) {
-      return _ref3.apply(this, arguments);
-    };
-  })());
+  _fairmontMultimethods.Method.define(confidential.encrypt, _kmsKey.isKMSKeyID, _pandaParchment.isString, function (key, plaintext) {
+    return confidential.encrypt(key, decode("utf8", plaintext));
+  }); // Extension to Symmetric Decryption that encrypts the key with KMS.
+
+
+  _fairmontMultimethods.Method.define(confidential.decrypt, _kmsKey.isKMSKeyID, isData, _pandaParchment.isString, async function ({
+    id
+  }, blob, encoding) {
+    var ciphertext, key, lockedKey, nonce;
+    ({
+      ciphertext,
+      nonce,
+      lockedKey
+    } = JSON.parse(encode("utf8", blob)));
+    ciphertext = decode("base64", ciphertext);
+    nonce = decode("base64", nonce);
+    key = await kmsDecrypt(lockedKey, "buffer");
+    return encode(encoding, nacl.secretbox.open(ciphertext, nonce, key));
+  });
+
   _fairmontMultimethods.Method.define(confidential.decrypt, _kmsKey.isKMSKeyID, isData, function (key, blob) {
     return confidential.decrypt(key, blob, "utf8");
   });
-  _fairmontMultimethods.Method.define(confidential.decrypt, _kmsKey.isKMSKeyID, _fairmontHelpers.isString, _fairmontHelpers.isString, function (key, blob, encoding) {
+
+  _fairmontMultimethods.Method.define(confidential.decrypt, _kmsKey.isKMSKeyID, _pandaParchment.isString, _pandaParchment.isString, function (key, blob, encoding) {
     return confidential.decrypt(key, decode("base64", blob), encoding);
   });
-  _fairmontMultimethods.Method.define(confidential.decrypt, _kmsKey.isKMSKeyID, _fairmontHelpers.isString, function (key, blob) {
+
+  _fairmontMultimethods.Method.define(confidential.decrypt, _kmsKey.isKMSKeyID, _pandaParchment.isString, function (key, blob) {
     return confidential.decrypt(key, decode("base64", blob), "utf8");
   });
+
   return confidential;
 };
 
-exports.default = kms;
+var _default = kms;
+exports.default = _default;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInRlc3RzL2V4dGVuZGVkL2ttcy5jb2ZmZWUiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7OztBQUFBOztBQUNBOztBQUNBOztBQUNBOzs7O0FBSEEsSUFBQSxHQUFBOzs7QUFNQSxHQUFBLEdBQU0sVUFBQSxZQUFBLEVBQUEsR0FBQSxFQUFBO0FBQ0osTUFBQSxNQUFBLEVBQUEsTUFBQSxFQUFBLE1BQUEsRUFBQSxVQUFBLEVBQUEsVUFBQSxFQUFBLElBQUEsRUFBQSxXQUFBLEVBQUEsU0FBQTtBQUFBLEdBQUE7QUFBQyxJQUFBLEdBQUEsRUFBSTtBQUFBLE1BQUEsR0FBQSxFQUFJO0FBQUEsUUFBQSxTQUFBO0FBQVksUUFBQSxPQUFBLEVBQVosVUFBQTtBQUFnQyxRQUFBLE9BQUEsRUFBUTtBQUF4QztBQUFKO0FBQUwsTUFBZ0UscUJBQWhFLEdBQWdFLENBQWhFOztBQUVBLEVBQUEsWUFBWSxDQUFaLFdBQUEsR0FBMkIsZ0JBQUEsTUFBQSxFQUFBO0FBQVksV0FBQSxNQUFNLFNBQUEsQ0FBQSxNQUFBLEVBQU4sUUFBTSxDQUFOO0FBQVosR0FBM0I7O0FBQ0EsR0FBQTtBQUFBLElBQUEsTUFBQTtBQUFBLElBQUEsTUFBQTtBQUFBLElBQUEsTUFBQTtBQUFBLElBQUEsV0FBQTtBQUFBLElBQUE7QUFBQSxNQUhBLFlBR0EsRUFKSSxDOztBQU9KLCtCQUFBLE1BQUEsQ0FBYyxZQUFZLENBQTFCLE9BQUEsRUFBQSxrQkFBQSxFQUFBLE1BQUEsRUFDRSxnQkFBQztBQUFELElBQUE7QUFBQyxHQUFELEVBQUEsU0FBQSxFQUFBO0FBQ0UsUUFBQSxVQUFBLEVBQUEsR0FBQSxFQUFBLE1BQUEsRUFBQSxTQUFBLEVBQUEsS0FBQSxFQUFBLENBQUE7QUFBQSxJQUFBLE1BQUEsR0FBUyxJQUFJLENBQUMsU0FBTCxDQUFBLFdBQUEsR0FBNkIsSUFBSSxDQUFDLFNBQUwsQ0FBZSxTQUFyRDtBQUNBLElBQUEsQ0FBQSxHQUFJLE1BQU0sV0FBQSxDQUFOLE1BQU0sQ0FB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QUFBLElBQUEsRUFBQTtXQUNFLFlBQVksQ0FBWixPQUFBLENBQUEsR0FBQSxFQUEwQixNQUFBLENBQUEsUUFBQSxFQUExQixJQUEwQixDQUExQixFQUFBLE1BQUEsQztBQUZKLEdBQUE7O1NBSUEsWTtBQTlDSSxDQUFOOztlQWdEZSxHIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IFN1bmRvZyBmcm9tIFwic3VuZG9nXCJcbmltcG9ydCB7aXNTdHJpbmd9IGZyb20gXCJwYW5kYS1wYXJjaG1lbnRcIlxuaW1wb3J0IHtNZXRob2R9IGZyb20gXCJmYWlybW9udC1tdWx0aW1ldGhvZHNcIlxuaW1wb3J0IHtpc0tNU0tleUlEfSBmcm9tIFwiLi9rbXMta2V5XCJcblxuIyBFeHRlbmQgQ29uZmlkZW50aWFsIHdpdGggS01TIHZpYSBzdW5kb2cuXG5rbXMgPSAoY29uZmlkZW50aWFsLCBTREspIC0+XG4gIHtBV1M6S01TOntyYW5kb21LZXksIGVuY3J5cHQ6a21zRW5jcnlwdCwgZGVjcnlwdDprbXNEZWNyeXB0fX0gPSBTdW5kb2cgU0RLXG5cbiAgY29uZmlkZW50aWFsLnJhbmRvbUJ5dGVzID0gKGxlbmd0aCkgLT4gYXdhaXQgcmFuZG9tS2V5IGxlbmd0aCwgXCJidWZmZXJcIlxuICB7ZW5jb2RlLCBkZWNvZGUsIGlzRGF0YSwgcmFuZG9tQnl0ZXMsIG5hY2x9ID0gY29uZmlkZW50aWFsXG5cbiAgIyBFeHRlbnNpb24gdG8gU3ltbWV0cmljIEVuY3J5cHRpb24gdGhhdCBlbmNyeXB0cyB0aGUga2V5IHdpdGggS01TLlxuICBNZXRob2QuZGVmaW5lIGNvbmZpZGVudGlhbC5lbmNyeXB0LCBpc0tNU0tleUlELCBpc0RhdGEsXG4gICAgKHtpZH0sIHBsYWludGV4dCkgLT5cbiAgICAgIGxlbmd0aCA9IG5hY2wuc2VjcmV0Ym94Lm5vbmNlTGVuZ3RoICsgbmFjbC5zZWNyZXRib3gua2V5TGVuZ3RoXG4gICAgICByID0gYXdhaXQgcmFuZG9tQnl0ZXMgbGVuZ3RoXG4gICAgICBrZXkgPSByLnNsaWNlIDAsIG5hY2wuc2VjcmV0Ym94LmtleUxlbmd0aFxuICAgICAgbm9uY2UgPSByLnNsaWNlIG5hY2wuc2VjcmV0Ym94LmtleUxlbmd0aFxuXG4gICAgICBjaXBoZXJ0ZXh0ID0gbmFjbC5zZWNyZXRib3ggcGxhaW50ZXh0LCBub25jZSwga2V5XG4gICAgICBsb2NrZWRLZXkgPSBhd2FpdCBrbXNFbmNyeXB0IGlkLCBrZXksIFwiYnVmZmVyXCJcbiAgICAgIGVuY29kZVxuICAgICAgICBsb2NrZWRLZXk6IGxvY2tlZEtleSAjIEFscmVhZHkgYmFzZTY0XG4gICAgICAgIGNpcGhlcnRleHQ6IGVuY29kZSBcImJhc2U2NFwiLCBjaXBoZXJ0ZXh0XG4gICAgICAgIG5vbmNlOiBlbmNvZGUgXCJiYXNlNjRcIiwgbm9uY2VcblxuICBNZXRob2QuZGVmaW5lIGNvbmZpZGVudGlhbC5lbmNyeXB0LCBpc0tNU0tleUlELCBpc1N0cmluZywgaXNTdHJpbmcsXG4gICAgKGtleSwgcGxhaW50ZXh0LCBlbmNvZGluZykgLT5cbiAgICAgIGNvbmZpZGVudGlhbC5lbmNyeXB0IGtleSwgZGVjb2RlKGVuY29kaW5nLCBwbGFpbnRleHQpXG4gIE1ldGhvZC5kZWZpbmUgY29uZmlkZW50aWFsLmVuY3J5cHQsIGlzS01TS2V5SUQsIGlzU3RyaW5nLFxuICAgIChrZXksIHBsYWludGV4dCkgLT5cbiAgICAgIGNvbmZpZGVudGlhbC5lbmNyeXB0IGtleSwgZGVjb2RlKFwidXRmOFwiLCBwbGFpbnRleHQpXG5cbiAgIyBFeHRlbnNpb24gdG8gU3ltbWV0cmljIERlY3J5cHRpb24gdGhhdCBlbmNyeXB0cyB0aGUga2V5IHdpdGggS01TLlxuICBNZXRob2QuZGVmaW5lIGNvbmZpZGVudGlhbC5kZWNyeXB0LCBpc0tNU0tleUlELCBpc0RhdGEsIGlzU3RyaW5nLFxuICAgICh7aWR9LCBibG9iLCBlbmNvZGluZykgLT5cbiAgICAgIHtjaXBoZXJ0ZXh0LCBub25jZSwgbG9ja2VkS2V5fSA9IEpTT04ucGFyc2UgZW5jb2RlIFwidXRmOFwiLCBibG9iXG4gICAgICBjaXBoZXJ0ZXh0ID0gZGVjb2RlIFwiYmFzZTY0XCIsIGNpcGhlcnRleHRcbiAgICAgIG5vbmNlID0gZGVjb2RlIFwiYmFzZTY0XCIsIG5vbmNlXG4gICAgICBrZXkgPSBhd2FpdCBrbXNEZWNyeXB0IGxvY2tlZEtleSwgXCJidWZmZXJcIlxuICAgICAgZW5jb2RlIGVuY29kaW5nLCBuYWNsLnNlY3JldGJveC5vcGVuIGNpcGhlcnRleHQsIG5vbmNlLCBrZXlcbiAgTWV0aG9kLmRlZmluZSBjb25maWRlbnRpYWwuZGVjcnlwdCwgaXNLTVNLZXlJRCwgaXNEYXRhLFxuICAgIChrZXksIGJsb2IpIC0+XG4gICAgICBjb25maWRlbnRpYWwuZGVjcnlwdCBrZXksIGJsb2IsIFwidXRmOFwiXG4gIE1ldGhvZC5kZWZpbmUgY29uZmlkZW50aWFsLmRlY3J5cHQsIGlzS01TS2V5SUQsIGlzU3RyaW5nLCBpc1N0cmluZyxcbiAgICAoa2V5LCBibG9iLCBlbmNvZGluZykgLT5cbiAgICAgIGNvbmZpZGVudGlhbC5kZWNyeXB0IGtleSwgZGVjb2RlKFwiYmFzZTY0XCIsIGJsb2IpLCBlbmNvZGluZ1xuICBNZXRob2QuZGVmaW5lIGNvbmZpZGVudGlhbC5kZWNyeXB0LCBpc0tNU0tleUlELCBpc1N0cmluZyxcbiAgICAoa2V5LCBibG9iKSAtPlxuICAgICAgY29uZmlkZW50aWFsLmRlY3J5cHQga2V5LCBkZWNvZGUoXCJiYXNlNjRcIiwgYmxvYiksIFwidXRmOFwiXG5cbiAgY29uZmlkZW50aWFsXG5cbmV4cG9ydCBkZWZhdWx0IGttc1xuIl0sInNvdXJjZVJvb3QiOiIifQ==
+//# sourceURL=tests/extended/kms.coffee

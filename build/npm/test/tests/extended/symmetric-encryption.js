@@ -3,58 +3,35 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.default = void 0;
 
-var _powerAssertRecorder = function () { function PowerAssertRecorder() { this.captured = []; } PowerAssertRecorder.prototype._capt = function _capt(value, espath) { this.captured.push({ value: value, espath: espath }); return value; }; PowerAssertRecorder.prototype._expr = function _expr(value, source) { var capturedValues = this.captured; this.captured = []; return { powerAssertContext: { value: value, events: capturedValues }, source: source }; }; return PowerAssertRecorder; }();
-
-var _powerAssert = require("power-assert");
-
-var _powerAssert2 = _interopRequireDefault(_powerAssert);
+var _assert = _interopRequireDefault(require("assert"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
-
 var symmetric;
 
-symmetric = function ({ encrypt, decrypt, key }) {
-  return _asyncToGenerator(function* () {
-    var _rec = new _powerAssertRecorder(),
-        _rec2 = new _powerAssertRecorder(),
-        _rec3 = new _powerAssertRecorder(),
-        _rec4 = new _powerAssertRecorder();
+symmetric = function ({
+  encrypt,
+  decrypt,
+  key
+}) {
+  return async function () {
+    var KEY, cipher, message, output; // Generate symmetric key of correct length that should be saved.
 
-    var KEY, cipher, message, output;
-    // Generate symmetric key of correct length that should be saved.
-    KEY = yield key.symmetric();
-    (0, _powerAssert2.default)(_rec._expr(_rec._capt(_rec._capt(KEY, "arguments/0/left") && _rec._capt(_rec._capt(key, "arguments/0/right/callee/object").isSymmetric(_rec._capt(KEY, "arguments/0/right/arguments/0")), "arguments/0/right"), "arguments/0"), {
-      content: "assert(KEY && key.isSymmetric(KEY), \"bad key\")",
-      filepath: "tests/extended/symmetric-encryption.coffee",
-      line: 6,
-      async: true
-    }), "bad key");
-    // Person A symmetrically encrypts their data.
+    KEY = await key.symmetric();
+    (0, _assert.default)(KEY && key.isSymmetric(KEY), "bad key"); // Person A symmetrically encrypts their data.
+
     message = "Hello World!";
-    cipher = yield encrypt(KEY, message);
-    (0, _powerAssert2.default)(_rec2._expr(_rec2._capt(_rec2._capt(cipher, "arguments/0/left") && _rec2._capt(_rec2._capt(message, "arguments/0/right/left") !== _rec2._capt(cipher, "arguments/0/right/right"), "arguments/0/right"), "arguments/0"), {
-      content: "assert(cipher && message !== cipher, \"must create a ciphertext\")",
-      filepath: "tests/extended/symmetric-encryption.coffee",
-      line: 11,
-      async: true
-    }), "must create a ciphertext");
-    // Person A later decrypts that ciphertext.
-    output = yield decrypt(KEY, cipher);
-    return _powerAssert2.default.equal(_rec3._expr(_rec3._capt(message, "arguments/0"), {
-      content: "assert.equal(message, output, \"failed to decrypt\")",
-      filepath: "tests/extended/symmetric-encryption.coffee",
-      line: 15,
-      async: true
-    }), _rec4._expr(_rec4._capt(output, "arguments/1"), {
-      content: "assert.equal(message, output, \"failed to decrypt\")",
-      filepath: "tests/extended/symmetric-encryption.coffee",
-      line: 15,
-      async: true
-    }), "failed to decrypt");
-  });
+    cipher = await encrypt(KEY, message);
+    (0, _assert.default)(cipher && message !== cipher, "must create a ciphertext"); // Person A later decrypts that ciphertext.
+
+    output = await decrypt(KEY, cipher);
+    return _assert.default.equal(message, output, "failed to decrypt");
+  };
 };
 
-exports.default = symmetric;
+var _default = symmetric;
+exports.default = _default;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInRlc3RzL2V4dGVuZGVkL3N5bW1ldHJpYy1lbmNyeXB0aW9uLmNvZmZlZSJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7O0FBQUE7Ozs7QUFBQSxJQUFBLFNBQUE7O0FBRUEsU0FBQSxHQUFZLFVBQUM7QUFBQSxFQUFBLE9BQUE7QUFBQSxFQUFBLE9BQUE7QUFBRCxFQUFBO0FBQUMsQ0FBRCxFQUFBO1NBQTZCLGtCQUFBO0FBRXZDLFFBQUEsR0FBQSxFQUFBLE1BQUEsRUFBQSxPQUFBLEVBQUEsTUFBQSxDQUZ1QyxDOztBQUV2QyxJQUFBLEdBQUEsR0FBTSxNQUFNLEdBQUcsQ0FBVCxTQUFNLEVBQVo7QUFDQSx5QkFBUSxHQUFBLElBQU8sR0FBRyxDQUFILFdBQUEsQ0FBZixHQUFlLENBQWYsRUFEQSxTQUNBLEVBSHVDLEM7O0FBTXZDLElBQUEsT0FBQSxHQUFVLGNBQVY7QUFDQSxJQUFBLE1BQUEsR0FBUyxNQUFNLE9BQUEsQ0FBQSxHQUFBLEVBQU4sT0FBTSxDQUFmO0FBQ0EseUJBQVEsTUFBQSxJQUFVLE9BQUEsS0FBbEIsTUFBQSxFQU5BLDBCQU1BLEVBUnVDLEM7O0FBV3ZDLElBQUEsTUFBQSxHQUFTLE1BQU0sT0FBQSxDQUFBLEdBQUEsRUFBTixNQUFNLENBQWY7V0FDQSxnQkFBQSxLQUFBLENBQUEsT0FBQSxFQUFBLE1BQUEsRUFBQSxtQkFBQSxDO0FBWnVDLEc7QUFBN0IsQ0FBWjs7ZUFjZSxTIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IGFzc2VydCBmcm9tIFwiYXNzZXJ0XCJcblxuc3ltbWV0cmljID0gKHtlbmNyeXB0LCBkZWNyeXB0LCBrZXl9KSAtPiAtPlxuICAjIEdlbmVyYXRlIHN5bW1ldHJpYyBrZXkgb2YgY29ycmVjdCBsZW5ndGggdGhhdCBzaG91bGQgYmUgc2F2ZWQuXG4gIEtFWSA9IGF3YWl0IGtleS5zeW1tZXRyaWMoKVxuICBhc3NlcnQgKEtFWSAmJiBrZXkuaXNTeW1tZXRyaWMgS0VZKSwgXCJiYWQga2V5XCJcblxuICAjIFBlcnNvbiBBIHN5bW1ldHJpY2FsbHkgZW5jcnlwdHMgdGhlaXIgZGF0YS5cbiAgbWVzc2FnZSA9IFwiSGVsbG8gV29ybGQhXCJcbiAgY2lwaGVyID0gYXdhaXQgZW5jcnlwdCBLRVksIG1lc3NhZ2VcbiAgYXNzZXJ0IChjaXBoZXIgJiYgbWVzc2FnZSAhPSBjaXBoZXIpLCBcIm11c3QgY3JlYXRlIGEgY2lwaGVydGV4dFwiXG5cbiAgIyBQZXJzb24gQSBsYXRlciBkZWNyeXB0cyB0aGF0IGNpcGhlcnRleHQuXG4gIG91dHB1dCA9IGF3YWl0IGRlY3J5cHQgS0VZLCBjaXBoZXJcbiAgYXNzZXJ0LmVxdWFsIG1lc3NhZ2UsIG91dHB1dCwgXCJmYWlsZWQgdG8gZGVjcnlwdFwiXG5cbmV4cG9ydCBkZWZhdWx0IHN5bW1ldHJpY1xuIl0sInNvdXJjZVJvb3QiOiIifQ==
+//# sourceURL=tests/extended/symmetric-encryption.coffee

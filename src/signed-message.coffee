@@ -1,6 +1,6 @@
 # Signed messages are in containing objects that also hold meta-data about the nature of (possibly multiple) signature(s) on a message.  This class accepts either an object literal or the base64 blob that's output from the "sign" method for transport.
-import {Method} from "fairmont-multimethods"
-import {isType, isString, isBuffer, isObject} from "fairmont-helpers"
+import {Method} from "panda-generics"
+import {isType, isString, isBuffer, isObject} from "panda-parchment"
 
 import {encode, decode, isData} from "./utils"
 
