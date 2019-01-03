@@ -3,116 +3,55 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.default = void 0;
 
-var _powerAssertRecorder = function () { function PowerAssertRecorder() { this.captured = []; } PowerAssertRecorder.prototype._capt = function _capt(value, espath) { this.captured.push({ value: value, espath: espath }); return value; }; PowerAssertRecorder.prototype._expr = function _expr(value, source) { var capturedValues = this.captured; this.captured = []; return { powerAssertContext: { value: value, events: capturedValues }, source: source }; }; return PowerAssertRecorder; }();
-
-var _powerAssert = require("power-assert");
-
-var _powerAssert2 = _interopRequireDefault(_powerAssert);
+var _assert = _interopRequireDefault(require("assert"));
 
 var _amen = require("amen");
 
 var _index = require("../../../src/index");
 
-var _tweetnacl = require("tweetnacl");
-
-var _tweetnacl2 = _interopRequireDefault(_tweetnacl);
+var _tweetnacl = _interopRequireDefault(require("tweetnacl"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
-
 var asymmetric;
 
-asymmetric = (() => {
-  var _ref = _asyncToGenerator(function* () {
-    var _rec = new _powerAssertRecorder(),
-        _rec2 = new _powerAssertRecorder(),
-        _rec3 = new _powerAssertRecorder(),
-        _rec4 = new _powerAssertRecorder(),
-        _rec5 = new _powerAssertRecorder(),
-        _rec6 = new _powerAssertRecorder(),
-        _rec7 = new _powerAssertRecorder(),
-        _rec8 = new _powerAssertRecorder(),
-        _rec9 = new _powerAssertRecorder(),
-        _rec10 = new _powerAssertRecorder();
+asymmetric = async function () {
+  var A, B, cipher, decrypt, encrypt, key, key1, key2, keyPair, message, output, privateKey, publicKey;
+  ({
+    keyPair,
+    key,
+    encrypt,
+    decrypt
+  } = (0, _index.confidential)()); // Test Key Pair Generation
 
-    var A, B, cipher, decrypt, encrypt, key, key1, key2, keyPair, message, output, privateKey, publicKey;
-    ({ keyPair, key, encrypt, decrypt } = (0, _index.confidential)());
-    // Test Key Pair Generation
-    A = ({ privateKey, publicKey } = yield keyPair.encryption());
-    (0, _powerAssert2.default)(_rec._expr(_rec._capt(_rec._capt(privateKey, "arguments/0/left") && _rec._capt(_rec._capt(key, "arguments/0/right/callee/object").isPrivate(_rec._capt(privateKey, "arguments/0/right/arguments/0")), "arguments/0/right"), "arguments/0"), {
-      content: "assert(privateKey && key.isPrivate(privateKey), \"must make private key\")",
-      filepath: "tests/regular/asymmetric-encryption.coffee",
-      line: 11,
-      async: true
-    }), "must make private key");
-    (0, _powerAssert2.default)(_rec2._expr(_rec2._capt(_rec2._capt(publicKey, "arguments/0/left") && _rec2._capt(_rec2._capt(key, "arguments/0/right/callee/object").isPublic(_rec2._capt(publicKey, "arguments/0/right/arguments/0")), "arguments/0/right"), "arguments/0"), {
-      content: "assert(publicKey && key.isPublic(publicKey), \"must make public key\")",
-      filepath: "tests/regular/asymmetric-encryption.coffee",
-      line: 12,
-      async: true
-    }), "must make public key");
-    (0, _powerAssert2.default)(_rec3._expr(_rec3._capt(_rec3._capt(_rec3._capt(_rec3._capt(privateKey, "arguments/0/left/object/object").key, "arguments/0/left/object").length, "arguments/0/left") === _rec3._capt(_rec3._capt(_rec3._capt(_tweetnacl2.default, "arguments/0/right/object/object").box, "arguments/0/right/object").secretKeyLength, "arguments/0/right"), "arguments/0"), {
-      content: "assert(privateKey.key.length === nacl.box.secretKeyLength, \"private key is improper length\")",
-      filepath: "tests/regular/asymmetric-encryption.coffee",
-      line: 13,
-      async: true
-    }), "private key is improper length");
-    (0, _powerAssert2.default)(_rec4._expr(_rec4._capt(_rec4._capt(_rec4._capt(_rec4._capt(publicKey, "arguments/0/left/object/object").key, "arguments/0/left/object").length, "arguments/0/left") === _rec4._capt(_rec4._capt(_rec4._capt(_tweetnacl2.default, "arguments/0/right/object/object").box, "arguments/0/right/object").publicKeyLength, "arguments/0/right"), "arguments/0"), {
-      content: "assert(publicKey.key.length === nacl.box.publicKeyLength, \"public key is improper length\")",
-      filepath: "tests/regular/asymmetric-encryption.coffee",
-      line: 15,
-      async: true
-    }), "public key is improper length");
-    // Test Encrypt - Decrypt Cycle
-    B = yield keyPair.encryption();
-    message = "Hello World!";
-    // Person A encrypts the message for person B.
-    key1 = key.shared(A.privateKey, B.publicKey);
-    (0, _powerAssert2.default)(_rec5._expr(_rec5._capt(_rec5._capt(_rec5._capt(key1, "arguments/0/left/left") && _rec5._capt(_rec5._capt(key, "arguments/0/left/right/callee/object").isShared(_rec5._capt(key1, "arguments/0/left/right/arguments/0")), "arguments/0/left/right"), "arguments/0/left") && _rec5._capt(_rec5._capt(_rec5._capt(_rec5._capt(key1, "arguments/0/right/left/object/object").key, "arguments/0/right/left/object").length, "arguments/0/right/left") === _rec5._capt(_rec5._capt(_rec5._capt(_tweetnacl2.default, "arguments/0/right/right/object/object").box, "arguments/0/right/right/object").sharedKeyLength, "arguments/0/right/right"), "arguments/0/right"), "arguments/0"), {
-      content: "assert(key1 && key.isShared(key1) && key1.key.length === nacl.box.sharedKeyLength, \"failed to create shared key.\")",
-      filepath: "tests/regular/asymmetric-encryption.coffee",
-      line: 24,
-      async: true
-    }), "failed to create shared key.");
-    cipher = yield encrypt(key1, message);
-    (0, _powerAssert2.default)(_rec6._expr(_rec6._capt(_rec6._capt(cipher, "arguments/0/left") && _rec6._capt(_rec6._capt(message, "arguments/0/right/left") !== _rec6._capt(cipher, "arguments/0/right/right"), "arguments/0/right"), "arguments/0"), {
-      content: "assert(cipher && message !== cipher, \"failed to create a ciphertext\")",
-      filepath: "tests/regular/asymmetric-encryption.coffee",
-      line: 26,
-      async: true
-    }), "failed to create a ciphertext");
-    // Person B gets the cipher and decrypts the message with counterpart.
-    key2 = key.shared(B.privateKey, A.publicKey);
-    _powerAssert2.default.equal(_rec7._expr(_rec7._capt(_rec7._capt(key1, "arguments/0/callee/object").encode(), "arguments/0"), {
-      content: "assert.equal(key1.encode(), key2.encode(), \"shared keys must be identical\")",
-      filepath: "tests/regular/asymmetric-encryption.coffee",
-      line: 30,
-      async: true
-    }), _rec8._expr(_rec8._capt(_rec8._capt(key2, "arguments/1/callee/object").encode(), "arguments/1"), {
-      content: "assert.equal(key1.encode(), key2.encode(), \"shared keys must be identical\")",
-      filepath: "tests/regular/asymmetric-encryption.coffee",
-      line: 30,
-      async: true
-    }), "shared keys must be identical");
-    output = decrypt(key2, cipher);
-    return _powerAssert2.default.equal(_rec9._expr(_rec9._capt(message, "arguments/0"), {
-      content: "assert.equal(message, output, \"failed to decrypt\")",
-      filepath: "tests/regular/asymmetric-encryption.coffee",
-      line: 32,
-      async: true
-    }), _rec10._expr(_rec10._capt(output, "arguments/1"), {
-      content: "assert.equal(message, output, \"failed to decrypt\")",
-      filepath: "tests/regular/asymmetric-encryption.coffee",
-      line: 32,
-      async: true
-    }), "failed to decrypt");
-  });
+  A = ({
+    privateKey,
+    publicKey
+  } = await keyPair.encryption());
+  (0, _assert.default)(privateKey && key.isPrivate(privateKey), "must make private key");
+  (0, _assert.default)(publicKey && key.isPublic(publicKey), "must make public key");
+  (0, _assert.default)(privateKey.key.length === _tweetnacl.default.box.secretKeyLength, "private key is improper length");
+  (0, _assert.default)(publicKey.key.length === _tweetnacl.default.box.publicKeyLength, "public key is improper length"); // Test Encrypt - Decrypt Cycle
 
-  return function asymmetric() {
-    return _ref.apply(this, arguments);
-  };
-})();
+  B = await keyPair.encryption();
+  message = "Hello World!"; // Person A encrypts the message for person B.
 
-exports.default = asymmetric;
+  key1 = key.shared(A.privateKey, B.publicKey);
+  (0, _assert.default)(key1 && key.isShared(key1) && key1.key.length === _tweetnacl.default.box.sharedKeyLength, "failed to create shared key.");
+  cipher = await encrypt(key1, message);
+  (0, _assert.default)(cipher && message !== cipher, "failed to create a ciphertext"); // Person B gets the cipher and decrypts the message with counterpart.
+
+  key2 = key.shared(B.privateKey, A.publicKey);
+
+  _assert.default.equal(key1.encode(), key2.encode(), "shared keys must be identical");
+
+  output = decrypt(key2, cipher);
+  return _assert.default.equal(message, output, "failed to decrypt");
+};
+
+var _default = asymmetric;
+exports.default = _default;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInRlc3RzL3JlZ3VsYXIvYXN5bW1ldHJpYy1lbmNyeXB0aW9uLmNvZmZlZSJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7O0FBQUE7O0FBQ0E7O0FBQ0E7O0FBQ0E7Ozs7QUFIQSxJQUFBLFVBQUE7O0FBS0EsVUFBQSxHQUFhLGtCQUFBO0FBQ1gsTUFBQSxDQUFBLEVBQUEsQ0FBQSxFQUFBLE1BQUEsRUFBQSxPQUFBLEVBQUEsT0FBQSxFQUFBLEdBQUEsRUFBQSxJQUFBLEVBQUEsSUFBQSxFQUFBLE9BQUEsRUFBQSxPQUFBLEVBQUEsTUFBQSxFQUFBLFVBQUEsRUFBQSxTQUFBO0FBQUEsR0FBQTtBQUFBLElBQUEsT0FBQTtBQUFBLElBQUEsR0FBQTtBQUFBLElBQUEsT0FBQTtBQUFBLElBQUE7QUFBQSxNQUFBLDBCQUFBLEVBRFcsQzs7QUFJWCxFQUFBLENBQUEsSUFBSTtBQUFBLElBQUEsVUFBQTtBQUFBLElBQUE7QUFBQSxNQUEwQixNQUFNLE9BQU8sQ0FBdkMsVUFBZ0MsRUFBcEMsQ0FBQTtBQUNBLHVCQUFRLFVBQUEsSUFBYyxHQUFHLENBQUgsU0FBQSxDQUF0QixVQUFzQixDQUF0QixFQUFBLHVCQUFBO0FBQ0EsdUJBQVEsU0FBQSxJQUFhLEdBQUcsQ0FBSCxRQUFBLENBQXJCLFNBQXFCLENBQXJCLEVBQUEsc0JBQUE7QUFDQSx1QkFBTyxVQUFVLENBQUMsR0FBWCxDQUFBLE1BQUEsS0FBeUIsbUJBQUssR0FBTCxDQUFoQyxlQUFBLEVBQUEsZ0NBQUE7QUFFQSx1QkFBTyxTQUFTLENBQUMsR0FBVixDQUFBLE1BQUEsS0FBd0IsbUJBQUssR0FBTCxDQUEvQixlQUFBLEVBUkEsK0JBUUEsRUFUVyxDOztBQWFYLEVBQUEsQ0FBQSxHQUFJLE1BQU0sT0FBTyxDQUFiLFVBQU0sRUFBVjtBQUNBLEVBQUEsT0FBQSxHQWJBLGNBYUEsQ0FkVyxDOztBQWlCWCxFQUFBLElBQUEsR0FBTyxHQUFHLENBQUgsTUFBQSxDQUFXLENBQUMsQ0FBWixVQUFBLEVBQXlCLENBQUMsQ0FBMUIsU0FBQSxDQUFQO0FBQ0EsdUJBQVEsSUFBQSxJQUFRLEdBQUcsQ0FBSCxRQUFBLENBQVIsSUFBUSxDQUFSLElBQStCLElBQUksQ0FBQyxHQUFMLENBQUEsTUFBQSxLQUFtQixtQkFBSyxHQUFMLENBQTFELGVBQUEsRUFBQSw4QkFBQTtBQUNBLEVBQUEsTUFBQSxHQUFTLE1BQU0sT0FBQSxDQUFBLElBQUEsRUFBTixPQUFNLENBQWY7QUFDQSx1QkFBUSxNQUFBLElBQVUsT0FBQSxLQUFsQixNQUFBLEVBbkJBLCtCQW1CQSxFQXBCVyxDOztBQXVCWCxFQUFBLElBQUEsR0FBTyxHQUFHLENBQUgsTUFBQSxDQUFXLENBQUMsQ0FBWixVQUFBLEVBQXlCLENBQUMsQ0FBMUIsU0FBQSxDQUFQOztBQUNBLGtCQUFBLEtBQUEsQ0FBYSxJQUFJLENBQWpCLE1BQWEsRUFBYixFQUE0QixJQUFJLENBQWhDLE1BQTRCLEVBQTVCLEVBQUEsK0JBQUE7O0FBQ0EsRUFBQSxNQUFBLEdBQVMsT0FBQSxDQUFBLElBQUEsRUFBQSxNQUFBLENBQVQ7U0FDQSxnQkFBQSxLQUFBLENBQUEsT0FBQSxFQUFBLE1BQUEsRUFBQSxtQkFBQSxDO0FBMUJXLENBQWI7O2VBNEJlLFUiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgYXNzZXJ0IGZyb20gXCJhc3NlcnRcIlxuaW1wb3J0IHt0ZXN0LCBwcmludH0gZnJvbSBcImFtZW5cIlxuaW1wb3J0IHtjb25maWRlbnRpYWx9IGZyb20gXCIuLi8uLi8uLi9zcmMvaW5kZXhcIlxuaW1wb3J0IG5hY2wgZnJvbSBcInR3ZWV0bmFjbFwiXG5cbmFzeW1tZXRyaWMgPSAtPlxuICB7a2V5UGFpciwga2V5LCBlbmNyeXB0LCBkZWNyeXB0fSA9IGNvbmZpZGVudGlhbCgpXG5cbiAgIyBUZXN0IEtleSBQYWlyIEdlbmVyYXRpb25cbiAgQSA9IHtwcml2YXRlS2V5LCBwdWJsaWNLZXl9ID0gYXdhaXQga2V5UGFpci5lbmNyeXB0aW9uKClcbiAgYXNzZXJ0IChwcml2YXRlS2V5ICYmIGtleS5pc1ByaXZhdGUgcHJpdmF0ZUtleSksIFwibXVzdCBtYWtlIHByaXZhdGUga2V5XCJcbiAgYXNzZXJ0IChwdWJsaWNLZXkgJiYga2V5LmlzUHVibGljIHB1YmxpY0tleSksIFwibXVzdCBtYWtlIHB1YmxpYyBrZXlcIlxuICBhc3NlcnQgcHJpdmF0ZUtleS5rZXkubGVuZ3RoID09IG5hY2wuYm94LnNlY3JldEtleUxlbmd0aCxcbiAgICBcInByaXZhdGUga2V5IGlzIGltcHJvcGVyIGxlbmd0aFwiXG4gIGFzc2VydCBwdWJsaWNLZXkua2V5Lmxlbmd0aCA9PSBuYWNsLmJveC5wdWJsaWNLZXlMZW5ndGgsXG4gICAgXCJwdWJsaWMga2V5IGlzIGltcHJvcGVyIGxlbmd0aFwiXG5cbiAgIyBUZXN0IEVuY3J5cHQgLSBEZWNyeXB0IEN5Y2xlXG4gIEIgPSBhd2FpdCBrZXlQYWlyLmVuY3J5cHRpb24oKVxuICBtZXNzYWdlID0gXCJIZWxsbyBXb3JsZCFcIlxuXG4gICMgUGVyc29uIEEgZW5jcnlwdHMgdGhlIG1lc3NhZ2UgZm9yIHBlcnNvbiBCLlxuICBrZXkxID0ga2V5LnNoYXJlZCBBLnByaXZhdGVLZXksIEIucHVibGljS2V5XG4gIGFzc2VydCAoa2V5MSAmJiBrZXkuaXNTaGFyZWQoa2V5MSkgJiYgKGtleTEua2V5Lmxlbmd0aCA9PSBuYWNsLmJveC5zaGFyZWRLZXlMZW5ndGgpKSwgXCJmYWlsZWQgdG8gY3JlYXRlIHNoYXJlZCBrZXkuXCJcbiAgY2lwaGVyID0gYXdhaXQgZW5jcnlwdCBrZXkxLCBtZXNzYWdlXG4gIGFzc2VydCAoY2lwaGVyICYmIG1lc3NhZ2UgIT0gY2lwaGVyKSwgXCJmYWlsZWQgdG8gY3JlYXRlIGEgY2lwaGVydGV4dFwiXG5cbiAgIyBQZXJzb24gQiBnZXRzIHRoZSBjaXBoZXIgYW5kIGRlY3J5cHRzIHRoZSBtZXNzYWdlIHdpdGggY291bnRlcnBhcnQuXG4gIGtleTIgPSBrZXkuc2hhcmVkIEIucHJpdmF0ZUtleSwgQS5wdWJsaWNLZXlcbiAgYXNzZXJ0LmVxdWFsIGtleTEuZW5jb2RlKCksIGtleTIuZW5jb2RlKCksIFwic2hhcmVkIGtleXMgbXVzdCBiZSBpZGVudGljYWxcIlxuICBvdXRwdXQgPSBkZWNyeXB0IGtleTIsIGNpcGhlclxuICBhc3NlcnQuZXF1YWwgbWVzc2FnZSwgb3V0cHV0LCBcImZhaWxlZCB0byBkZWNyeXB0XCJcblxuZXhwb3J0IGRlZmF1bHQgYXN5bW1ldHJpY1xuIl0sInNvdXJjZVJvb3QiOiIifQ==
+//# sourceURL=tests/regular/asymmetric-encryption.coffee

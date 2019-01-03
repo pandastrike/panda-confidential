@@ -3,21 +3,26 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.isData = exports.decode = exports.encode = undefined;
+exports.isData = exports.decode = exports.encode = void 0;
 
-var _tweetnaclUtil = require("tweetnacl-util");
+var _tweetnaclUtil = _interopRequireDefault(require("tweetnacl-util"));
 
-var _tweetnaclUtil2 = _interopRequireDefault(_tweetnaclUtil);
+var _pandaParchment = require("panda-parchment");
 
-var _fairmontHelpers = require("fairmont-helpers");
-
-var _fairmontMultimethods = require("fairmont-multimethods");
+var _pandaGenerics = require("panda-generics");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var decode, decodeBase64, decodeUTF8, encode, encodeBase64, encodeUTF8, isAny, isBase64, isBase64URLSafe, isBinary, isData, isEqual, isUTF8, isUint8Array;
-
-({ decodeBase64, decodeUTF8, encodeBase64, encodeUTF8 } = _tweetnaclUtil2.default);
+exports.isData = isData;
+exports.encode = encode;
+exports.decode = decode;
+({
+  decodeBase64,
+  decodeUTF8,
+  encodeBase64,
+  encodeUTF8
+} = _tweetnaclUtil.default);
 
 isEqual = function (x) {
   return function (y) {
@@ -26,93 +31,87 @@ isEqual = function (x) {
 };
 
 isUTF8 = isEqual("utf8");
-
 isBase64 = isEqual("base64");
-
 isBase64URLSafe = isEqual("base64url");
-
 isBinary = isEqual("binary");
-
-isUint8Array = (0, _fairmontHelpers.isType)(Uint8Array);
+isUint8Array = (0, _pandaParchment.isType)(Uint8Array);
 
 exports.isData = isData = function (x) {
-  return (0, _fairmontHelpers.isBuffer)(x) || isUint8Array(x);
+  return (0, _pandaParchment.isBuffer)(x) || isUint8Array(x);
 };
 
 isAny = function (x) {
   return true;
 };
 
-exports.decode = decode = _fairmontMultimethods.Method.create({
+exports.decode = decode = _pandaGenerics.Method.create({
   default: function (...args) {
     throw new Error(`Unable to decode string ${args}`);
   }
 });
 
-_fairmontMultimethods.Method.define(decode, isUTF8, _fairmontHelpers.isString, function (_, string) {
+_pandaGenerics.Method.define(decode, isUTF8, _pandaParchment.isString, function (_, string) {
   return decodeUTF8(string);
 });
 
-_fairmontMultimethods.Method.define(decode, isBase64, _fairmontHelpers.isString, function (_, string) {
+_pandaGenerics.Method.define(decode, isBase64, _pandaParchment.isString, function (_, string) {
   return decodeBase64(string);
 });
 
-_fairmontMultimethods.Method.define(decode, _fairmontHelpers.isObject, function (object) {
+_pandaGenerics.Method.define(decode, _pandaParchment.isObject, function (object) {
   return decode("utf8", JSON.stringify(object));
 });
 
-_fairmontMultimethods.Method.define(decode, isAny, isData, function (_, array) {
+_pandaGenerics.Method.define(decode, isAny, isData, function (_, array) {
   return array; // no op
 });
 
-exports.encode = encode = _fairmontMultimethods.Method.create({
+exports.encode = encode = _pandaGenerics.Method.create({
   default: function (...args) {
     throw new Error(`Unable to encode data ${args}`);
   }
 });
 
-_fairmontMultimethods.Method.define(encode, isData, function (array) {
+_pandaGenerics.Method.define(encode, isData, function (array) {
   return encodeUTF8(array);
 });
 
-_fairmontMultimethods.Method.define(encode, isUTF8, isData, function (_, array) {
+_pandaGenerics.Method.define(encode, isUTF8, isData, function (_, array) {
   return encodeUTF8(array);
 });
 
-_fairmontMultimethods.Method.define(encode, isBase64, isData, function (_, array) {
+_pandaGenerics.Method.define(encode, isBase64, isData, function (_, array) {
   return encodeBase64(array);
 });
 
-_fairmontMultimethods.Method.define(encode, isUTF8, _fairmontHelpers.isString, function (_, string) {
+_pandaGenerics.Method.define(encode, isUTF8, _pandaParchment.isString, function (_, string) {
   return encode("utf8", decode("base64", string));
 });
 
-_fairmontMultimethods.Method.define(encode, isBase64, _fairmontHelpers.isString, function (_, string) {
+_pandaGenerics.Method.define(encode, isBase64, _pandaParchment.isString, function (_, string) {
   return encode("base64", decode("utf8", string));
 });
 
-_fairmontMultimethods.Method.define(encode, isBase64, _fairmontHelpers.isObject, function (_, object) {
+_pandaGenerics.Method.define(encode, isBase64, _pandaParchment.isObject, function (_, object) {
   return encode("base64", decode(object));
 });
 
-_fairmontMultimethods.Method.define(encode, _fairmontHelpers.isObject, function (object) {
+_pandaGenerics.Method.define(encode, _pandaParchment.isObject, function (object) {
   return encode("base64", object);
 });
 
-_fairmontMultimethods.Method.define(encode, isBase64URLSafe, isAny, function (_, thing) {
+_pandaGenerics.Method.define(encode, isBase64URLSafe, isAny, function (_, thing) {
   // Based on RFC 4648's "base64url" mapping:
   // https://tools.ietf.org/html/rfc4648#section-5
   return encode("base64", thing).replace(/\+/g, '-').replace(/\//g, '_').replace(/\=+$/, '');
 });
 
-_fairmontMultimethods.Method.define(encode, _fairmontHelpers.isString, _fairmontHelpers.isObject, function (encoding, object) {
+_pandaGenerics.Method.define(encode, _pandaParchment.isString, _pandaParchment.isObject, function (encoding, object) {
   return encode(encoding, decode(object));
 });
 
-_fairmontMultimethods.Method.define(encode, isBinary, isData, function (_, array) {
+_pandaGenerics.Method.define(encode, isBinary, isData, function (_, array) {
   return array; // no op
 });
-
-exports.encode = encode;
-exports.decode = decode;
-exports.isData = isData;
+//# sourceMappingURL=data:application/json;base64,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LEVBQUEsd0JBQUEsRUFDRSxVQUFBLENBQUEsRUFBQSxNQUFBLEVBQUE7U0FBZ0IsTUFBQSxDQUFBLE1BQUEsRUFBZSxNQUFBLENBQUEsUUFBQSxFQUFmLE1BQWUsQ0FBZixDO0FBRGxCLENBQUE7O0FBRUEsc0JBQUEsTUFBQSxDQUFBLE1BQUEsRUFBQSxRQUFBLEVBQUEsd0JBQUEsRUFDRSxVQUFBLENBQUEsRUFBQSxNQUFBLEVBQUE7U0FBZ0IsTUFBQSxDQUFBLFFBQUEsRUFBaUIsTUFBQSxDQUFBLE1BQUEsRUFBakIsTUFBaUIsQ0FBakIsQztBQURsQixDQUFBOztBQUVBLHNCQUFBLE1BQUEsQ0FBQSxNQUFBLEVBQUEsUUFBQSxFQUFBLHdCQUFBLEVBQ0UsVUFBQSxDQUFBLEVBQUEsTUFBQSxFQUFBO1NBQWdCLE1BQUEsQ0FBQSxRQUFBLEVBQWlCLE1BQUEsQ0FBakIsTUFBaUIsQ0FBakIsQztBQURsQixDQUFBOztBQUVBLHNCQUFBLE1BQUEsQ0FBQSxNQUFBLEVBQUEsd0JBQUEsRUFDRSxVQUFBLE1BQUEsRUFBQTtTQUFZLE1BQUEsQ0FBQSxRQUFBLEVBQUEsTUFBQSxDO0FBRGQsQ0FBQTs7QUFFQSxzQkFBQSxNQUFBLENBQUEsTUFBQSxFQUFBLGVBQUEsRUFBQSxLQUFBLEVBQ0UsVUFBQSxDQUFBLEVBQUEsS0FBQSxFQUFBOzs7U0FHRSxNQUFBLENBQUEsUUFBQSxFQUFBLEtBQUEsQ0FBQSxDQUFBLE9BQUEsQ0FBQSxLQUFBLEVBQUEsR0FBQSxFQUFBLE9BQUEsQ0FBQSxLQUFBLEVBQUEsR0FBQSxFQUFBLE9BQUEsQ0FBQSxNQUFBLEVBQUEsRUFBQSxDO0FBSkosQ0FBQTs7QUFRQSxzQkFBQSxNQUFBLENBQUEsTUFBQSxFQUFBLHdCQUFBLEVBQUEsd0JBQUEsRUFDRSxVQUFBLFFBQUEsRUFBQSxNQUFBLEVBQUE7U0FBc0IsTUFBQSxDQUFBLFFBQUEsRUFBaUIsTUFBQSxDQUFqQixNQUFpQixDQUFqQixDO0FBRHhCLENBQUE7O0FBRUEsc0JBQUEsTUFBQSxDQUFBLE1BQUEsRUFBQSxRQUFBLEVBQUEsTUFBQSxFQUNFLFVBQUEsQ0FBQSxFQUFBLEtBQUEsRUFBQTtTQUFBLEssQ0FBQSxDQUFBO0FBREYsQ0FBQSIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBuYWNsIGZyb20gXCJ0d2VldG5hY2wtdXRpbFwiXG5pbXBvcnQge2lzVHlwZSwgaXNCdWZmZXIsIGlzU3RyaW5nLCBpc09iamVjdH0gZnJvbSBcInBhbmRhLXBhcmNobWVudFwiXG5pbXBvcnQge01ldGhvZH0gZnJvbSBcInBhbmRhLWdlbmVyaWNzXCJcblxue2RlY29kZUJhc2U2NCwgZGVjb2RlVVRGOCwgZW5jb2RlQmFzZTY0LCBlbmNvZGVVVEY4fSA9IG5hY2xcblxuaXNFcXVhbCA9ICh4KSAtPiAoeSkgLT4geCA9PSB5XG5pc1VURjggPSBpc0VxdWFsIFwidXRmOFwiXG5pc0Jhc2U2NCA9IGlzRXF1YWwgXCJiYXNlNjRcIlxuaXNCYXNlNjRVUkxTYWZlID0gaXNFcXVhbCBcImJhc2U2NHVybFwiXG5pc0JpbmFyeSA9IGlzRXF1YWwgXCJiaW5hcnlcIlxuXG5pc1VpbnQ4QXJyYXkgPSBpc1R5cGUgVWludDhBcnJheVxuaXNEYXRhID0gKHgpIC0+IGlzQnVmZmVyKHgpIHx8IGlzVWludDhBcnJheSh4KVxuaXNBbnkgPSAoeCkgLT4gdHJ1ZVxuXG5kZWNvZGUgPSBNZXRob2QuY3JlYXRlIGRlZmF1bHQ6IChhcmdzLi4uKSAtPlxuICB0aHJvdyBuZXcgRXJyb3IgXCJVbmFibGUgdG8gZGVjb2RlIHN0cmluZyAje2FyZ3N9XCJcbk1ldGhvZC5kZWZpbmUgZGVjb2RlLCBpc1VURjgsIGlzU3RyaW5nLFxuICAoXywgc3RyaW5nKSAtPiBkZWNvZGVVVEY4IHN0cmluZ1xuTWV0aG9kLmRlZmluZSBkZWNvZGUsIGlzQmFzZTY0LCBpc1N0cmluZyxcbiAgKF8sIHN0cmluZykgLT4gZGVjb2RlQmFzZTY0IHN0cmluZ1xuTWV0aG9kLmRlZmluZSBkZWNvZGUsIGlzT2JqZWN0LFxuICAob2JqZWN0KSAtPiBkZWNvZGUgXCJ1dGY4XCIsIEpTT04uc3RyaW5naWZ5IG9iamVjdFxuTWV0aG9kLmRlZmluZSBkZWNvZGUsIGlzQW55LCBpc0RhdGEsXG4gIChfLCBhcnJheSkgLT4gYXJyYXkgICMgbm8gb3BcblxuZW5jb2RlID0gTWV0aG9kLmNyZWF0ZSBkZWZhdWx0OiAoYXJncy4uLikgLT5cbiAgdGhyb3cgbmV3IEVycm9yIFwiVW5hYmxlIHRvIGVuY29kZSBkYXRhICN7YXJnc31cIlxuTWV0aG9kLmRlZmluZSBlbmNvZGUsIGlzRGF0YSxcbiAgKGFycmF5KSAtPiBlbmNvZGVVVEY4IGFycmF5XG5NZXRob2QuZGVmaW5lIGVuY29kZSwgaXNVVEY4LCBpc0RhdGEsXG4gIChfLCBhcnJheSkgLT4gIGVuY29kZVVURjggYXJyYXlcbk1ldGhvZC5kZWZpbmUgZW5jb2RlLCBpc0Jhc2U2NCwgaXNEYXRhLFxuICAoXywgYXJyYXkpIC0+ICBlbmNvZGVCYXNlNjQgYXJyYXlcbk1ldGhvZC5kZWZpbmUgZW5jb2RlLCBpc1VURjgsIGlzU3RyaW5nLFxuICAoXywgc3RyaW5nKSAtPiAgZW5jb2RlIFwidXRmOFwiLCBkZWNvZGUgXCJiYXNlNjRcIiwgc3RyaW5nXG5NZXRob2QuZGVmaW5lIGVuY29kZSwgaXNCYXNlNjQsIGlzU3RyaW5nLFxuICAoXywgc3RyaW5nKSAtPiAgZW5jb2RlIFwiYmFzZTY0XCIsIGRlY29kZSBcInV0ZjhcIiwgc3RyaW5nXG5NZXRob2QuZGVmaW5lIGVuY29kZSwgaXNCYXNlNjQsIGlzT2JqZWN0LFxuICAoXywgb2JqZWN0KSAtPiAgZW5jb2RlIFwiYmFzZTY0XCIsIGRlY29kZSBvYmplY3Rcbk1ldGhvZC5kZWZpbmUgZW5jb2RlLCBpc09iamVjdCxcbiAgKG9iamVjdCkgLT4gZW5jb2RlIFwiYmFzZTY0XCIsIG9iamVjdFxuTWV0aG9kLmRlZmluZSBlbmNvZGUsIGlzQmFzZTY0VVJMU2FmZSwgaXNBbnksXG4gIChfLCB0aGluZykgLT5cbiAgICAjIEJhc2VkIG9uIFJGQyA0NjQ4J3MgXCJiYXNlNjR1cmxcIiBtYXBwaW5nOlxuICAgICMgaHR0cHM6Ly90b29scy5pZXRmLm9yZy9odG1sL3JmYzQ2NDgjc2VjdGlvbi01XG4gICAgZW5jb2RlIFwiYmFzZTY0XCIsIHRoaW5nXG4gICAgLnJlcGxhY2UoL1xcKy9nLCAnLScpXG4gICAgLnJlcGxhY2UoL1xcLy9nLCAnXycpXG4gICAgLnJlcGxhY2UoL1xcPSskLywgJycpXG5NZXRob2QuZGVmaW5lIGVuY29kZSwgaXNTdHJpbmcsIGlzT2JqZWN0LFxuICAoZW5jb2RpbmcsIG9iamVjdCkgLT4gZW5jb2RlIGVuY29kaW5nLCBkZWNvZGUgb2JqZWN0XG5NZXRob2QuZGVmaW5lIGVuY29kZSwgaXNCaW5hcnksIGlzRGF0YSxcbiAgKF8sIGFycmF5KSAtPiBhcnJheSAgIyBubyBvcFxuXG5leHBvcnQge1xuICBlbmNvZGVcbiAgZGVjb2RlXG4gIGlzRGF0YVxufVxuIl0sInNvdXJjZVJvb3QiOiIifQ==
+//# sourceURL=utils.coffee

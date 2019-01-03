@@ -1,6 +1,6 @@
 import nacl from "tweetnacl"
-import {isString, isObject} from "fairmont-helpers"
-import {Method} from "fairmont-multimethods"
+import {isString, isObject} from "panda-parchment"
+import {Method} from "panda-generics"
 
 import {decode, encode, isData} from "./utils"
 import {isSymmetricKey, isSharedKey} from "./keys"

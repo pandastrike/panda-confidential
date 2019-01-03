@@ -1,5 +1,5 @@
-import {isKind} from "fairmont-helpers"
-import {Method} from "fairmont-multimethods"
+import {isKind} from "panda-parchment"
+import {Method} from "panda-generics"
 import {encode} from "../utils"
 
 class Key

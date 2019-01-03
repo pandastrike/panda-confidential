@@ -1,4 +1,4 @@
-import {isKind} from "fairmont-helpers"
+import {isKind} from "panda-parchment"
 import {encode} from "../utils"
 
 class KeyPair

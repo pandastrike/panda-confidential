@@ -1,6 +1,6 @@
 import nacl from "tweetnacl-util"
-import {isType, isBuffer, isString, isObject} from "fairmont-helpers"
-import {Method} from "fairmont-multimethods"
+import {isType, isBuffer, isString, isObject} from "panda-parchment"
+import {Method} from "panda-generics"
 
 {decodeBase64, decodeUTF8, encodeBase64, encodeUTF8} = nacl
 

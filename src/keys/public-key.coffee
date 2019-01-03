@@ -1,5 +1,5 @@
-import {isType, isString} from "fairmont-helpers"
-import {Method} from "fairmont-multimethods"
+import {isType, isString} from "panda-parchment"
+import {Method} from "panda-generics"
 
 import {Key} from "./key"
 import {isData, decode} from "../utils"

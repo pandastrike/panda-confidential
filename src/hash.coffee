@@ -1,6 +1,6 @@
 import nacl from "tweetnacl"
-import {isString, isObject} from "fairmont-helpers"
-import {Method} from "fairmont-multimethods"
+import {isString, isObject} from "panda-parchment"
+import {Method} from "panda-generics"
 import {isData, decode, encode} from "./utils"
 
 # Return the SHA-512 hash of a message.

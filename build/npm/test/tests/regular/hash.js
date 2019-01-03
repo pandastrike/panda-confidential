@@ -3,12 +3,9 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.default = void 0;
 
-var _powerAssertRecorder = function () { function PowerAssertRecorder() { this.captured = []; } PowerAssertRecorder.prototype._capt = function _capt(value, espath) { this.captured.push({ value: value, espath: espath }); return value; }; PowerAssertRecorder.prototype._expr = function _expr(value, source) { var capturedValues = this.captured; this.captured = []; return { powerAssertContext: { value: value, events: capturedValues }, source: source }; }; return PowerAssertRecorder; }();
-
-var _powerAssert = require("power-assert");
-
-var _powerAssert2 = _interopRequireDefault(_powerAssert);
+var _assert = _interopRequireDefault(require("assert"));
 
 var _amen = require("amen");
 
@@ -19,23 +16,17 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var Hash;
 
 Hash = function () {
-  var _rec = new _powerAssertRecorder(),
-      _rec2 = new _powerAssertRecorder();
-
   var expectedOutput, hash, message, output;
-  ({ hash } = (0, _index.confidential)());
+  ({
+    hash
+  } = (0, _index.confidential)());
   message = "Hello World!";
   expectedOutput = "hhhE1nBOhXP+w02WfiC8/vPUJM9IvgTm3AjyvVjHKXQzcQFerYkcw88cnTS0kmS1EHUbH/nlN5N7xGtdb/TsyA==";
   output = hash(message);
-  return _powerAssert2.default.equal(_rec._expr(_rec._capt(output, "arguments/0"), {
-    content: "assert.equal(output, expectedOutput, \"Unexpected hash result\")",
-    filepath: "tests/regular/hash.coffee",
-    line: 12
-  }), _rec2._expr(_rec2._capt(expectedOutput, "arguments/1"), {
-    content: "assert.equal(output, expectedOutput, \"Unexpected hash result\")",
-    filepath: "tests/regular/hash.coffee",
-    line: 12
-  }), "Unexpected hash result");
+  return _assert.default.equal(output, expectedOutput, "Unexpected hash result");
 };
 
-exports.default = Hash;
+var _default = Hash;
+exports.default = _default;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInRlc3RzL3JlZ3VsYXIvaGFzaC5jb2ZmZWUiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7OztBQUFBOztBQUNBOztBQUNBOzs7O0FBRkEsSUFBQSxJQUFBOztBQUlBLElBQUEsR0FBTyxZQUFBO0FBQ0wsTUFBQSxjQUFBLEVBQUEsSUFBQSxFQUFBLE9BQUEsRUFBQSxNQUFBO0FBQUEsR0FBQTtBQUFBLElBQUE7QUFBQSxNQUFBLDBCQUFBO0FBRUEsRUFBQSxPQUFBLEdBQVUsY0FBVjtBQUNBLEVBQUEsY0FBQSxHQUFpQiwwRkFBakI7QUFFQSxFQUFBLE1BQUEsR0FBUyxJQUFBLENBQUEsT0FBQSxDQUFUO1NBQ0EsZ0JBQUEsS0FBQSxDQUFBLE1BQUEsRUFBQSxjQUFBLEVBQUEsd0JBQUEsQztBQVBLLENBQVA7O2VBU2UsSSIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBhc3NlcnQgZnJvbSBcImFzc2VydFwiXG5pbXBvcnQge3Rlc3QsIHByaW50fSBmcm9tIFwiYW1lblwiXG5pbXBvcnQge2NvbmZpZGVudGlhbH0gZnJvbSBcIi4uLy4uLy4uL3NyYy9pbmRleFwiXG5cbkhhc2ggPSAtPlxuICB7aGFzaH0gPSBjb25maWRlbnRpYWwoKVxuXG4gIG1lc3NhZ2UgPSBcIkhlbGxvIFdvcmxkIVwiXG4gIGV4cGVjdGVkT3V0cHV0ID0gXCJoaGhFMW5CT2hYUCt3MDJXZmlDOC92UFVKTTlJdmdUbTNBanl2VmpIS1hRemNRRmVyWWtjdzg4Y25UUzBrbVMxRUhVYkgvbmxONU43eEd0ZGIvVHN5QT09XCJcblxuICBvdXRwdXQgPSBoYXNoIG1lc3NhZ2VcbiAgYXNzZXJ0LmVxdWFsIG91dHB1dCwgZXhwZWN0ZWRPdXRwdXQsIFwiVW5leHBlY3RlZCBoYXNoIHJlc3VsdFwiXG5cbmV4cG9ydCBkZWZhdWx0IEhhc2hcbiJdLCJzb3VyY2VSb290IjoiIn0=
+//# sourceURL=tests/regular/hash.coffee

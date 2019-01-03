@@ -1,5 +1,5 @@
 import Sundog from "sundog"
-import {isString} from "fairmont-helpers"
+import {isString} from "panda-parchment"
 import {Method} from "fairmont-multimethods"
 import {isKMSKeyID} from "./kms-key"
 
