@@ -1,6 +1,0 @@
-## SignatureKeyPair
-_extends [KeyPair][classKeyPair]_
-
-This key pair is used by panda-confidential for data signing. You may generate a pair by invoking [`keyPair.signature()`][SignatureKeyPair].
-
-___The key pair you generate for signing is _not_ suitable for encryption.___

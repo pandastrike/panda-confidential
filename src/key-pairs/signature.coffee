@@ -1,23 +1,31 @@
 import nacl from "tweetnacl"
-import {isType, isObject} from "panda-parchment"
-import {Method} from "panda-generics"
-import {KeyPair} from "./key-pair"
-import {privateKey, publicKey} from "../keys"
+import {isType} from "panda-parchment"
+import KeyPair from "./key-pair"
 
-class SignatureKeyPair extends KeyPair
-
-isSignatureKeyPair = isType SignatureKeyPair
+toBytes = (string) -> convert from: "base64", to: "bytes", string
 
 signatureKeyPair = (randomBytes) ->
-  # Generate a random input to generate a pair. Length comes from TweetNaCl.
-  getPair = Method.create
-    default: ->
-      input = await randomBytes nacl.sign.seedLength
-      pair = nacl.sign.keyPair.fromSeed input
-      new SignatureKeyPair
-        privateKey: privateKey pair.secretKey
-        publicKey: publicKey pair.publicKey
-  Method.define getPair, isObject, (o) -> new SignatureKeyPair o
-  getPair
+  class SignatureKeyPair extends KeyPair
 
-export {signatureKeyPair, isSignatureKeyPair}
+  @create: ->
+    input = await randomBytes nacl.sign.seedLength
+    pair = nacl.sign.keyPair.fromSeed input
+    new SignatureKeyPair
+      privateKey: pair.secretKey
+      publicKey: pair.publicKey
+
+  @from: (hint, value) ->
+    new SignatureKeyPair do ->
+      value =
+        if hint == "utf8"
+          JSON.parse value
+        else
+          JSON.parse convert from: hint, to: "utf8", value
+
+      privateKey: toBytes value.privateKey
+      publicKey: toBytes value.publicKey
+
+  @isType: isType @
+
+
+export default signatureKeyPair

@@ -1,13 +1,25 @@
 import {isKind} from "panda-parchment"
-import {encode} from "../utils"
+import {convert} from "../utils"
+import PublicKey from "../keys/public"
+import PrivateKey from "../keys/private"
+
+toBase64 = (bytes) -> convert from: "bytes", to: "base64", bytes
 
 class KeyPair
-  constructor: ({@privateKey, @publicKey}) ->
-  encode: ->
-    encode
-      privateKey: @privateKey.encode()
-      publicKey: @publicKey.encode()
+  constructor: ({publicKey, privateKey}) ->
+    @publicKey = new PublicKey publicKey
+    @privateKey = new PrivateKey privateKey
 
-isKeyPair = isKind KeyPair
+  to: (hint) ->
+    output = JSON.stringify
+      privateKey: toBase64 @privateKey
+      publicKey: toBase64 @publicKey
 
-export {KeyPair, isKeyPair}
+    if hint == "utf8"
+      output
+    else
+      convert from: "utf8", to: hint, output
+
+  @isKind: isKind @
+
+export default KeyPair

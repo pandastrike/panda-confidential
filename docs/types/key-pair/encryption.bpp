@@ -1,6 +1,0 @@
-## EncryptionKeyPair
-_extends [KeyPair][classKeyPair]_
-
-This key pair is used by panda-confidential for public key encryption. You may generate a pair by invoking [`keyPair.encryption()`][EncryptionKeyPair].
-
-___The key pair you generate for encryption is _not_ suitable for signing.___

@@ -1,20 +1,13 @@
-import {key, isKey} from "./key"
-import {publicKey, isPublicKey} from "./public-key"
-import {privateKey, isPrivateKey} from "./private-key"
-import {sharedKey, isSharedKey} from "./shared-key"
-import {symmetricKey, isSymmetricKey} from "./symmetric-key"
-import equal from "./equal"
+import Key from "./key"
+import PublicKey from "./public-key"
+import PrivateKey from "./private-key"
+import SharedKey from "./shared-key"
+import symmetricKey from "./symmetric-key"
 
 export {
-  key
-  publicKey
-  privateKey
-  sharedKey
+  Key
+  PublicKey
+  PrivateKey
+  SharedKey
   symmetricKey
-  isKey
-  isPublicKey
-  isPrivateKey
-  isSharedKey
-  isSymmetricKey
-  equal
 }

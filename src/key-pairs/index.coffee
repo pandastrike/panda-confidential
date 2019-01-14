@@ -1,9 +1,9 @@
-import {encryptionKeyPair, isEncryptionKeyPair} from "./encryption"
-import {signatureKeyPair, isSignatureKeyPair} from "./signature"
+import KeyPair from "./key-pair"
+import encryptionKeyPair from "./encryption"
+import signatureKeyPair from "./signature"
 
 export {
+  KeyPair
   encryptionKeyPair
   signatureKeyPair
-  isEncryptionKeyPair
-  isSignatureKeyPair
 }

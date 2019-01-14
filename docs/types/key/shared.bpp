@@ -1,5 +1,0 @@
-## SharedKey
-_extends [Key][classKey]_
-
-### Description
-This key type is used in [TweetNaCl.js public key encryption interface][tweetnacl-box]. It is a special key formed by using one person's private key and another's public key, yielding a shared secret. This is the key required by [`encrypt`][encrypt] to perform asymmetric encryption.

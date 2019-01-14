@@ -1,25 +1,31 @@
 import nacl from "tweetnacl"
-import {isType, isObject} from "panda-parchment"
-import {Method} from "panda-generics"
-import {KeyPair} from "./key-pair"
-import {privateKey, publicKey} from "../keys"
+import {isType} from "panda-parchment"
+import KeyPair from "./key-pair"
 
-class EncryptionKeyPair extends KeyPair
-
-isEncryptionKeyPair = isType EncryptionKeyPair
+toBytes = (string) -> convert from: "base64", to: "bytes", string
 
 encryptionKeyPair = (randomBytes) ->
-  # Generate a random input to generate a pair. Length comes from TweetNaCl.
-  getPair = Method.create
-    default: ->
-      input = await randomBytes nacl.box.secretKeyLength
-      pair = nacl.box.keyPair.fromSecretKey input
-      new EncryptionKeyPair
-        privateKey: privateKey pair.secretKey
-        publicKey: publicKey pair.publicKey
+  class EncryptionKeyPair extends KeyPair
 
-  Method.define getPair, isObject, (o) -> new EncryptionKeyPair o
-  getPair
+  @create: ->
+    input = await randomBytes nacl.box.secretKeyLength
+    pair = nacl.box.keyPair.fromSecretKey input
+    new EncryptionKeyPair
+      privateKey: pair.secretKey
+      publicKey: pair.publicKey
+
+  @from: (hint, value) ->
+    new EncryptionKeyPair do ->
+      value =
+        if hint == "utf8"
+          JSON.parse value
+        else
+          JSON.parse convert from: hint, to: "utf8", value
+
+      privateKey: toBytes value.privateKey
+      publicKey: toBytes value.publicKey
+
+  @isType: isType @
 
 
-export {encryptionKeyPair, isEncryptionKeyPair}
+export default encryptionKeyPair

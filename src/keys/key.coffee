@@ -1,11 +1,15 @@
 import {isKind} from "panda-parchment"
-import {Method} from "panda-generics"
-import {encode} from "../utils"
+import {convert} from "../utils"
 
 class Key
   constructor: (@key) ->
-  encode: (encoding="base64")-> encode encoding, @key
 
-isKey = isKind Key
+  to: (hint) ->
+    if hint == "bytes"
+      @key
+    else
+      convert from: "bytes", to: hint, @key
 
-export {Key, isKey}
+  @isKind: isKind @
+
+export default Key

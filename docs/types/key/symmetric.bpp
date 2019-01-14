@@ -1,6 +1,0 @@
-## SymmetricKey
-
-_extends [Key][classKey]_
-
-### Description
-This key type is used in [TweetNaCl.js symmetric encryption interface][tweetnacl-secretbox]. This is the key type required by [`encrypt`][encrypt] to perform symmetric encryption.

@@ -1,6 +1,6 @@
 {
   "name": "panda-confidential",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Simple, extensible interface for the tweetnacl-js cryptography library",
   "main": "build/npm/src/index.js",
   "files": [
@@ -54,7 +54,7 @@
     "through2": "^2.0.5"
   },
   "dependencies": {
-    "panda-generics": "^5.0.0",
+    "panda-generics": "^4.0.0",
     "panda-parchment": "^4.2.0",
     "tweetnacl": "^1.0.0",
     "tweetnacl-util": "^0.15.0"
