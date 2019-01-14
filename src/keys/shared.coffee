@@ -1,21 +1,18 @@
 import nacl from "tweetnacl"
-import {isType} from "panda-parchment"
+import {isType, isPrototype} from "panda-parchment"
 import {Method} from "panda-generics"
 import Key from "./key"
-import PublicKey from "./public"
-import PrivateKey from "./private"
-import EncryptionKeyPair from "../key-pairs/encryption"
 import {convert} from "../utils"
 
 create = Method.create default: (args...) ->
   throw new Error "panda-confidential::SharedKey.create - no match on #{args...}"
 
-Method.define create, PublicKey.isType, PrivateKey.isType,
+Method.define create, isPrototype "PublicKey", isPrototype "PrivateKey",
   (publicKey, privateKey) ->
     nacl.box.before publicKey.to "bytes", privateKey.to "bytes"
-Method.define create, PrivateKey.isType, PublicKey.isType,
+Method.define create, isPrototype "PrivateKey", isPrototype "PublicKey",
   (privateKey, publicKey) -> create publicKey, privateKey
-Method.define create, EncryptionKeyPair.isType,
+Method.define create, isPrototype "EncryptionKeyPair",
   (keyPair) -> create keyPair.publicKey, keyPair.privateKey
 
 class SharedKey extends Key
@@ -32,8 +29,3 @@ class SharedKey extends Key
   @create: (args...) -> new SharedKey create args...
 
 export default SharedKey
-
-
-
-
-export default sharedKey

@@ -1,26 +1,26 @@
 import nacl from "tweetnacl"
-import {isString} from "panda-parchment"
+import {isPrototype} from "panda-parchment"
 import {Method} from "panda-generics"
 
-import {isSignedMessage, signedMessage} from "./signed-message"
-import {isData} from "./utils"
+import Declaration from "../containers/declaration"
+
+isPublicKey = isPrototype "PublicKey"
+isPrivatedKey = isPrototype "PrivateKey"
+isSignatureKeyPair = isPrototype "SignatureKeyPair"
+isDeclaration = Declaration.isType
 
 # Define a multimethod.
-verify = Method.create()
+verify = Method.create default: (args...) ->
+  throw new Error "panda-confidential::verify no matches on #{args...}"
 
 # Verify the signature(s) on a message.
-Method.define verify, isSignedMessage,
-  ({message, encoding, publicKeys, signatures}) ->
-    if publicKeys.length != signatures.length
+Method.define verify, isDeclaration,
+  ({data, signatories, signatures}) ->
+    if signatories.length != signatures.length
       return false
-    for i in [0...publicKeys.length]
-      if !nacl.sign.detached.verify message, signatures[i], publicKeys[i]
+    for signatory, i in signatories
+      unless nacl.sign.detached.verify data, signatures[i], signatory
         return false
     return true
-
-Method.define verify, isString,
-  (message) -> verify signedMessage message
-Method.define verify, isData,
-  (message) -> verify signedMessage message
 
 export default verify

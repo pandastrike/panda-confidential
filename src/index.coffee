@@ -9,10 +9,11 @@ confidential = (randomBytes) ->
 
   randomBytes ?= nacl.randomBytes
 
-  encrypt = _encrypt randomBytes
   SymmetricKey = symmetricKey randomBytes
   EncryptionKeyPair = encryptionKeyPair randomBytes
   SignatureKeyPair = signatureKeyPair randomBytes
+
+  encrypt = _encrypt randomBytes
 
   {nacl, randomBytes,
   convert, isBytes,

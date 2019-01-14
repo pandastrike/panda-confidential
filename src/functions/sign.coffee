@@ -1,55 +1,43 @@
 import nacl from "tweetnacl"
-import {isString} from "panda-parchment"
+import {isPrototype} from "panda-parchment"
 import {Method} from "panda-generics"
 
-import {isData, encode, decode} from "./utils"
-import {isPrivateKey, isPublicKey} from "./keys"
-import {isSignatureKeyPair} from "./key-pairs"
-import {isSignedMessage, signedMessage} from "./signed-message"
+import Declaration from "../containers/declaration"
+
+isPublicKey = isPrototype "PublicKey"
+isPrivatedKey = isPrototype "PrivateKey"
+isSignatureKeyPair = isPrototype "SignatureKeyPair"
+isPlaintext = isPrototype "Plaintext"
+isDeclaration = Declaration.isType
 
 # Define a multimethod.
-sign = Method.create()
+sign = Method.create default: (args...) ->
+  throw new Error "panda-confidential::sign no matches on #{args...}"
 
 # Signing a plain message.
-Method.define sign, isPrivateKey, isPublicKey, isData, isString,
-  ({key:privateKey}, {key:publicKey}, message, encoding) ->
-      signedMessage
-        message: message
-        encoding: encoding
-        publicKeys: [publicKey]
-        signatures: [nacl.sign.detached message, privateKey]
+Method.define sign, isPrivateKey, isPublicKey, isPlaintext,
+  (privateKey, publicKey, plaintext) ->
+      data = plaintext.to "bytes"
+      new Declaration
+        data: data
+        signatories: [publicKey.to "bytes"]
+        signatures: [nacl.sign.detached data, privateKey.to "bytes"]
 
-Method.define sign, isPrivateKey, isPublicKey, isData,
-  (privateKey, publicKey, message) ->
-    sign privateKey, publicKey, message, "buffer"
-Method.define sign, isPrivateKey, isPublicKey, isString, isString,
-  (privateKey, publicKey, message, encoding) ->
-    sign privateKey, publicKey, decode(encoding, message), encoding
-Method.define sign, isPrivateKey, isPublicKey, isString,
-  (privateKey, publicKey, message) ->
-    sign privateKey, publicKey, decode("utf8", message), "utf8"
+# Signing Declaration class (previously signed message).
+Method.define sign, isPrivateKey, isPublicKey, isDeclaration,
+  (privateKey, publicKey, declaration) ->
+    declaration.signatories.push publicKey.to "bytes"
+    declaration.signatures.push(
+      nacl.sign.detached declaration.data, privateKey.to "bytes"
+    )
+    declaration
 
-# Signing a plain message with whole Key Pair.
-Method.define sign, isSignatureKeyPair, isData,
-  ({privateKey, publicKey}, message) ->
-    sign privateKey, publicKey, message, "buffer"
-Method.define sign, isSignatureKeyPair, isString, isString,
-  ({privateKey, publicKey}, message, encoding) ->
-    sign privateKey, publicKey, decode(encoding, message), encoding
-Method.define sign, isSignatureKeyPair, isString,
-  ({privateKey, publicKey}, message) ->
-    sign privateKey, publicKey, decode("utf8", message), "utf8"
+# Signing with whole Key Pair.
+Method.define sign, isSignatureKeyPair, isAny,
+  ({privateKey, publicKey}, thing) -> sign privateKey, publicKey, thing
 
-# Signing SignedMessage class (previously signed message).
-Method.define sign, isPrivateKey, isPublicKey, isSignedMessage,
-  ({key:privateKey}, {key:publicKey}, sig) ->
-    sig.publicKeys.push publicKey
-    sig.signatures.push nacl.sign.detached sig.message, privateKey
-    sig
-
-Method.define sign, isSignatureKeyPair, isSignedMessage,
-  ({privateKey, publicKey}, sig) ->
-    sign privateKey, publicKey, sig
-
+# Signing with public key first
+Method.define sign, isPublicKey, isPrivateKey, isAny,
+  (publicKey, privateKey, thing) -> sign privateKey, publicKey, thing
 
 export default sign
