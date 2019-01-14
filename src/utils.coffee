@@ -16,7 +16,7 @@ isBytes = (x) -> isBuffer(x) || isUint8Array(x)
 isAny = (x) -> true
 
 decode = Method.create default: (args...) ->
-  throw new Error "panda-confidential::convert::decode Unable to decode with arguments #{args...}"
+  throw new Error "panda-confidential::convert::decode no matches on #{JSON.stringify args}"
 Method.define decode, hint.isBytes, isBytes,
   (_, bytes) -> bytes  # no op, but enforcing bytes type
 Method.define decode, hint.isUTF8, isString,
@@ -35,7 +35,7 @@ Method.define decode, hint.isSafeBase64, isString,
     decodeBase64 string.replace(/\-/g, '+').replace(/\_//g, '/') + modulo
 
 encode = Method.create default: (args...) ->
-  throw new Error "panda-confidential::convert::encode Unable to encode with arguments #{args...}"
+  throw new Error "panda-confidential::convert::encode no matches on #{JSON.stringify args}"
 Method.define encode, hint.isBytes, isBytes,
   (_, bytes) -> bytes  # no op, but enforcing bytes type
 Method.define encode, hint.isUTF8, isBytes,
@@ -71,10 +71,10 @@ convert = ({from: _from, to}, value) ->
     throw new Error "panda-confidential::convert - 'from' (#{_from}) and 'to' (#{to}) hints are not allowed to be identical."
 
   if _from == "bytes" && !(isBytes value)
-    throw new Error "panda-confidential::convert - 'from' hint is '#{_from}', but the input value is type #{typeof value}"
+    throw new Error "panda-confidential::convert - 'from' hint is '#{_from}', but the input value '#{value}', is type #{typeof value}"
 
   if _from in ["utf8", "base64", "safe-base64"] && !(isString value)
-    throw new Error "panda-confidential::convert - 'from' hint is '#{_from}', but the input value is type #{typeof value}"
+    throw new Error "panda-confidential::convert - 'from' hint is '#{_from}', but the input value, '#{value}', is type #{typeof value}"
 
   encode to, decode _from, value
 

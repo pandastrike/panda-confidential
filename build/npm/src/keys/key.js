@@ -3,27 +3,39 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.isKey = exports.Key = void 0;
+exports.default = void 0;
 
 var _pandaParchment = require("panda-parchment");
 
-var _pandaGenerics = require("panda-generics");
-
 var _utils = require("../utils");
 
-var Key, isKey;
-exports.isKey = isKey;
-exports.Key = Key;
-exports.Key = Key = class Key {
-  constructor(key) {
-    this.key = key;
+var Key;
+
+Key = function () {
+  class Key {
+    constructor(key) {
+      this.key = key;
+    }
+
+    to(hint) {
+      if (hint === "bytes") {
+        return this.key;
+      } else {
+        return (0, _utils.convert)({
+          from: "bytes",
+          to: hint
+        }, this.key);
+      }
+    }
+
   }
 
-  encode(encoding = "base64") {
-    return (0, _utils.encode)(encoding, this.key);
-  }
+  ;
+  Key.isKind = (0, _pandaParchment.isKind)(Key);
+  return Key;
+}.call(void 0);
 
-};
-exports.isKey = isKey = (0, _pandaParchment.isKind)(Key);
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImtleXMva2V5LmNvZmZlZSJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7O0FBQUE7O0FBQ0E7O0FBQ0E7O0FBRkEsSUFBQSxHQUFBLEVBQUEsS0FBQTs7O0FBSU0sY0FBQSxHQUFBLEdBQU4sTUFBQSxHQUFBLENBQUE7QUFDRSxFQUFBLFdBQWEsQ0FBQSxHQUFBLEVBQUE7QUFBQyxTQUFDLEdBQUQsR0FBQyxHQUFEO0FBQUQ7O0FBQ2IsRUFBQSxNQUFRLENBQUMsUUFBQSxHQUFELFFBQUEsRUFBQTtXQUFzQixtQkFBQSxRQUFBLEVBQWlCLEtBQWpCLEdBQUEsQztBQUF0Qjs7QUFGVixDQUFNO0FBSU4sZ0JBQUEsS0FBQSxHQUFRLDRCQUFBLEdBQUEsQ0FBUiIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7aXNLaW5kfSBmcm9tIFwicGFuZGEtcGFyY2htZW50XCJcbmltcG9ydCB7TWV0aG9kfSBmcm9tIFwicGFuZGEtZ2VuZXJpY3NcIlxuaW1wb3J0IHtlbmNvZGV9IGZyb20gXCIuLi91dGlsc1wiXG5cbmNsYXNzIEtleVxuICBjb25zdHJ1Y3RvcjogKEBrZXkpIC0+XG4gIGVuY29kZTogKGVuY29kaW5nPVwiYmFzZTY0XCIpLT4gZW5jb2RlIGVuY29kaW5nLCBAa2V5XG5cbmlzS2V5ID0gaXNLaW5kIEtleVxuXG5leHBvcnQge0tleSwgaXNLZXl9XG4iXSwic291cmNlUm9vdCI6IiJ9
-//# sourceURL=keys/key.coffee
+var _default = Key;
+exports.default = _default;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy9kYXZpZC9SZXBvc2l0b3JpZXMvcGFuZGEtY29uZmlkZW50aWFsL3NyYy9rZXlzL2tleS5jb2ZmZWUiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7OztBQUFBOztBQUNBOztBQURBLElBQUEsR0FBQTs7QUFHTSxHQUFBLEdBQUEsWUFBQTtBQUFOLFFBQUEsR0FBQSxDQUFBO0FBQ0UsSUFBQSxXQUFhLENBQUEsR0FBQSxFQUFBO0FBQUMsV0FBQyxHQUFELEdBQUMsR0FBRDtBQUFEOztBQUViLElBQUEsRUFBSSxDQUFBLElBQUEsRUFBQTtBQUNGLFVBQUcsSUFBQSxLQUFILE9BQUEsRUFBQTtlQUNFLEtBREYsRztBQUFBLE9BQUEsTUFBQTtlQUdFLG9CQUFRO0FBQUEsVUFBQSxJQUFBLEVBQUEsT0FBQTtBQUFlLFVBQUEsRUFBQSxFQUFJO0FBQW5CLFNBQVIsRUFBaUMsS0FIbkMsR0FHRSxDOztBQUpBOztBQUhOOztBQUFBO0FBU0UsRUFBQSxHQUFDLENBQUQsTUFBQSxHQUFTLDRCQUFBLEdBQUEsQ0FBVDs7Q0FUSSxDLElBQUEsUUFBQTs7ZUFXUyxHIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHtpc0tpbmR9IGZyb20gXCJwYW5kYS1wYXJjaG1lbnRcIlxuaW1wb3J0IHtjb252ZXJ0fSBmcm9tIFwiLi4vdXRpbHNcIlxuXG5jbGFzcyBLZXlcbiAgY29uc3RydWN0b3I6IChAa2V5KSAtPlxuXG4gIHRvOiAoaGludCkgLT5cbiAgICBpZiBoaW50ID09IFwiYnl0ZXNcIlxuICAgICAgQGtleVxuICAgIGVsc2VcbiAgICAgIGNvbnZlcnQgZnJvbTogXCJieXRlc1wiLCB0bzogaGludCwgQGtleVxuXG4gIEBpc0tpbmQ6IGlzS2luZCBAXG5cbmV4cG9ydCBkZWZhdWx0IEtleVxuIl0sInNvdXJjZVJvb3QiOiIifQ==
+//# sourceURL=/Users/david/Repositories/panda-confidential/src/keys/key.coffee

@@ -1,9 +1,9 @@
 import regular from "./regular"
-import extended from "./extended"
+#import extended from "./extended"
 
 Tests = (SDK) ->
   await regular()
-  if SDK
-    await extended SDK
+  # if SDK
+  #   await extended SDK
 
 export default Tests

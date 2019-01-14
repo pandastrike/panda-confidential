@@ -2,13 +2,20 @@ import assert from "assert"
 import {test, print} from "amen"
 import {confidential} from "../../../src/index"
 
-Hash = ->
-  {hash} = confidential()
+HashTest = ->
+  {hash, Hash, Plaintext} = confidential()
 
   message = "Hello World!"
-  expectedOutput = "hhhE1nBOhXP+w02WfiC8/vPUJM9IvgTm3AjyvVjHKXQzcQFerYkcw88cnTS0kmS1EHUbH/nlN5N7xGtdb/TsyA=="
+  plaintext = Plaintext.from "utf8", message
 
-  output = hash message
-  assert.equal output, expectedOutput, "Unexpected hash result"
+  # Perform SHA-512 hash.
+  hashResult = hash plaintext
 
-export default Hash
+  assert (Hash.isType hashResult), "bad hash"
+  assert.equal(
+    hashResult.to "base64"
+    "hhhE1nBOhXP+w02WfiC8/vPUJM9IvgTm3AjyvVjHKXQzcQFerYkcw88cnTS0kmS1EHUbH/nlN5N7xGtdb/TsyA=="
+    "bad hash result"
+  )
+
+export default HashTest

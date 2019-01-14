@@ -1,13 +1,13 @@
+import {include} from "panda-parchment"
 import Key from "./key"
-import PublicKey from "./public-key"
-import PrivateKey from "./private-key"
-import SharedKey from "./shared-key"
-import symmetricKey from "./symmetric-key"
+import PublicKey from "./public"
+import PrivateKey from "./private"
+import sharedKey from "./shared"
+import symmetricKey from "./symmetric"
 
-export {
-  Key
-  PublicKey
-  PrivateKey
-  SharedKey
-  symmetricKey
-}
+keys = (confidential) ->
+  SharedKey = sharedKey confidential
+  SymmetricKey = symmetricKey confidential
+  include confidential, {Key, PublicKey, PrivateKey, SharedKey, SymmetricKey}
+
+export default keys

@@ -3,7 +3,7 @@ import {isType} from "panda-parchment"
 import Key from "./key"
 import {convert} from "../utils"
 
-symmetricKey = (randomBytes) ->
+symmetricKey = ({randomBytes}) ->
 
   class SymmetricKey extends Key
     @create: ->

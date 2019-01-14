@@ -1,25 +1,22 @@
 import nacl from "tweetnacl"
-import {Key, PrivateKey, PublicKey, SharedKey, symmetricKey} from "./keys"
-import {KeyPair, encryptionKeyPair, signatureKeyPair} from "./key-pairs"
-import {Envelope, Declaration, Plaintext} from "./containers"
-import {_encrypt, decrypt, sign, verify, hash} from "./functions"
 import {convert, isBytes} from "./utils"
+import keys from "./keys"
+import keyPairs from "./key-pairs"
+import containers from "./containers"
+import functions from "./functions"
 
 confidential = (randomBytes) ->
+  Confidential =
+    nacl: nacl
+    isBytes: isBytes
+    convert: convert
+    randomBytes: randomBytes ? nacl.randomBytes
 
-  randomBytes ?= nacl.randomBytes
+  keyPairs Confidential
+  keys Confidential
+  containers Confidential
+  functions Confidential
 
-  SymmetricKey = symmetricKey randomBytes
-  EncryptionKeyPair = encryptionKeyPair randomBytes
-  SignatureKeyPair = signatureKeyPair randomBytes
-
-  encrypt = _encrypt randomBytes
-
-  {nacl, randomBytes,
-  convert, isBytes,
-  encrypt, decrypt, sign, verify, hash,
-  Envelope, Declaration, Plaintext,
-  Key, SymmetricKey, PublicKey, PrivateKey, SharedKey,
-  KeyPair, EncryptionKeyPair, SignatureKeyPair}
+  Confidential
 
 export {confidential}

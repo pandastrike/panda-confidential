@@ -8,7 +8,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "test": "coffee --transpile test/index.coffee"
+    "test": "p9k npm:test"
   },
   "repository": {
     "type": "git",
@@ -44,14 +44,12 @@
     "@babel/preset-env": "^7.2.3",
     "amen": "^2.0.4",
     "aws-sdk": "^2.382.0",
-    "biscotti-cpp": "^1.0.2",
     "coffeescript": "^2.3.2",
     "command-line-args": "^5.0.2",
     "panda-9000": "^4.4.0",
     "panda-builder": "^3.2.1",
     "source-map-support": "^0.5.9",
-    "sundog": "^2.0.0",
-    "through2": "^2.0.5"
+    "sundog": "^2.0.0"
   },
   "dependencies": {
     "panda-generics": "^4.0.0",

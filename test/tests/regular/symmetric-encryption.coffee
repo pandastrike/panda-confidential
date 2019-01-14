@@ -3,19 +3,33 @@ import {confidential} from "../../../src/index"
 
 symmetric = ->
   # Setup for encryption
-  {encrypt, decrypt, key} = confidential()
+  {encrypt, decrypt, SymmetricKey, Plaintext, Envelope} = confidential()
 
   # Generate symmetric key of correct length that should be saved.
-  KEY = await key.symmetric()
-  assert (KEY && key.isSymmetric KEY), "bad key"
+  key = await SymmetricKey.create()
+  assert (SymmetricKey.isType key), "bad key"
 
   # Person A symmetrically encrypts their data.
   message = "Hello World!"
-  cipher = await encrypt KEY, message
-  assert (cipher && message != cipher), "must create a ciphertext"
+  plaintext = Plaintext.from "utf8", message
+  assert (Plaintext.isType plaintext), "bad plaintext"
 
-  # Person A later decrypts that ciphertext.
-  output = await decrypt KEY, cipher
-  assert.equal message, output, "failed to decrypt"
+  envelope = await encrypt key, plaintext
+  assert (Envelope.isType envelope), "bad envelope"
+
+  # Person A serializes their envelope for storage.
+  serialized = envelope.to "base64"
+
+  # Person A later hydrates the envelope and decrypts.
+  envelope = Envelope.from "base64", serialized
+  outPlaintext = await decrypt key, envelope
+  assert (Plaintext.isType outPlaintext), "bad plaintext"
+
+  assert.equal (outPlaintext.to "utf8"), message, "failed to decrypt"
+
+  # negative test
+  key = await SymmetricKey.create()
+  outPlaintext = await decrypt key, envelope
+  assert outPlaintext.plaintext == null, "decrypt negative test failure"
 
 export default symmetric
