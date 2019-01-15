@@ -75,12 +75,12 @@ isHint = Method.create default: (args...) ->
     no matches on #{JSON.stringify args}"
 
 Method.define isHint, isAllowedHint, isAllowedHint,
+  -> true
+
+Method.define isHint, eq,
   (_from, to) ->
-    if _from == to
-      throw new Error "panda-confidential::convert -
-        'from' (#{_from}) and 'to' (#{to}) hints cannot be identical."
-    else
-      true
+    throw new Error "panda-confidential::convert -
+      'from' (#{_from}) and 'to' (#{to}) hints cannot be identical."
 
 Method.define isHint, isObject,
   ({from:_from, to}) -> isHint _from, to
