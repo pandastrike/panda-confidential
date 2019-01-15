@@ -3,10 +3,10 @@ import {test, print} from "amen"
 import {confidential} from "../../../src/index"
 
 compose = (list) ->
-  [string, transformations...] = list
+  [context, transformations...] = list
   for transform in transformations
-    string.message = transform string.message
-  string.message
+    context.message = transform context.message
+  context.message
 
 Test = ->
   {convert} = confidential()
