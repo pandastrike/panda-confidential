@@ -41,7 +41,7 @@ Method.define decode, hint.isSafeBase64, isString,
         when 3 then "="
         when 2 then "=="
         else ""
-    decodeBase64 string.replace(/\-/g, '+').replace(/\_//g, '/') + padding
+    decodeBase64 string.replace(/\-/g, '+').replace(/\_/g, '/') + padding
 
 
 # encode takes a byte array and formats it according to the hint.

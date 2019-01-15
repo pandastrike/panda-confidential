@@ -4,6 +4,7 @@ import symmetric from "./symmetric-encryption"
 import asymmetric from "./asymmetric-encryption"
 import signature from "./signature"
 import hash from "./hash"
+import convert from "./convert"
 
 Test = ->
   await print await test "Panda Confidential", [
@@ -26,6 +27,11 @@ Test = ->
       description: "SHA-512 Hash"
       wait: false,
       hash
+
+    test
+      description: "Format Conversions"
+      wait: false,
+      convert
   ]
 
 export default Test
