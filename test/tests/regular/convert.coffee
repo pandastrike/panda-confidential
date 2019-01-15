@@ -2,29 +2,23 @@ import assert from "assert"
 import {test, print} from "amen"
 import {confidential} from "../../../src/index"
 
-compose = (list) ->
-  [context, transformations...] = list
-  for transform in transformations
-    context.message = transform context.message
-  context.message
-
 Test = ->
   {convert} = confidential()
-  _convert = (hint) ->
-    (data) -> convert hint, data
 
-  message = "Hello, World!"
+  compose = ([string, transformations...]) ->
+    string = convert transform, string for transform in transformations
+    string
 
   final = compose [
-    {message}
-    _convert from: "utf8", to: "bytes"
-    _convert from: "bytes", to: "base64"
-    _convert from: "base64", to: "bytes"
-    _convert from: "bytes", to: "safe-base64"
-    _convert from: "safe-base64", to: "bytes"
-    _convert from: "bytes", to: "utf8"
+    "Hello, World!"
+    {from: "utf8", to: "bytes"}
+    {from: "bytes", to: "base64"}
+    {from: "base64", to: "bytes"}
+    {from: "bytes", to: "safe-base64"}
+    {from: "safe-base64", to: "bytes"}
+    {from: "bytes", to: "utf8"}
   ]
 
-  assert.equal final, message, "bad convert"
+  assert.equal final, "Hello, World!", "bad convert"
 
 export default Test
