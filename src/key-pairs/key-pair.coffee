@@ -7,8 +7,8 @@ toBase64 = (bytes) -> convert from: "bytes", to: "base64", bytes
 
 class KeyPair
   constructor: ({publicKey, privateKey}) ->
-    @publicKey = new PublicKey publicKey
-    @privateKey = new PrivateKey privateKey
+    @publicKey = PublicKey.from "bytes", publicKey
+    @privateKey = PrivateKey.from "bytes", privateKey
 
   to: (hint) ->
     output = JSON.stringify

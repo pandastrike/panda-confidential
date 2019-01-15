@@ -9,12 +9,20 @@ Decrypt = ({SymmetricKey, SharedKey, Envelope, Plaintext}) ->
   # Symmetric Decryption
   Method.define decrypt, SymmetricKey.isType, Envelope.isType,
     (key, {ciphertext, nonce}) ->
-      new Plaintext nacl.secretbox.open ciphertext, nonce, key.to "bytes"
+      plaintext = nacl.secretbox.open ciphertext, nonce, key.to "bytes"
+      if plaintext?
+        Plaintext.from "bytes", plaintext
+      else
+        throw new Error "Decryption Failure - Invalid Key"
 
   # Asymmetric Decryption via shared key.
   Method.define decrypt, SharedKey.isType, Envelope.isType,
     (key, {ciphertext, nonce}) ->
-      new Plaintext nacl.box.open.after ciphertext, nonce, key.to "bytes"
+      plaintext = nacl.box.open.after ciphertext, nonce, key.to "bytes"
+      if plaintext?
+        Plaintext.from "bytes", plaintext
+      else
+        throw new Error "Decryption Failure - Invalid Key"
 
   decrypt
 

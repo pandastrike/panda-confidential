@@ -22,14 +22,16 @@ symmetric = ->
 
   # Person A later hydrates the envelope and decrypts.
   envelope = Envelope.from "base64", serialized
-  outPlaintext = await decrypt key, envelope
+  outPlaintext = decrypt key, envelope
   assert (Plaintext.isType outPlaintext), "bad plaintext"
 
   assert.equal (outPlaintext.to "utf8"), message, "failed to decrypt"
 
   # negative test
-  key = await SymmetricKey.create()
-  outPlaintext = await decrypt key, envelope
-  assert outPlaintext.plaintext == null, "decrypt negative test failure"
+  try
+    key = await SymmetricKey.create()
+    decrypt key, envelope
+    assert.fail "This decrypt should fail"
+  catch
 
 export default symmetric

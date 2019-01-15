@@ -6,7 +6,7 @@ _hash = ({Hash, Plaintext}) ->
   hash = Method.create default: (args...) ->
     throw new Error "panda-confidential::hash - no match on #{args}"
   Method.define hash, Plaintext.isType,
-    (plaintext) -> new Hash nacl.hash plaintext.to "bytes"
+    (plaintext) -> Hash.from "bytes", nacl.hash plaintext.to "bytes"
 
   hash
 

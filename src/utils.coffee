@@ -1,47 +1,64 @@
 import nacl from "tweetnacl-util"
-import {isType, isBuffer, isString} from "panda-parchment"
+import {unary} from "panda-garden"
+import {isType, isObject, isString, eq, isDefined} from "panda-parchment"
 import {Method} from "panda-generics"
 
 {decodeBase64, decodeUTF8, encodeBase64, encodeUTF8} = nacl
 
-isEqual = (x) -> (y) -> x == y
+isBytes = isType Uint8Array
+
+allowedHints = ["bytes", "utf8", "base64", "safe-base64"]
+isAllowedHint = (x) -> x in allowedHints
+
 hint =
-  isBytes: isEqual "bytes"
-  isUTF8: isEqual "utf8"
-  isBase64: isEqual "base64"
-  isSafeBase64: isEqual "safe-base64"
+  isBytes: eq "bytes"
+  isUTF8: eq "utf8"
+  isBase64: eq "base64"
+  isSafeBase64: eq "safe-base64"
 
-isUint8Array = isType Uint8Array
-isBytes = (x) -> isBuffer(x) || isUint8Array(x)
-isAny = (x) -> true
 
+# decode takes an input and breaks it down to a byte array.
 decode = Method.create default: (args...) ->
-  throw new Error "panda-confidential::convert::decode no matches on #{JSON.stringify args}"
+  throw new Error "panda-confidential::convert::decode -
+    Confirm your data type matches the hint.
+    No matches on #{JSON.stringify args}"
+
 Method.define decode, hint.isBytes, isBytes,
   (_, bytes) -> bytes  # no op, but enforcing bytes type
+
 Method.define decode, hint.isUTF8, isString,
   (_, string) -> decodeUTF8 string
+
 Method.define decode, hint.isBase64, isString,
   (_, string) -> decodeBase64 string
+
 Method.define decode, hint.isSafeBase64, isString,
   (_, string) ->
     # Based on RFC 4648's "base64url" mapping:
     # https://tools.ietf.org/html/rfc4648#section-5
-    modulo =
+    padding =
       switch string.length % 4
         when 3 then "="
         when 2 then "=="
         else ""
-    decodeBase64 string.replace(/\-/g, '+').replace(/\_//g, '/') + modulo
+    decodeBase64 string.replace(/\-/g, '+').replace(/\_//g, '/') + padding
 
+
+# encode takes a byte array and formats it according to the hint.
 encode = Method.create default: (args...) ->
-  throw new Error "panda-confidential::convert::encode no matches on #{JSON.stringify args}"
+  throw new Error "panda-confidential::convert::encode -
+    Confirm your data type matches the hint.
+    No matches on #{JSON.stringify args}"
+
 Method.define encode, hint.isBytes, isBytes,
   (_, bytes) -> bytes  # no op, but enforcing bytes type
+
 Method.define encode, hint.isUTF8, isBytes,
   (_, bytes) ->  encodeUTF8 bytes
+
 Method.define encode, hint.isBase64, isBytes,
   (_, bytes) ->  encodeBase64 bytes
+
 Method.define encode, hint.isSafeBase64, isBytes,
   (_, bytes) ->
     # Based on RFC 4648's "base64url" mapping:
@@ -52,32 +69,30 @@ Method.define encode, hint.isSafeBase64, isBytes,
     .replace(/\=+$/, '')
 
 
-allowedHints = ["bytes", "utf8", "base64", "safe-base64"]
 
-convert = ({from: _from, to}, value) ->
-  if !_from?
-    throw new Error "panda-confidential::convert - must provide 'from' hint"
+isHint = Method.create default: (args...) ->
+  throw new Error "panda-confidential::convert:: - invalid hint:
+    no matches on #{JSON.stringify args}"
 
-  if _from not in allowedHints
-    throw new Error "panda-confidential::convert - hint from = '#{_from}' not recognized"
+Method.define isHint, isAllowedHint, isAllowedHint,
+  (_from, to) ->
+    if _from == to
+      throw new Error "panda-confidential::convert -
+        'from' (#{_from}) and 'to' (#{to}) hints cannot be identical."
+    else
+      true
 
-  if !to?
-    throw new Error "panda-confidential::convert - must provide 'to' hint"
+Method.define isHint, isObject,
+  ({from:_from, to}) -> isHint _from, to
 
-  if to not in allowedHints
-    throw new Error "panda-confidential::convert - hint to = '#{_from}' not recognized"
+# convert takes a piece of data and converts it by using decode to get bytes,
+# then encode to get the final format.
+convert = Method.create default: (args...) ->
+  throw new Error "panda-confidential::convert:: -
+    no matches on #{JSON.stringify args}"
 
-  if _from == to
-    throw new Error "panda-confidential::convert - 'from' (#{_from}) and 'to' (#{to}) hints are not allowed to be identical."
-
-  if _from == "bytes" && !(isBytes value)
-    throw new Error "panda-confidential::convert - 'from' hint is '#{_from}', but the input value '#{value}', is type #{typeof value}"
-
-  if _from in ["utf8", "base64", "safe-base64"] && !(isString value)
-    throw new Error "panda-confidential::convert - 'from' hint is '#{_from}', but the input value, '#{value}', is type #{typeof value}"
-
-  encode to, decode _from, value
-
+Method.define convert, (unary isHint), isDefined,
+  ({from: _from, to}, value) -> encode to, decode _from, value
 
 
 export {

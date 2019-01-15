@@ -1,14 +1,7 @@
 import nacl from "tweetnacl"
 import {isPrototype} from "panda-parchment"
 import {Method} from "panda-generics"
-
-import Envelope from "../containers/envelope"
-import Nonce from "../containers/nonce"
-
-isSymmetricKey = isPrototype "SymmetricKey"
-isSharedKey = isPrototype "SharedKey"
-isPlaintext = isPrototype "Plaintext"
-isNonce = Nonce.isType
+import {convert} from "../utils"
 
 Encrypt = ({randomBytes, SymmetricKey, SharedKey,
             Plaintext, Nonce, Envelope}) ->
@@ -24,12 +17,14 @@ Encrypt = ({randomBytes, SymmetricKey, SharedKey,
         nonce.to "bytes"
         key.to "bytes"
       )
-      Promise.resolve new Envelope {ciphertext, nonce: nonce.to "bytes"}
+      ciphertext = convert from: "bytes", to: "base64", ciphertext
+      nonce = nonce.to "base64"
+      Promise.resolve Envelope.from "utf8", JSON.stringify {ciphertext, nonce}
 
 
   Method.define encrypt, SymmetricKey.isType, Plaintext.isType,
     (key, plaintext) ->
-      nonce = new Nonce await randomBytes nacl.secretbox.nonceLength
+      nonce = Nonce.from "bytes", await randomBytes nacl.secretbox.nonceLength
       encrypt key, nonce, plaintext
 
   # Asymmetric Encryption via shared key.
@@ -40,10 +35,12 @@ Encrypt = ({randomBytes, SymmetricKey, SharedKey,
         nonce.to "bytes"
         key.to "bytes"
       )
-      Promise.resolve new Envelope {ciphertext, nonce: nonce.to "bytes"}
+      ciphertext = convert from: "bytes", to: "base64", ciphertext
+      nonce = nonce.to "base64"
+      Promise.resolve Envelope.from "utf8", JSON.stringify {ciphertext, nonce}
 
   Method.define encrypt, SharedKey.isType, Plaintext.isType, (key, plaintext) ->
-    nonce = new Nonce await randomBytes nacl.box.nonceLength
+    nonce = Nonce.from "bytes", await randomBytes nacl.box.nonceLength
     encrypt key, nonce, plaintext
 
   # Return the multimethod.

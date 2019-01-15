@@ -52,6 +52,7 @@
     "sundog": "^2.0.0"
   },
   "dependencies": {
+    "panda-garden": "^3.2.0",
     "panda-generics": "^4.0.0",
     "panda-parchment": "^4.2.0",
     "tweetnacl": "^1.0.0",

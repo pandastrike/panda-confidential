@@ -43,9 +43,11 @@ asymmetric = ->
   assert.equal (outPlaintext.to "utf8"), message, "failed to decrypt"
 
   # Negative test
-  C = await EncryptionKeyPair.create()
-  key3 = SharedKey.create A.publicKey, C.privateKey
-  outPlaintext = decrypt key3, envelope
-  assert outPlaintext.plaintext == null, "decrypt negative test failure"
+  try
+    C = await EncryptionKeyPair.create()
+    key3 = SharedKey.create A.publicKey, C.privateKey
+    decrypt key3, envelope
+    assert.fail "This decrypt shoudl fail"
+  catch
 
 export default asymmetric
