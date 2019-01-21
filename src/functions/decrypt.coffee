@@ -13,7 +13,7 @@ Decrypt = ({SymmetricKey, SharedKey, Envelope, Plaintext}) ->
       if plaintext?
         Plaintext.from "bytes", plaintext
       else
-        throw new Error "Decryption Failure - Invalid Key"
+        throw new Error "Decryption Failure"
 
   # Asymmetric Decryption via shared key.
   Method.define decrypt, SharedKey.isType, Envelope.isType,
@@ -22,7 +22,7 @@ Decrypt = ({SymmetricKey, SharedKey, Envelope, Plaintext}) ->
       if plaintext?
         Plaintext.from "bytes", plaintext
       else
-        throw new Error "Decryption Failure - Invalid Key"
+        throw new Error "Decryption Failure"
 
   decrypt
 

@@ -10,7 +10,8 @@ confidential = (randomBytes) ->
     nacl: nacl
     isBytes: isBytes
     convert: convert
-    randomBytes: randomBytes ? nacl.randomBytes
+    randomBytes: (length) ->
+      Promise.resolve (randomBytes ? nacl.randomBytes) length
 
   keyPairs Confidential
   keys Confidential
