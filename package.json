@@ -40,15 +40,11 @@
   },
   "homepage": "https://github.com/pandastrike/panda-confidential#readme",
   "devDependencies": {
-    "@babel/core": "^7.2.2",
-    "@babel/preset-env": "^7.2.3",
     "amen": "^2.0.4",
     "aws-sdk": "^2.382.0",
-    "coffeescript": "^2.3.2",
     "command-line-args": "^5.0.2",
     "panda-9000": "^4.4.0",
     "panda-builder": "^3.2.1",
-    "source-map-support": "^0.5.9",
     "sundog": "^2.0.0"
   },
   "dependencies": {
