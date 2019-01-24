@@ -1,10 +1,11 @@
 import nacl from "tweetnacl"
 import {Method} from "panda-generics"
+import {toJSON} from "panda-parchment"
 
 Decrypt = ({SymmetricKey, SharedKey, Envelope, Plaintext}) ->
   # Define a multimethod for export.
   decrypt = Method.create default: (args...) ->
-    throw new Error "panda-confidential::decrypt no matches on #{JSON.stringify args}"
+    throw new Error "panda-confidential::decrypt no matches on #{toJSON args}"
 
   # Symmetric Decryption
   Method.define decrypt, SymmetricKey.isType, Envelope.isType,

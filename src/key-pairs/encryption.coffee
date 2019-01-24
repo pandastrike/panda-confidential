@@ -1,5 +1,5 @@
 import nacl from "tweetnacl"
-import {isType} from "panda-parchment"
+import {isType, fromJSON} from "panda-parchment"
 import {convert} from "../utils"
 import KeyPair from "./key-pair"
 
@@ -19,9 +19,9 @@ encryptionKeyPair = ({randomBytes}) ->
       new EncryptionKeyPair do ->
         value =
           if hint == "utf8"
-            JSON.parse value
+            fromJSON value
           else
-            JSON.parse convert from: hint, to: "utf8", value
+            fromJSON convert from: hint, to: "utf8", value
 
         privateKey: toBytes value.privateKey
         publicKey: toBytes value.publicKey

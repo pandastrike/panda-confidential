@@ -1,4 +1,4 @@
-import {isKind} from "panda-parchment"
+import {isKind, toJSON} from "panda-parchment"
 import {convert} from "../utils"
 import PublicKey from "../keys/public"
 import PrivateKey from "../keys/private"
@@ -11,7 +11,7 @@ class KeyPair
     @privateKey = PrivateKey.from "bytes", privateKey
 
   to: (hint) ->
-    output = JSON.stringify
+    output = toJSON
       privateKey: toBase64 @privateKey
       publicKey: toBase64 @publicKey
 

@@ -1,4 +1,4 @@
-import {isType} from "panda-parchment"
+import {isType, toJSON, fromJSON} from "panda-parchment"
 import {convert} from "../utils"
 
 toBase64 = (bytes) -> convert from: "bytes", to: "base64", bytes
@@ -8,7 +8,7 @@ class Declaration
   constructor: ({@data, @signatories, @signatures}) ->
 
   to: (hint) ->
-    output = JSON.stringify
+    output = toJSON
       data: toBase64 @data
       signatories: (toBase64 s for s in @signatories)
       signatures: (toBase64 s for s in @signatures)
@@ -22,9 +22,9 @@ class Declaration
     new Declaration do ->
       value =
         if hint == "utf8"
-          JSON.parse value
+          fromJSON value
         else
-          JSON.parse convert from: hint, to: "utf8", value
+          fromJSON convert from: hint, to: "utf8", value
 
       data: toBytes value.data
       signatories: (toBytes s for s in value.signatories)

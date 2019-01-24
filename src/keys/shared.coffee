@@ -1,5 +1,5 @@
 import nacl from "tweetnacl"
-import {isType, isPrototype} from "panda-parchment"
+import {isType, isPrototype, toJSON} from "panda-parchment"
 import {Method} from "panda-generics"
 import Key from "./key"
 import PublicKey from "./public"
@@ -10,7 +10,7 @@ sharedKey = ({EncryptionKeyPair}) ->
 
   create = Method.create default: (args...) ->
     throw new Error "panda-confidential::SharedKey.create -
-      no match on #{args}"
+      no match on #{toJSON args}"
 
   Method.define create, PublicKey.isType, PrivateKey.isType,
     (publicKey, privateKey) ->

@@ -1,5 +1,5 @@
 import nacl from "tweetnacl"
-import {isDefined} from "panda-parchment"
+import {isDefined, toJSON} from "panda-parchment"
 import {Method} from "panda-generics"
 import {convert} from "../utils"
 
@@ -15,7 +15,7 @@ Sign = ({PublicKey, PrivateKey, SignatureKeyPair,
         data = plaintext.to "bytes"
         signature = nacl.sign.detached data, privateKey.to "bytes"
         signature = convert from: "bytes", to: "base64", signature
-        Declaration.from "utf8", JSON.stringify
+        Declaration.from "utf8", toJSON
           data: plaintext.to "base64"
           signatories: [publicKey.to "base64"]
           signatures: [signature]

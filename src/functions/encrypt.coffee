@@ -1,5 +1,5 @@
 import nacl from "tweetnacl"
-import {isPrototype} from "panda-parchment"
+import {isPrototype, toJSON} from "panda-parchment"
 import {Method} from "panda-generics"
 import {convert} from "../utils"
 
@@ -7,7 +7,7 @@ Encrypt = ({randomBytes, SymmetricKey, SharedKey,
             Plaintext, Nonce, Envelope}) ->
   # Define a multimethod to export.
   encrypt = Method.create default: (args...) ->
-    throw new Error "panda-confidential::encrypt no matches on #{JSON.stringify args}"
+    throw new Error "panda-confidential::encrypt no matches on #{toJSON args}"
 
   # Symmetric Encryption
   Method.define encrypt, SymmetricKey.isType, Nonce.isType, Plaintext.isType,
@@ -19,7 +19,7 @@ Encrypt = ({randomBytes, SymmetricKey, SharedKey,
       )
       ciphertext = convert from: "bytes", to: "base64", ciphertext
       nonce = nonce.to "base64"
-      Promise.resolve Envelope.from "utf8", JSON.stringify {ciphertext, nonce}
+      Promise.resolve Envelope.from "utf8", toJSON {ciphertext, nonce}
 
 
   Method.define encrypt, SymmetricKey.isType, Plaintext.isType,
@@ -37,7 +37,7 @@ Encrypt = ({randomBytes, SymmetricKey, SharedKey,
       )
       ciphertext = convert from: "bytes", to: "base64", ciphertext
       nonce = nonce.to "base64"
-      Promise.resolve Envelope.from "utf8", JSON.stringify {ciphertext, nonce}
+      Promise.resolve Envelope.from "utf8", toJSON {ciphertext, nonce}
 
   Method.define encrypt, SharedKey.isType, Plaintext.isType, (key, plaintext) ->
     nonce = Nonce.from "bytes", await randomBytes nacl.box.nonceLength

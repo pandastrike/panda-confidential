@@ -1,6 +1,6 @@
 import nacl from "tweetnacl-util"
 import {unary} from "panda-garden"
-import {isType, isObject, isString, eq, isDefined} from "panda-parchment"
+import {isType, isObject, isString, eq, isDefined, toJSON} from "panda-parchment"
 import {Method} from "panda-generics"
 
 {decodeBase64, decodeUTF8, encodeBase64, encodeUTF8} = nacl
@@ -21,7 +21,7 @@ hint =
 decode = Method.create default: (args...) ->
   throw new Error "panda-confidential::convert::decode -
     Confirm your data type matches the hint.
-    No matches on #{JSON.stringify args}"
+    No matches on #{toJSON args}"
 
 Method.define decode, hint.isBytes, isBytes,
   (_, bytes) -> bytes  # no op, but enforcing bytes type
@@ -48,7 +48,7 @@ Method.define decode, hint.isSafeBase64, isString,
 encode = Method.create default: (args...) ->
   throw new Error "panda-confidential::convert::encode -
     Confirm your data type matches the hint.
-    No matches on #{JSON.stringify args}"
+    No matches on #{toJSON args}"
 
 Method.define encode, hint.isBytes, isBytes,
   (_, bytes) -> bytes  # no op, but enforcing bytes type
@@ -72,7 +72,7 @@ Method.define encode, hint.isSafeBase64, isBytes,
 
 isHint = Method.create default: (args...) ->
   throw new Error "panda-confidential::convert:: - invalid hint:
-    no matches on #{JSON.stringify args}"
+    no matches on #{toJSON args}"
 
 Method.define isHint, isAllowedHint, isAllowedHint,
   -> true
@@ -89,7 +89,7 @@ Method.define isHint, isObject,
 # then encode to get the final format.
 convert = Method.create default: (args...) ->
   throw new Error "panda-confidential::convert:: -
-    no matches on #{JSON.stringify args}"
+    no matches on #{toJSON args}"
 
 Method.define convert, (unary isHint), isDefined,
   ({from: _from, to}, value) -> encode to, decode _from, value
