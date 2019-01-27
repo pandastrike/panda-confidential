@@ -19,9 +19,7 @@ Encrypt = ({randomBytes, SymmetricKey, SharedKey,
           key.to "bytes"
         )
 
-      Promise.resolve Envelope.from "utf8", toJSON
-        ciphertext: ciphertext.to "base64"
-        nonce: nonce.to "base64"
+      Promise.resolve Envelope.create {ciphertext, nonce}
 
   Method.define encrypt, SymmetricKey.isType, Message.isType,
     (key, message) ->
@@ -39,9 +37,7 @@ Encrypt = ({randomBytes, SymmetricKey, SharedKey,
           key.to "bytes"
         )
 
-      Promise.resolve Envelope.from "utf8", toJSON
-        ciphertext: ciphertext.to "base64"
-        nonce: nonce.to "base64"
+      Promise.resolve Envelope.create {ciphertext, nonce}
 
   Method.define encrypt, SharedKey.isType, Message.isType, (key, message) ->
     nonce = Nonce.from "bytes", await randomBytes nacl.box.nonceLength

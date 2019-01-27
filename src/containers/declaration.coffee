@@ -17,6 +17,8 @@ Container = ({Message, Signature, PublicKey}) ->
       else
         convert from: "utf8", to: hint, output
 
+    @create: (value) -> new Declaration value
+
     @from: (hint, value) ->
       new Declaration do ->
         {message, signatories, signatures} =

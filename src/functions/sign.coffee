@@ -18,10 +18,10 @@ Sign = ({PublicKey, PrivateKey, SignatureKeyPair,
             privateKey.to "bytes"
           )
 
-        Declaration.from "utf8", toJSON
-          message: message.to "base64"
-          signatories: [publicKey.to "base64"]
-          signatures: [signature.to "base64"]
+        Declaration.create
+          message: message
+          signatures: [signature]
+          signatories: [publicKey]
 
   # Signing Declaration class (previously signed message).
   Method.define sign, PrivateKey.isType, PublicKey.isType, Declaration.isType,

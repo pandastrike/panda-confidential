@@ -16,6 +16,8 @@ Container = ({Nonce, Ciphertext}) ->
       else
         convert from: "utf8", to: hint, output
 
+    @create: (value) -> new Envelope value
+
     @from: (hint, value) ->
       new Envelope do ->
         {ciphertext, nonce} =
