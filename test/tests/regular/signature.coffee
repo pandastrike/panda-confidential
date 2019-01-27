@@ -4,7 +4,7 @@ import {confidential} from "../../../src/index"
 import nacl from "tweetnacl"
 
 Signature = ->
-  {sign, verify, SignatureKeyPair, PrivateKey, PublicKey, Declaration, Plaintext, convert} = confidential()
+  {sign, verify, SignatureKeyPair, PrivateKey, PublicKey, Declaration, Message, convert} = confidential()
 
   # Test Key Pair Generation
   A = {privateKey, publicKey} = await SignatureKeyPair.create()
@@ -19,22 +19,22 @@ Signature = ->
   # Test Encrypt - Decrypt Cycle
   B = await SignatureKeyPair.create()
 
-  message = "Hello World!"
-  plaintext = Plaintext.from "utf8", message
-  assert (Plaintext.isType plaintext), "bad plaintext"
+  string = "Hello World!"
+  message = Message.from "utf8", string
+  assert (Message.isType message), "bad message"
 
   ## Case 1
   ################################
   # Person A signs a message.
-  declaration = sign A.privateKey, A.publicKey, plaintext
+  declaration = sign A.privateKey, A.publicKey, message
   assert (Declaration.isType declaration), "bad declaration"
   assert.equal(
-    convert from: "bytes", to: "utf8", declaration.data
-    message
+    declaration.message.to "utf8"
+    string
     "bad declaration: message must be intact"
   )
   assert.equal(
-    convert from: "bytes", to: "base64", declaration.signatories[0]
+    declaration.signatories[0].to "base64"
     A.publicKey.to "base64"
     "bad declaration: signatory's public key is incorrect"
   )
@@ -46,7 +46,7 @@ Signature = ->
   assert (verify declaration) == true, "failed to verify"
 
   # Negative test.
-  declaration.signatories = [B.publicKey.to "bytes"]
+  declaration.signatories = [B.publicKey]
   assert (verify declaration) == false, "signature negative test failure"
 
 
@@ -54,21 +54,21 @@ Signature = ->
   ## Case 2
   ################################
   # Person A and B sign a message with key pairs.
-  declaration = sign A, plaintext
+  declaration = sign A, message
   sign B, declaration
   assert (Declaration.isType declaration), "bad declaration"
   assert.equal(
-    convert from: "bytes", to: "utf8", declaration.data
-    message
+    declaration.message.to "utf8"
+    string
     "bad declaration: message must be intact"
   )
   assert.equal(
-    convert from: "bytes", to: "base64", declaration.signatories[0]
+    declaration.signatories[0].to "base64"
     A.publicKey.to "base64"
     "bad declaration: signatory A's public key is incorrect"
   )
   assert.equal(
-    convert from: "bytes", to: "base64", declaration.signatories[1]
+    declaration.signatories[1].to "base64"
     B.publicKey.to "base64"
     "bad declaration: signatory B's public key is incorrect"
   )

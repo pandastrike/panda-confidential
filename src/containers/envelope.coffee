@@ -1,33 +1,32 @@
-import {isType, toJSON, fromJSON} from "panda-parchment"
-import {convert} from "../utils"
+import {isType, toJSON, fromJSON, eq, isDefined, isObject} from "panda-parchment"
+import {convert, isAllowedHint} from "../utils"
 
-toBase64 = (bytes) -> convert from: "bytes", to: "base64", bytes
-toBytes = (string) -> convert from: "base64", to: "bytes", string
+Container = ({Nonce, Ciphertext}) ->
 
-class Envelope
-  constructor: ({@ciphertext, @nonce}) ->
+  class Envelope
+    constructor: ({@ciphertext, @nonce}) ->
 
-  to: (hint) ->
-    output = toJSON
-      ciphertext: toBase64 @ciphertext
-      nonce: toBase64 @nonce
+    to: (hint) ->
+      output = toJSON
+        ciphertext: @ciphertext.to "base64"
+        nonce: @nonce.to "base64"
 
-    if hint == "utf8"
-      output
-    else
-      convert from: "utf8", to: hint, output
+      if hint == "utf8"
+        output
+      else
+        convert from: "utf8", to: hint, output
 
-  @from: (hint, value) ->
-    new Envelope do ->
-      value =
-        if hint == "utf8"
-          fromJSON value
-        else
-          fromJSON convert from: hint, to: "utf8", value
+    @from: (hint, value) ->
+      new Envelope do ->
+        {ciphertext, nonce} =
+          if hint == "utf8"
+            fromJSON value
+          else
+            fromJSON convert from: hint, to: "utf8", value
 
-      ciphertext: toBytes value.ciphertext
-      nonce: toBytes value.nonce
+        ciphertext: Ciphertext.from "base64", ciphertext
+        nonce: Nonce.from "base64", nonce
 
-  @isType: isType @
+    @isType: isType @
 
-export default Envelope
+export default Container

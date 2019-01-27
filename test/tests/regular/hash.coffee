@@ -3,13 +3,13 @@ import {test, print} from "amen"
 import {confidential} from "../../../src/index"
 
 HashTest = ->
-  {hash, Hash, Plaintext} = confidential()
+  {hash, Hash, Message} = confidential()
 
-  message = "Hello, World!"
-  plaintext = Plaintext.from "utf8", message
+  string = "Hello, World!"
+  message = Message.from "utf8", string
 
   # Perform SHA-512 hash.
-  hashResult = hash plaintext
+  hashResult = hash message
 
   assert (Hash.isType hashResult), "bad hash"
   assert.equal(

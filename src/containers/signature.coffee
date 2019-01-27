@@ -1,17 +1,17 @@
 import {isType} from "panda-parchment"
 import {convert} from "../utils"
 
-class Plaintext
-  constructor: (@plaintext) ->
+class Signature
+  constructor: (@signature) ->
 
   to: (hint) ->
     if hint == "bytes"
-      @plaintext
+      @signature
     else
-      convert from: "bytes", to: hint, @plaintext
+      convert from: "bytes", to: hint, @signature
 
   @from: (hint, value) ->
-    new Plaintext do ->
+    new Signature do ->
       if hint == "bytes"
         value
       else
@@ -19,4 +19,4 @@ class Plaintext
 
   @isType: isType @
 
-export default Plaintext
+export default Signature

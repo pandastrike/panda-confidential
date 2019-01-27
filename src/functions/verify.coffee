@@ -9,12 +9,23 @@ Verify = ({Declaration}) ->
 
   # Verify the signature(s) on a message.
   Method.define verify, Declaration.isType,
-    ({data, signatories, signatures}) ->
-      if signatories.length != signatures.length
+    ({message, signatories, signatures}) ->
+      {length} = signatories
+
+      if length < 1
         return false
-      for signatory, i in signatories
-        unless nacl.sign.detached.verify data, signatures[i], signatory
-          return false
+      if signatures.length != length
+        return false
+
+      for i in [0...length]
+        isValid = nacl.sign.detached.verify(
+          message.to "bytes"
+          signatures[i].to "bytes"
+          signatories[i].to "bytes"
+        )
+
+        return false unless isValid
+
       return true
 
   verify

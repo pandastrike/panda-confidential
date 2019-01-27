@@ -4,7 +4,7 @@ import {confidential} from "../../../src/index"
 import nacl from "tweetnacl"
 
 asymmetric = ->
-  {encrypt, decrypt, EncryptionKeyPair, Plaintext, Envelope, PrivateKey, PublicKey, SharedKey} = confidential()
+  {encrypt, decrypt, EncryptionKeyPair, Message, Envelope, PrivateKey, PublicKey, SharedKey} = confidential()
 
   # Test Key Pair Generation
   A = {privateKey, publicKey} = await EncryptionKeyPair.create()
@@ -19,15 +19,15 @@ asymmetric = ->
   B = await EncryptionKeyPair.create()
 
   # Person A encrypts the message for person B.
-  message = "Hello World!"
-  plaintext = Plaintext.from "utf8", message
-  assert (Plaintext.isType plaintext), "bad plaintext"
+  string = "Hello World!"
+  message = Message.from "utf8", string
+  assert (Message.isType message), "bad message"
 
   key1 = SharedKey.create A.privateKey, B.publicKey
   assert (SharedKey.isType key1), "bad shared key"
   assert key1.key.length == nacl.box.sharedKeyLength, "bad shared key"
 
-  envelope = await encrypt key1, plaintext
+  envelope = await encrypt key1, message
   assert (Envelope.isType envelope), "bad envelope"
   serialized = envelope.to "base64"
 
@@ -37,10 +37,10 @@ asymmetric = ->
   key2 = SharedKey.create B.privateKey, A.publicKey
   assert.equal (key1.to "base64"), (key2.to "base64"), "shared keys must match"
 
-  outPlaintext = decrypt key2, envelope
-  assert (Plaintext.isType outPlaintext), "bad plaintext"
+  outMessage = decrypt key2, envelope
+  assert (Message.isType outMessage), "bad message"
 
-  assert.equal (outPlaintext.to "utf8"), message, "failed to decrypt"
+  assert.equal (outMessage.to "utf8"), string, "failed to decrypt"
 
   # Negative test
   try

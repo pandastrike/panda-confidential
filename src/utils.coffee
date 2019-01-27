@@ -98,4 +98,5 @@ Method.define convert, (unary isHint), isDefined,
 export {
   convert
   isBytes
+  isAllowedHint
 }

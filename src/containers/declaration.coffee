@@ -1,35 +1,34 @@
 import {isType, toJSON, fromJSON} from "panda-parchment"
 import {convert} from "../utils"
 
-toBase64 = (bytes) -> convert from: "bytes", to: "base64", bytes
-toBytes = (string) -> convert from: "base64", to: "bytes", string
+Container = ({Message, Signature, PublicKey}) ->
 
-class Declaration
-  constructor: ({@data, @signatories, @signatures}) ->
+  class Declaration
+    constructor: ({@message, @signatories, @signatures}) ->
 
-  to: (hint) ->
-    output = toJSON
-      data: toBase64 @data
-      signatories: (toBase64 s for s in @signatories)
-      signatures: (toBase64 s for s in @signatures)
+    to: (hint) ->
+      output = toJSON
+        message: @message.to "base64"
+        signatories: (s.to "base64" for s in @signatories)
+        signatures: (s.to "base64" for s in @signatures)
 
-    if hint == "utf8"
-      output
-    else
-      convert from: "utf8", to: hint, output
+      if hint == "utf8"
+        output
+      else
+        convert from: "utf8", to: hint, output
 
-  @from: (hint, value) ->
-    new Declaration do ->
-      value =
-        if hint == "utf8"
-          fromJSON value
-        else
-          fromJSON convert from: hint, to: "utf8", value
+    @from: (hint, value) ->
+      new Declaration do ->
+        {message, signatories, signatures} =
+          if hint == "utf8"
+            fromJSON value
+          else
+            fromJSON convert from: hint, to: "utf8", value
 
-      data: toBytes value.data
-      signatories: (toBytes s for s in value.signatories)
-      signatures: (toBytes s for s in value.signatures)
+        message: Message.from "base64", message
+        signatories: (PublicKey.from "base64", s for s in signatories)
+        signatures: (Signature.from "base64", s for s in signatures)
 
-  @isType: isType @
+    @isType: isType @
 
-export default Declaration
+export default Container

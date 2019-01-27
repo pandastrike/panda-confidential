@@ -4,28 +4,36 @@ import {Method} from "panda-generics"
 import {convert} from "../utils"
 
 Sign = ({PublicKey, PrivateKey, SignatureKeyPair,
-  Plaintext, Declaration}) ->
+  Message, Signature, Declaration}) ->
   # Define a multimethod.
   sign = Method.create default: (args...) ->
     throw new Error "panda-confidential::sign no matches on #{arg}"
 
   # Signing a plain message.
-  Method.define sign, PrivateKey.isType, PublicKey.isType, Plaintext.isType,
-    (privateKey, publicKey, plaintext) ->
-        data = plaintext.to "bytes"
-        signature = nacl.sign.detached data, privateKey.to "bytes"
-        signature = convert from: "bytes", to: "base64", signature
+  Method.define sign, PrivateKey.isType, PublicKey.isType, Message.isType,
+    (privateKey, publicKey, message) ->
+        signature = Signature.from "bytes",
+          nacl.sign.detached(
+            message.to "bytes"
+            privateKey.to "bytes"
+          )
+
         Declaration.from "utf8", toJSON
-          data: plaintext.to "base64"
+          message: message.to "base64"
           signatories: [publicKey.to "base64"]
-          signatures: [signature]
+          signatures: [signature.to "base64"]
 
   # Signing Declaration class (previously signed message).
   Method.define sign, PrivateKey.isType, PublicKey.isType, Declaration.isType,
     (privateKey, publicKey, declaration) ->
-      declaration.signatories.push publicKey.to "bytes"
-      declaration.signatures.push nacl.sign.detached declaration.data,
-        privateKey.to "bytes"
+      signature = Signature.from "bytes",
+        nacl.sign.detached(
+          declaration.message.to "bytes"
+          privateKey.to "bytes"
+        )
+
+      declaration.signatures.push signature
+      declaration.signatories.push publicKey
       declaration
 
   # Signing with whole Key Pair.
