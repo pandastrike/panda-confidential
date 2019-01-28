@@ -5,6 +5,10 @@ Container = ({Message, Signature, PublicKey}) ->
 
   class Declaration
     constructor: ({@message, @signatories, @signatures}) ->
+      @signatories.list = (hint) ->
+        key.to hint for key in @
+      @signatures.list = (hint) ->
+        signature.to hint for signature in @
 
     to: (hint) ->
       output = toJSON

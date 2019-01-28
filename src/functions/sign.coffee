@@ -7,7 +7,7 @@ Sign = ({PublicKey, PrivateKey, SignatureKeyPair,
   Message, Signature, Declaration}) ->
   # Define a multimethod.
   sign = Method.create default: (args...) ->
-    throw new Error "panda-confidential::sign no matches on #{arg}"
+    throw new Error "panda-confidential::sign no matches on #{toJSON args}"
 
   # Signing a plain message.
   Method.define sign, PrivateKey.isType, PublicKey.isType, Message.isType,
