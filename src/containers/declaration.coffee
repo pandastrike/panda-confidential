@@ -6,15 +6,15 @@ Container = ({Message, Signature, PublicKey}) ->
   class Declaration
     constructor: ({@message, @signatories, @signatures}) ->
       @signatories.list = (hint) ->
-        key.to hint for key in @
+        signatory.to hint for signatory in @
       @signatures.list = (hint) ->
         signature.to hint for signature in @
 
     to: (hint) ->
       output = toJSON
         message: @message.to "base64"
-        signatories: (s.to "base64" for s in @signatories)
-        signatures: (s.to "base64" for s in @signatures)
+        signatories: @signatories.list "base64"
+        signatures: @signatures.list "base64"
 
       if hint == "utf8"
         output
