@@ -79,4 +79,31 @@ Signature = ->
   declaration = Declaration.from "base64", serialized
   assert (verify declaration) == true, "failed to verify"
 
+
+  ## Case 3
+  ################################
+  # Person A signs a message with multiple key pairs.
+  declaration = sign [A, B], message
+  assert.equal(
+    declaration.message.to "utf8"
+    string
+    "bad declaration: message must be intact"
+  )
+  assert.equal(
+    declaration.signatories[0].to "base64"
+    A.publicKey.to "base64"
+    "bad declaration: signatory A's public key is incorrect"
+  )
+  assert.equal(
+    declaration.signatories[1].to "base64"
+    B.publicKey.to "base64"
+    "bad declaration: signatory B's public key is incorrect"
+  )
+
+  serialized = declaration.to "base64"
+
+  # Person C verifies the message from both.
+  declaration = Declaration.from "base64", serialized
+  assert (verify declaration) == true, "failed to verify"
+
 export default Signature

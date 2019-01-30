@@ -1,5 +1,5 @@
 import {isType} from "panda-parchment"
-import {convert} from "../utils"
+import {convert, areType} from "../utils"
 
 class Signature
   constructor: (@signature) ->
@@ -18,5 +18,6 @@ class Signature
         convert from: hint, to: "bytes", value
 
   @isType: isType @
+  @areType: areType @isType
 
 export default Signature

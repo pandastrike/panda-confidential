@@ -1,6 +1,6 @@
 import {isType} from "panda-parchment"
 import Key from "./key"
-import {convert} from "../utils"
+import {convert, areType} from "../utils"
 
 class PublicKey extends Key
 
@@ -12,5 +12,6 @@ class PublicKey extends Key
         convert from: hint, to: "bytes", value
 
   @isType: isType @
+  @areType: areType @isType
 
 export default PublicKey

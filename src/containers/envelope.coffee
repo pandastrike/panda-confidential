@@ -1,5 +1,5 @@
 import {isType, toJSON, fromJSON, eq, isDefined, isObject} from "panda-parchment"
-import {convert, isAllowedHint} from "../utils"
+import {convert, areType, isAllowedHint} from "../utils"
 
 Container = ({Nonce, Ciphertext}) ->
 
@@ -30,5 +30,6 @@ Container = ({Nonce, Ciphertext}) ->
         nonce: Nonce.from "base64", nonce
 
     @isType: isType @
+    @areType: areType @isType
 
 export default Container

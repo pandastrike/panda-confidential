@@ -1,9 +1,18 @@
-import nacl from "tweetnacl-util"
-import {unary} from "panda-garden"
-import {isType, isObject, isString, eq, isDefined, toJSON} from "panda-parchment"
+import {unary, curry} from "panda-garden"
+import {isType, isObject, isString, isArray, eq, isDefined, toJSON} from "panda-parchment"
 import {Method} from "panda-generics"
 
-{decodeBase64, decodeUTF8, encodeBase64, encodeUTF8} = nacl
+# The author of tweetnacl-js strongly recommends his stablelib modules, but
+# be careful with the encode-decode name convention.
+import {encode as decodeUTF8, decode as encodeUTF8} from "@stablelib/utf8"
+import {decode as decodeBase64, encode as encodeBase64} from "@stablelib/base64"
+
+# Apply isType to a collection.
+areType = curry (typeCheck, array) ->
+  return false unless isArray array
+  for item in array
+    return false unless typeCheck item
+  true
 
 isBytes = isType Uint8Array
 
@@ -99,4 +108,5 @@ export {
   convert
   isBytes
   isAllowedHint
+  areType
 }

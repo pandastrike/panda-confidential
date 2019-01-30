@@ -48,10 +48,11 @@
     "sundog": "^2.0.0"
   },
   "dependencies": {
+    "@stablelib/base64": "^0.7.2",
+    "@stablelib/utf8": "^0.10.1",
     "panda-garden": "^3.2.0",
     "panda-generics": "^4.0.0",
     "panda-parchment": "^4.2.0",
-    "tweetnacl": "^1.0.0",
-    "tweetnacl-util": "^0.15.0"
+    "tweetnacl": "^1.0.0"
   }
 }

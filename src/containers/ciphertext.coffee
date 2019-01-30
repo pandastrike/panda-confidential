@@ -1,5 +1,5 @@
 import {isType} from "panda-parchment"
-import {convert} from "../utils"
+import {convert, areType} from "../utils"
 
 class Ciphertext
   constructor: (@ciphertext) ->
@@ -18,5 +18,6 @@ class Ciphertext
         convert from: hint, to: "bytes", value
 
   @isType: isType @
+  @areType: areType @isType
 
 export default Ciphertext

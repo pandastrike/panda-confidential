@@ -1,6 +1,6 @@
 import nacl from "tweetnacl"
 import {isType, fromJSON} from "panda-parchment"
-import {convert} from "../utils"
+import {convert, areType} from "../utils"
 import KeyPair from "./key-pair"
 
 toBytes = (string) -> convert from: "base64", to: "bytes", string
@@ -27,5 +27,6 @@ signatureKeyPair = ({randomBytes}) ->
         publicKey: toBytes value.publicKey
 
     @isType: isType @
+    @areType: areType @isType
 
 export default signatureKeyPair

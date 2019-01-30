@@ -1,5 +1,5 @@
 import {isType, toJSON, fromJSON} from "panda-parchment"
-import {convert} from "../utils"
+import {convert, areType} from "../utils"
 
 Container = ({Message, Signature, PublicKey}) ->
 
@@ -36,5 +36,6 @@ Container = ({Message, Signature, PublicKey}) ->
         signatures: (Signature.from "base64", s for s in signatures)
 
     @isType: isType @
+    @areType: areType @isType
 
 export default Container

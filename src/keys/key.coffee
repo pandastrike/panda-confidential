@@ -1,5 +1,5 @@
 import {isKind} from "panda-parchment"
-import {convert} from "../utils"
+import {convert, areType} from "../utils"
 
 class Key
   constructor: (@key) ->
@@ -11,5 +11,6 @@ class Key
       convert from: "bytes", to: hint, @key
 
   @isKind: isKind @
+  @areType: areType @isType
 
 export default Key

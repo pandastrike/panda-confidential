@@ -4,7 +4,7 @@ import {Method} from "panda-generics"
 import Key from "./key"
 import PublicKey from "./public"
 import PrivateKey from "./private"
-import {convert} from "../utils"
+import {convert, areType} from "../utils"
 
 sharedKey = ({EncryptionKeyPair}) ->
 
@@ -34,6 +34,7 @@ sharedKey = ({EncryptionKeyPair}) ->
           convert from: hint, to: "bytes", value
 
     @isType: isType @
+    @areType: areType @isType
 
     @create: create
 
