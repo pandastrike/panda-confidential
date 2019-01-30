@@ -1,4 +1,4 @@
-import {isType} from "panda-parchment"
+import {isType, fromJSON} from "panda-parchment"
 import {convert, areType} from "../utils"
 
 class Message
@@ -9,6 +9,8 @@ class Message
       @message
     else
       convert from: "bytes", to: hint, @message
+
+  json: -> fromJSON @to "utf8"
 
   @from: (hint, value) ->
     new Message do ->

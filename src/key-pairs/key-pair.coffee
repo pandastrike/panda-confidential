@@ -3,17 +3,13 @@ import {convert, areType} from "../utils"
 import PublicKey from "../keys/public"
 import PrivateKey from "../keys/private"
 
-toBase64 = (bytes) -> convert from: "bytes", to: "base64", bytes
-
 class KeyPair
-  constructor: ({publicKey, privateKey}) ->
-    @publicKey = PublicKey.from "bytes", publicKey
-    @privateKey = PrivateKey.from "bytes", privateKey
+  constructor: ({@publicKey, @privateKey}) ->
 
   to: (hint) ->
     output = toJSON
-      privateKey: toBase64 @privateKey
-      publicKey: toBase64 @publicKey
+      privateKey: @privateKey.to "base64"
+      publicKey: @publicKey.to "base64"
 
     if hint == "utf8"
       output
