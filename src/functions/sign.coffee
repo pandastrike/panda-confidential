@@ -1,8 +1,6 @@
 import nacl from "tweetnacl"
-import {pipe} from "panda-garden"
 import {toJSON, cat, first, rest} from "panda-parchment"
 import {Method} from "panda-generics"
-import {convert} from "../utils"
 
 Sign = ({PublicKey, PrivateKey, SignatureKeyPair,
   Message, Signature, Declaration}) ->

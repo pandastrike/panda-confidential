@@ -1,7 +1,6 @@
 import nacl from "tweetnacl"
-import {isPrototype, toJSON} from "panda-parchment"
+import {toJSON} from "panda-parchment"
 import {Method} from "panda-generics"
-import {convert} from "../utils"
 
 Encrypt = ({randomBytes, SymmetricKey, SharedKey,
             Message, Nonce, Ciphertext, Envelope}) ->

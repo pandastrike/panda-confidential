@@ -1,5 +1,5 @@
-import {isType, toJSON, fromJSON, eq, isDefined, isObject} from "panda-parchment"
-import {convert, areType, isAllowedHint} from "../utils"
+import {isType, toJSON, fromJSON} from "panda-parchment"
+import {convert, areType} from "../utils"
 
 Container = ({Nonce, Ciphertext}) ->
 
