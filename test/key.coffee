@@ -2,7 +2,7 @@
 import name from "./key-name"
 
 EstablishKey = (AWS) ->
-  {KMS:{get, create, addAlias}} = AWS
+  {get, create, addAlias} = AWS.KMS()
 
   if await get name
     console.error "Confirmed testing key #{name}"

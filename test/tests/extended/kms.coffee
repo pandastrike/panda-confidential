@@ -1,11 +1,11 @@
 import Sundog from "sundog"
 import {isString} from "panda-parchment"
-import {Method} from "fairmont-multimethods"
+import Method from "panda-generics"
 import {isKMSKeyID} from "./kms-key"
 
 # Extend Confidential with KMS via sundog.
 kms = (confidential, SDK) ->
-  {AWS:KMS:{randomKey, encrypt:kmsEncrypt, decrypt:kmsDecrypt}} = Sundog SDK
+  {randomKey, encrypt:kmsEncrypt, decrypt:kmsDecrypt} = (Sundog SDK).AWS.KMS()
 
   confidential.randomBytes = (length) -> await randomKey length, "buffer"
   {encode, decode, isData, randomBytes, nacl} = confidential

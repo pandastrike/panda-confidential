@@ -1,6 +1,6 @@
 import nacl from "tweetnacl"
 import {toJSON, cat, first, rest} from "panda-parchment"
-import {Method} from "panda-generics"
+import Method from "panda-generics"
 
 Sign = ({PublicKey, PrivateKey, SignatureKeyPair,
   Message, Signature, Declaration}) ->
@@ -11,8 +11,9 @@ Sign = ({PublicKey, PrivateKey, SignatureKeyPair,
 
 
   # Define a multimethod.
-  sign = Method.create default: (args...) ->
-    throw new Error "panda-confidential::sign no matches on #{toJSON args}"
+  sign = Method.create
+    name: "sign"
+    description: "Digitially signs a Message to return a Declaration."
 
   # Signing a plain Message
   Method.define sign, PrivateKey.isType, PublicKey.isType, Message.isType,

@@ -1,11 +1,13 @@
 import nacl from "tweetnacl"
-import {Method} from "panda-generics"
+import Method from "panda-generics"
 import {toJSON} from "panda-parchment"
 
 Verify = ({Declaration}) ->
   # Define a multimethod.
-  verify = Method.create default: (args...) ->
-    throw new Error "panda-confidential::verify no matches on #{toJSON args}"
+  verify = Method.create
+    name: "verify"
+    description: "Verifies the digital signature of a Declaration,
+      returning true or false."
 
   # Verify the signature(s) on a message.
   Method.define verify, Declaration.isType,

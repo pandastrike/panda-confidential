@@ -1,6 +1,6 @@
 {
   "name": "panda-confidential",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Simple, extensible interface for the tweetnacl-js cryptography library",
   "main": "build/npm/src/index.js",
   "files": [
@@ -39,20 +39,20 @@
     "url": "https://github.com/pandastrike/panda-confidential/issues"
   },
   "homepage": "https://github.com/pandastrike/panda-confidential#readme",
-  "devDependencies": {
-    "amen": "^2.0.4",
-    "aws-sdk": "^2.382.0",
-    "command-line-args": "^5.0.2",
-    "panda-9000": "^4.4.0",
-    "panda-builder": "^3.2.1",
-    "sundog": "^2.0.0"
-  },
   "dependencies": {
     "@stablelib/base64": "^0.7.2",
     "@stablelib/utf8": "^0.10.1",
-    "panda-garden": "^3.2.0",
-    "panda-generics": "^4.0.0",
-    "panda-parchment": "^4.2.0",
-    "tweetnacl": "^1.0.0"
+    "panda-garden": "^4.0.0",
+    "panda-generics": "^6.0.0",
+    "panda-parchment": "^5.0.0",
+    "tweetnacl": "^1.0.1"
+  },
+  "devDependencies": {
+    "amen": "^3.0.0",
+    "aws-sdk": "^2.382.0",
+    "command-line-args": "^5.0.2",
+    "panda-9000": "^5.0.0",
+    "panda-builder": "^4.0.0",
+    "sundog": "^6.0.1"
   }
 }

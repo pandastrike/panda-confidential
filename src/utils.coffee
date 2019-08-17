@@ -1,6 +1,6 @@
 import {unary, curry} from "panda-garden"
 import {isType, isObject, isString, isArray, eq, isDefined, toJSON} from "panda-parchment"
-import {Method} from "panda-generics"
+import Method from "panda-generics"
 
 # The author of tweetnacl-js strongly recommends his stablelib modules, but
 # be careful with the encode-decode name convention.
@@ -27,10 +27,10 @@ hint =
 
 
 # decode takes an input and breaks it down to a byte array.
-decode = Method.create default: (args...) ->
-  throw new Error "panda-confidential::convert::decode -
-    Confirm your data type matches the hint.
-    No matches on #{toJSON args}"
+decode = Method.create
+  name: "decode"
+  description: "Uses an encoding hint to decode a given string into a
+    byte array. NoOp on bytes."
 
 Method.define decode, hint.isBytes, isBytes,
   (_, bytes) -> bytes  # no op, but enforcing bytes type
@@ -54,10 +54,9 @@ Method.define decode, hint.isSafeBase64, isString,
 
 
 # encode takes a byte array and formats it according to the hint.
-encode = Method.create default: (args...) ->
-  throw new Error "panda-confidential::convert::encode -
-    Confirm your data type matches the hint.
-    No matches on #{toJSON args}"
+encode = Method.create
+  name: "encode"
+  description: "Encodes a given byte array using an encoding hint."
 
 Method.define encode, hint.isBytes, isBytes,
   (_, bytes) -> bytes  # no op, but enforcing bytes type
@@ -79,9 +78,9 @@ Method.define encode, hint.isSafeBase64, isBytes,
 
 
 
-isHint = Method.create default: (args...) ->
-  throw new Error "panda-confidential::convert:: - invalid hint:
-    no matches on #{toJSON args}"
+isHint = Method.create
+  name: "isHint"
+  description: "Checks to see if the arugment is a valid hint."
 
 Method.define isHint, isAllowedHint, isAllowedHint,
   -> true
@@ -96,9 +95,9 @@ Method.define isHint, isObject,
 
 # convert takes a piece of data and converts it by using decode to get bytes,
 # then encode to get the final format.
-convert = Method.create default: (args...) ->
-  throw new Error "panda-confidential::convert:: -
-    no matches on #{toJSON args}"
+convert = Method.create
+  name: "convert"
+  description: "Converts data from one form to another according to a hint."
 
 Method.define convert, (unary isHint), isDefined,
   ({from: _from, to}, value) -> encode to, decode _from, value

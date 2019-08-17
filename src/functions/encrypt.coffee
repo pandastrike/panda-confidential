@@ -1,12 +1,13 @@
 import nacl from "tweetnacl"
 import {toJSON} from "panda-parchment"
-import {Method} from "panda-generics"
+import Method from "panda-generics"
 
 Encrypt = ({randomBytes, SymmetricKey, SharedKey,
             Message, Nonce, Ciphertext, Envelope}) ->
   # Define a multimethod to export.
-  encrypt = Method.create default: (args...) ->
-    throw new Error "panda-confidential::encrypt no matches on #{toJSON args}"
+  encrypt = Method.create
+    name: "encrypt"
+    description: "Encrypts a Message to return an Envelope"
 
   # Symmetric Encryption
   Method.define encrypt, SymmetricKey.isType, Nonce.isType, Message.isType,
