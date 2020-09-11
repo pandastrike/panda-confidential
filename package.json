@@ -1,6 +1,6 @@
 {
   "name": "panda-confidential",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Simple, extensible interface for the tweetnacl-js cryptography library",
   "main": "build/npm/src/index.js",
   "main:coffee": "src/index.coffee",
