@@ -3,7 +3,9 @@
   "version": "3.0.0",
   "description": "Simple, extensible interface for the tweetnacl-js cryptography library",
   "main": "build/npm/src/index.js",
+  "main:coffee": "src/index.coffee",
   "files": [
+    "src",
     "build/npm/src",
     "LICENSE"
   ],
@@ -40,12 +42,12 @@
   },
   "homepage": "https://github.com/pandastrike/panda-confidential#readme",
   "dependencies": {
+    "@pandastrike/garden": "^8.0.1",
     "@stablelib/base64": "^0.7.2",
     "@stablelib/utf8": "^0.10.1",
-    "panda-garden": "^4.0.0",
-    "panda-generics": "^6.0.0",
-    "panda-parchment": "^5.0.0",
-    "tweetnacl": "^1.0.1"
+    "panda-generics": "^6.0.3",
+    "panda-parchment": "^6.0.4",
+    "tweetnacl": "^1.0.3"
   },
   "devDependencies": {
     "amen": "^3.0.0",
