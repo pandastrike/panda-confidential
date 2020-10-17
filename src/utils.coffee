@@ -1,4 +1,4 @@
-import {unary, curry} from "panda-garden"
+import {unary, curry} from "@pandastrike/garden"
 import {isType, isObject, isString, isArray, eq, isDefined, toJSON} from "panda-parchment"
 import Method from "panda-generics"
 
