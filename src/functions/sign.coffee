@@ -1,6 +1,6 @@
 import nacl from "tweetnacl"
-import {toJSON, cat, first, rest} from "panda-parchment"
-import Method from "panda-generics"
+import { cat, first, rest } from "@dashkite/joy/array"
+import { generic } from "@dashkite/joy/generic"
 
 Sign = ({PublicKey, PrivateKey, SignatureKeyPair,
   Message, Signature, Declaration}) ->
@@ -11,12 +11,12 @@ Sign = ({PublicKey, PrivateKey, SignatureKeyPair,
 
 
   # Define a multimethod.
-  sign = Method.create
+  sign = generic
     name: "sign"
     description: "Digitially signs a Message to return a Declaration."
 
   # Signing a plain Message
-  Method.define sign, PrivateKey.isType, PublicKey.isType, Message.isType,
+  generic sign, PrivateKey.isType, PublicKey.isType, Message.isType,
     (privateKey, publicKey, message) ->
         signature = Signature.from "bytes",
           nacl.sign.detached(
@@ -30,7 +30,7 @@ Sign = ({PublicKey, PrivateKey, SignatureKeyPair,
           signatories: [publicKey]
 
   # Signing a Declaration (previously signed Message)
-  Method.define sign, PrivateKey.isType, PublicKey.isType, Declaration.isType,
+  generic sign, PrivateKey.isType, PublicKey.isType, Declaration.isType,
     (privateKey, publicKey, declaration) ->
       signature = Signature.from "bytes",
         nacl.sign.detached(
@@ -43,15 +43,15 @@ Sign = ({PublicKey, PrivateKey, SignatureKeyPair,
       declaration
 
   # Signing with public key first
-  Method.define sign, PublicKey.isType, PrivateKey.isType, isContent,
+  generic sign, PublicKey.isType, PrivateKey.isType, isContent,
     (publicKey, privateKey, thing) -> sign privateKey, publicKey, thing
 
   # Signing with whole key pair.
-  Method.define sign, SignatureKeyPair.isType, isContent,
+  generic sign, SignatureKeyPair.isType, isContent,
     ({privateKey, publicKey}, thing) -> sign privateKey, publicKey, thing
 
   # Signing with a collection of key pairs
-  Method.define sign, SignatureKeyPair.areType, isContent,
+  generic sign, SignatureKeyPair.areType, isContent,
     (keyPairs, thing) ->
       declaration = sign (first keyPairs), thing
       for pair in rest keyPairs

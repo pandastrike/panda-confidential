@@ -1,5 +1,5 @@
-import {isKind, toJSON} from "panda-parchment"
-import {convert, areType} from "../utils"
+import { isKind } from "@dashkite/joy/type"
+import { toJSON, convert, areType } from "../utils"
 import PublicKey from "../keys/public"
 import PrivateKey from "../keys/private"
 

@@ -1,5 +1,5 @@
 import nacl from "tweetnacl"
-import {isType} from "panda-parchment"
+import { isType } from "@dashkite/joy/type"
 import Key from "./key"
 import {convert, areType} from "../utils"
 

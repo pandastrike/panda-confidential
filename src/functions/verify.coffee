@@ -1,16 +1,16 @@
 import nacl from "tweetnacl"
-import Method from "panda-generics"
-import {toJSON} from "panda-parchment"
+import { generic } from "@dashkite/joy/generic"
+import { toJSON } from "../utils"
 
 Verify = ({Declaration}) ->
   # Define a multimethod.
-  verify = Method.create
+  verify = generic
     name: "verify"
     description: "Verifies the digital signature of a Declaration,
       returning true or false."
 
   # Verify the signature(s) on a message.
-  Method.define verify, Declaration.isType,
+  generic verify, Declaration.isType,
     ({message, signatories, signatures}) ->
       {length} = signatories
 

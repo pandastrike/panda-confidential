@@ -1,4 +1,4 @@
-import {isKind} from "panda-parchment"
+import { isKind } from "@dashkite/joy/type"
 import {convert, areType} from "../utils"
 
 class Key

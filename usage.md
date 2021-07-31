@@ -86,7 +86,7 @@ We pass our SymmetricKey and the plaintext to `encrypt`. Under the hood, Panda-C
 Alice would like to securely send a message to Bob.  This calls for [asymmetric encryption][pke], allowing Alice to encrypt a message only Bob can decrypt. We also want _authentication_, to make sure Bob can confirm that the message really came from Alice.
 
 ```coffeescript
-import assert from "assert"
+import assert from "@dashkite/assert"
 import {confidential} from "panda-confidential"
 
 # Instantiate Panda-Confidential
@@ -132,7 +132,7 @@ We pass the `SharedKey` and the message to `encrypt`.  Under the hood, Panda-Con
 Alice wishes to publish a message and allow others to verify that the message is authentic. We can do this with a [digitial signature][digitial-signature].
 
 ```coffeescript
-import assert from "assert"
+import assert from "@dashkite/assert"
 import {confidential} from "panda-confidential"
 
 # Instantiate Panda-Confidential

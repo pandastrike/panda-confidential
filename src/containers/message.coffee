@@ -1,7 +1,8 @@
-import {isType, fromJSON} from "panda-parchment"
-import {convert, areType} from "../utils"
+import { isType } from "@dashkite/joy/type"
+import { fromJSON, convert, areType } from "../utils"
 
 class Message
+
   constructor: (@message) ->
 
   to: (hint) ->

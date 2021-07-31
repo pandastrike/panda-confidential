@@ -10,7 +10,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "test": "p9k npm:test"
+    "test": "genie test"
   },
   "repository": {
     "type": "git",
@@ -42,19 +42,16 @@
   },
   "homepage": "https://github.com/pandastrike/panda-confidential#readme",
   "dependencies": {
-    "@pandastrike/garden": "^8.0.1",
-    "@stablelib/base64": "^0.7.2",
-    "@stablelib/utf8": "^0.10.1",
-    "panda-generics": "^6.0.3",
-    "panda-parchment": "^6.0.4",
+    "@dashkite/amen-console": "^0.0.1",
+    "@dashkite/joy": "^0.3.11",
+    "@stablelib/base64": "^1.0.1",
+    "@stablelib/utf8": "^1.0.1",
     "tweetnacl": "^1.0.3"
   },
   "devDependencies": {
-    "amen": "^3.0.0",
-    "aws-sdk": "^2.382.0",
-    "command-line-args": "^5.0.2",
-    "panda-9000": "^5.0.0",
-    "panda-builder": "^4.0.0",
-    "sundog": "^6.0.1"
+    "@dashkite/amen": "^0.1.2",
+    "@dashkite/assert": "^0.1.3",
+    "@dashkite/genie": "^0.5.4",
+    "@dashkite/genie-presets": "^0.4.10"
   }
 }
