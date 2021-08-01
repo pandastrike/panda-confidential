@@ -2,20 +2,6 @@
   "name": "panda-confidential",
   "version": "3.0.2",
   "description": "Simple, extensible interface for the tweetnacl-js cryptography library",
-  "main": "build/npm/src/index.js",
-  "main:coffee": "src/index.coffee",
-  "files": [
-    "src",
-    "build/npm/src",
-    "LICENSE"
-  ],
-  "scripts": {
-    "test": "genie test"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/pandastrike/panda-confidential.git"
-  },
   "keywords": [
     "encryption",
     "PKE",
@@ -26,6 +12,15 @@
     "node",
     "universal"
   ],
+  "homepage": "https://github.com/pandastrike/panda-confidential#readme",
+  "bugs": {
+    "url": "https://github.com/pandastrike/panda-confidential/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pandastrike/panda-confidential.git"
+  },
+  "license": "MIT",
   "contributors": [
     {
       "name": "Dan Yoder",
@@ -36,11 +31,20 @@
       "email": "david@pandastrike.com"
     }
   ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/pandastrike/panda-confidential/issues"
+  "exports": {
+    ".": {
+      "browser": "./build/browser/src/index.js",
+      "node": "./build/node/src/index.js"
+    }
   },
-  "homepage": "https://github.com/pandastrike/panda-confidential#readme",
+  "main": "build/node/src/index.js",
+  "files": [
+    "build/browser/src",
+    "build/node/src"
+  ],
+  "scripts": {
+    "test": "genie test"
+  },
   "dependencies": {
     "@dashkite/amen-console": "^0.0.1",
     "@dashkite/joy": "^0.3.11",
