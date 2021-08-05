@@ -1,4 +1,4 @@
-import nacl from "tweetnacl"
+import nacl from "@dashkite/tweetnacl"
 import { cat, first, rest } from "@dashkite/joy/array"
 import { generic } from "@dashkite/joy/generic"
 

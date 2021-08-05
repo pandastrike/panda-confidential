@@ -1,4 +1,4 @@
-import nacl from "tweetnacl"
+import nacl from "@dashkite/tweetnacl"
 import { toJSON } from "../utils"
 import { generic } from "@dashkite/joy/generic"
 

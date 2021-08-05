@@ -1,4 +1,4 @@
-import nacl from "tweetnacl"
+import nacl from "@dashkite/tweetnacl"
 import { isType, isPrototype } from "@dashkite/joy/type"
 import { generic } from "@dashkite/joy/generic"
 import Key from "./key"

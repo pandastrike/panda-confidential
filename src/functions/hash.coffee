@@ -1,4 +1,4 @@
-import nacl from "tweetnacl"
+import nacl from "@dashkite/tweetnacl"
 import { generic } from "@dashkite/joy/generic"
 
 _hash = ({Hash, Message}) ->

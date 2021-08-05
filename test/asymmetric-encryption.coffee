@@ -1,6 +1,6 @@
 import assert from "@dashkite/assert"
 import { test } from "@dashkite/amen"
-import nacl from "tweetnacl"
+import nacl from "@dashkite/tweetnacl"
 
 asymmetric = do ({
   alice

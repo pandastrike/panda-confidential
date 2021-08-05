@@ -11,8 +11,8 @@ import { generic } from "@dashkite/joy/generic"
 
 # The author of tweetnacl-js strongly recommends his stablelib modules, but
 # be careful with the encode-decode name convention.
-import { encode as decodeUTF8, decode as encodeUTF8 } from "@stablelib/utf8"
-import { decode as decodeBase64, encode as encodeBase64 } from "@stablelib/base64"
+import { encode as decodeUTF8, decode as encodeUTF8 } from "@dashkite/utf8"
+import { decode as decodeBase64, encode as encodeBase64 } from "@dashkite/base64"
 
 # TODO this predicate should exist within Joy
 # (this is different than the deep equality function)

@@ -47,10 +47,10 @@
   },
   "dependencies": {
     "@dashkite/amen-console": "^0.0.1",
+    "@dashkite/base64": "^1.0.1",
     "@dashkite/joy": "^0.3.11",
-    "@stablelib/base64": "^1.0.1",
-    "@stablelib/utf8": "^1.0.1",
-    "tweetnacl": "^1.0.3"
+    "@dashkite/tweetnacl": "^1.0.3",
+    "@dashkite/utf8": "^1.0.1"
   },
   "devDependencies": {
     "@dashkite/amen": "^0.1.2",

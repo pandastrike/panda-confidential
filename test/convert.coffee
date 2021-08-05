@@ -1,7 +1,7 @@
 import { pipe } from "@dashkite/joy/function"
 import assert from "@dashkite/assert"
 import { test } from "@dashkite/amen"
-import nacl from "tweetnacl"
+import nacl from "@dashkite/tweetnacl"
 
 convert = do (
   plaintext = "Hello, World!"
