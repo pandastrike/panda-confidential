@@ -1,4 +1,7 @@
 presets:
+  verify: null
+  update: null
+  release: null
   coffeescript:
     targets:
       browser:
