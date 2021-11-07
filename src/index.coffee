@@ -1,5 +1,10 @@
-import nacl from "tweetnacl"
-import {convert, isBytes} from "./utils"
+import nacl from "@dashkite/tweetnacl"
+import {
+  convert
+  isBytes
+  supportedEncodings
+  isSupportedEncoding
+} from "./utils"
 import keys from "./keys"
 import keyPairs from "./key-pairs"
 import containers from "./containers"
@@ -10,13 +15,18 @@ confidential = (randomBytes) ->
     nacl: nacl
     isBytes: isBytes
     convert: convert
+    supportedEncodings: supportedEncodings
+    isSupportedEncoding: isSupportedEncoding
     randomBytes: (length) ->
       Promise.resolve (randomBytes ? nacl.randomBytes) length
 
-  keyPairs Confidential
-  keys Confidential
-  containers Confidential
-  functions Confidential
+  try
+    keyPairs Confidential
+    keys Confidential
+    containers Confidential
+    functions Confidential
+  catch error
+    console.error error
 
   Confidential
 

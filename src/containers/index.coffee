@@ -1,4 +1,4 @@
-import {include} from "panda-parchment"
+import { assign } from "@dashkite/joy/object"
 import Ciphertext from "./ciphertext"
 import Declaration from "./declaration"
 import Envelope from "./envelope"
@@ -8,8 +8,8 @@ import Nonce from "./nonce"
 import Signature from "./signature"
 
 containers = (confidential) ->
-  include confidential, {Ciphertext, Hash, Message, Nonce, Signature}
-  include confidential, Declaration: Declaration confidential
-  include confidential, Envelope: Envelope confidential
+  assign confidential, {Ciphertext, Hash, Message, Nonce, Signature}
+  assign confidential, Declaration: Declaration confidential
+  assign confidential, Envelope: Envelope confidential
 
 export default containers

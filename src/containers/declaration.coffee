@@ -1,5 +1,5 @@
-import {isType, toJSON, fromJSON} from "panda-parchment"
-import {convert, areType} from "../utils"
+import { isType } from "@dashkite/joy/type"
+import { toJSON, fromJSON, convert, areType } from "../utils"
 
 Container = ({Message, Signature, PublicKey}) ->
 

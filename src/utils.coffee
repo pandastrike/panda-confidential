@@ -1,11 +1,25 @@
-import {unary, curry} from "@pandastrike/garden"
-import {isType, isObject, isString, isArray, eq, isDefined, toJSON} from "panda-parchment"
-import Method from "panda-generics"
+import { unary, curry } from "@dashkite/joy/function"
+import {
+  isType
+  isObject
+  isString
+  isArray
+  isDefined
+} from "@dashkite/joy/type"
+
+import { generic } from "@dashkite/joy/generic"
 
 # The author of tweetnacl-js strongly recommends his stablelib modules, but
 # be careful with the encode-decode name convention.
-import {encode as decodeUTF8, decode as encodeUTF8} from "@stablelib/utf8"
-import {decode as decodeBase64, encode as encodeBase64} from "@stablelib/base64"
+import { encode as decodeUTF8, decode as encodeUTF8 } from "@dashkite/utf8"
+import { decode as decodeBase64, encode as encodeBase64 } from "@dashkite/base64"
+
+# TODO this predicate should exist within Joy
+# (this is different than the deep equality function)
+equal = curry (a, b) -> a == b
+
+fromJSON = (json) -> JSON.parse json
+toJSON = (value) -> JSON.stringify value
 
 # Apply isType to a collection.
 areType = curry (typeCheck, array) ->
@@ -16,32 +30,31 @@ areType = curry (typeCheck, array) ->
 
 isBytes = isType Uint8Array
 
-allowedHints = ["bytes", "utf8", "base64", "safe-base64"]
-isAllowedHint = (x) -> x in allowedHints
+supportedEncodings = ["bytes", "utf8", "base64", "safe-base64"]
+isSupportedEncoding = (x) -> x in supportedEncodings
 
 hint =
-  isBytes: eq "bytes"
-  isUTF8: eq "utf8"
-  isBase64: eq "base64"
-  isSafeBase64: eq "safe-base64"
-
+  isBytes: equal "bytes"
+  isUTF8: equal "utf8"
+  isBase64: equal "base64"
+  isSafeBase64: equal "safe-base64"
 
 # decode takes an input and breaks it down to a byte array.
-decode = Method.create
+decode = generic
   name: "decode"
   description: "Uses an encoding hint to decode a given string into a
     byte array. NoOp on bytes."
 
-Method.define decode, hint.isBytes, isBytes,
+generic decode, hint.isBytes, isBytes,
   (_, bytes) -> bytes  # no op, but enforcing bytes type
 
-Method.define decode, hint.isUTF8, isString,
+generic decode, hint.isUTF8, isString,
   (_, string) -> decodeUTF8 string
 
-Method.define decode, hint.isBase64, isString,
+generic decode, hint.isBase64, isString,
   (_, string) -> decodeBase64 string
 
-Method.define decode, hint.isSafeBase64, isString,
+generic decode, hint.isSafeBase64, isString,
   (_, string) ->
     # Based on RFC 4648's "base64url" mapping:
     # https://tools.ietf.org/html/rfc4648#section-5
@@ -52,22 +65,21 @@ Method.define decode, hint.isSafeBase64, isString,
         else ""
     decodeBase64 string.replace(/\-/g, '+').replace(/\_/g, '/') + padding
 
-
 # encode takes a byte array and formats it according to the hint.
-encode = Method.create
+encode = generic
   name: "encode"
   description: "Encodes a given byte array using an encoding hint."
 
-Method.define encode, hint.isBytes, isBytes,
+generic encode, hint.isBytes, isBytes,
   (_, bytes) -> bytes  # no op, but enforcing bytes type
 
-Method.define encode, hint.isUTF8, isBytes,
+generic encode, hint.isUTF8, isBytes,
   (_, bytes) ->  encodeUTF8 bytes
 
-Method.define encode, hint.isBase64, isBytes,
+generic encode, hint.isBase64, isBytes,
   (_, bytes) ->  encodeBase64 bytes
 
-Method.define encode, hint.isSafeBase64, isBytes,
+generic encode, hint.isSafeBase64, isBytes,
   (_, bytes) ->
     # Based on RFC 4648's "base64url" mapping:
     # https://tools.ietf.org/html/rfc4648#section-5
@@ -76,36 +88,17 @@ Method.define encode, hint.isSafeBase64, isBytes,
     .replace(/\//g, '_')
     .replace(/\=+$/, '')
 
-
-
-isHint = Method.create
-  name: "isHint"
-  description: "Checks to see if the arugment is a valid hint."
-
-Method.define isHint, isAllowedHint, isAllowedHint,
-  -> true
-
-Method.define isHint, eq,
-  (_from, to) ->
-    throw new Error "panda-confidential::convert -
-      'from' (#{_from}) and 'to' (#{to}) hints cannot be identical."
-
-Method.define isHint, isObject,
-  ({from:_from, to}) -> isHint _from, to
-
 # convert takes a piece of data and converts it by using decode to get bytes,
 # then encode to get the final format.
-convert = Method.create
-  name: "convert"
-  description: "Converts data from one form to another according to a hint."
-
-Method.define convert, (unary isHint), isDefined,
-  ({from: _from, to}, value) -> encode to, decode _from, value
-
+convert = curry (hints, value) ->
+  encode hints.to, decode hints.from, value
 
 export {
+  fromJSON
+  toJSON
   convert
   isBytes
-  isAllowedHint
+  supportedEncodings
+  isSupportedEncoding
   areType
 }

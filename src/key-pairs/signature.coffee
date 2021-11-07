@@ -1,11 +1,12 @@
-import nacl from "tweetnacl"
-import {isType, fromJSON} from "panda-parchment"
-import {convert, areType} from "../utils"
+import nacl from "@dashkite/tweetnacl"
+import { isType } from "@dashkite/joy/type"
+import { fromJSON, convert, areType } from "../utils"
 import KeyPair from "./key-pair"
 import PublicKey from "../keys/public"
 import PrivateKey from "../keys/private"
 
 signatureKeyPair = ({randomBytes}) ->
+
   class SignatureKeyPair extends KeyPair
 
     @create: ->

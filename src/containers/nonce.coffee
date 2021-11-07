@@ -1,4 +1,4 @@
-import {isType} from "panda-parchment"
+import { isType } from "@dashkite/joy/type"
 import {convert, areType} from "../utils"
 
 class Nonce

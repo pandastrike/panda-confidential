@@ -1,16 +1,16 @@
-import nacl from "tweetnacl"
-import {toJSON} from "panda-parchment"
-import Method from "panda-generics"
+import nacl from "@dashkite/tweetnacl"
+import { toJSON } from "../utils"
+import { generic } from "@dashkite/joy/generic"
 
 Encrypt = ({randomBytes, SymmetricKey, SharedKey,
             Message, Nonce, Ciphertext, Envelope}) ->
   # Define a multimethod to export.
-  encrypt = Method.create
+  encrypt = generic
     name: "encrypt"
     description: "Encrypts a Message to return an Envelope"
 
   # Symmetric Encryption
-  Method.define encrypt, SymmetricKey.isType, Nonce.isType, Message.isType,
+  generic encrypt, SymmetricKey.isType, Nonce.isType, Message.isType,
     (key, nonce, message) ->
       ciphertext = Ciphertext.from "bytes",
         nacl.secretbox(
@@ -21,14 +21,14 @@ Encrypt = ({randomBytes, SymmetricKey, SharedKey,
 
       Promise.resolve Envelope.create {ciphertext, nonce}
 
-  Method.define encrypt, SymmetricKey.isType, Message.isType,
+  generic encrypt, SymmetricKey.isType, Message.isType,
     (key, message) ->
       nonce = Nonce.from "bytes", await randomBytes nacl.secretbox.nonceLength
       encrypt key, nonce, message
 
 
   # Asymmetric Encryption via shared key.
-  Method.define encrypt, SharedKey.isType, Nonce.isType, Message.isType,
+  generic encrypt, SharedKey.isType, Nonce.isType, Message.isType,
     (key, nonce, message) ->
       ciphertext = Ciphertext.from "bytes",
         nacl.secretbox(
@@ -39,7 +39,7 @@ Encrypt = ({randomBytes, SymmetricKey, SharedKey,
 
       Promise.resolve Envelope.create {ciphertext, nonce}
 
-  Method.define encrypt, SharedKey.isType, Message.isType, (key, message) ->
+  generic encrypt, SharedKey.isType, Message.isType, (key, message) ->
     nonce = Nonce.from "bytes", await randomBytes nacl.box.nonceLength
     encrypt key, nonce, message
 

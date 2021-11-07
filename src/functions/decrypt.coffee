@@ -1,15 +1,15 @@
-import nacl from "tweetnacl"
-import Method from "panda-generics"
-import {toJSON} from "panda-parchment"
+import nacl from "@dashkite/tweetnacl"
+import { generic } from "@dashkite/joy/generic"
+import { toJSON } from "../utils"
 
 Decrypt = ({SymmetricKey, SharedKey, Envelope, Message}) ->
   # Define a multimethod for export.
-  decrypt = Method.create
+  decrypt = generic
     name: "decrypt"
     description: "Decrypts an Envelope to return a Message."
 
   # Symmetric Decryption
-  Method.define decrypt, SymmetricKey.isType, Envelope.isType,
+  generic decrypt, SymmetricKey.isType, Envelope.isType,
     (key, {ciphertext, nonce}) ->
       message = nacl.secretbox.open(
         ciphertext.to "bytes"
@@ -23,7 +23,7 @@ Decrypt = ({SymmetricKey, SharedKey, Envelope, Message}) ->
         throw new Error "Decryption Failure"
 
   # Asymmetric Decryption via shared key.
-  Method.define decrypt, SharedKey.isType, Envelope.isType,
+  generic decrypt, SharedKey.isType, Envelope.isType,
     (key, {ciphertext, nonce}) ->
       message = nacl.box.open.after(
         ciphertext.to "bytes"

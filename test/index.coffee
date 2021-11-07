@@ -1,26 +1,43 @@
-import parseCLIArgs from "command-line-args"
+import { test } from "@dashkite/amen"
+import print from "@dashkite/amen-console"
+import { confidential } from "../src/index"
 
-import Context from "./context"
-import EstablishKey from "./key"
-import Tests from "./tests"
+import symmetric from "./symmetric-encryption"
+import asymmetric from "./asymmetric-encryption"
+import signature from "./signature"
+import hash from "./hash"
+import convert from "./convert"
 
-# This grabs CLI arugments to allow the developer to configure the AWS context.
-options = parseCLIArgs [
-  { name: 'extended', alias: 'e', type: Boolean }
-  { name: "profile", alias: "p", type: String }
-  { name: "region", alias: "r", type: String }
-]
+$ = confidential()
 
 do ->
-  if options.extended
-    try
-      console.error "Establishing AWS context..."
-      {Sundog, SDK} = Context options
-      await EstablishKey Sundog
-    catch e
-      console.error "Failed to establish AWS SDK context.", e
-      process.exit()
-  else
-    SDK = false
 
-  await Tests SDK
+  await print await test "Panda Confidential", [
+
+    test
+      description: "Symmetric Encryption"
+      wait: false,
+      await symmetric $
+
+    await test
+      description: "Public Key Encryption"
+      wait: false,
+      await asymmetric $
+
+    test
+      description: "Digital Signature"
+      wait: false,
+      await signature $
+
+    test
+      description: "SHA-512 Hash"
+      wait: false,
+      hash $
+
+    test
+      description: "Format Conversions"
+      wait: false,
+      convert $
+
+  ]
+
