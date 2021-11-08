@@ -1,4 +1,4 @@
-import { test } from "@dashkite/amen"
+import { test, success } from "@dashkite/amen"
 import print from "@dashkite/amen-console"
 import { confidential } from "../src/index"
 
@@ -41,3 +41,4 @@ do ->
 
   ]
 
+  process.exit if success then 0 else 1
