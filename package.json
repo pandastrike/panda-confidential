@@ -46,7 +46,7 @@
     "test": "genie test"
   },
   "dependencies": {
-    "@dashkite/bake": "^0.0.5",
+    "@dashkite/bake": "^0.0.6",
     "@dashkite/joy": "^0.3.15",
     "@dashkite/tweetnacl": "^1.0.3"
   },
